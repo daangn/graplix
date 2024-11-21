@@ -1,7 +1,6 @@
 {
   "name": "graplix",
   "version": "0.0.1",
-  "private": true,
   "repository": "https://github.com/daangn/graplix",
   "type": "module",
   "exports": {
