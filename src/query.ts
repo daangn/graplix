@@ -1,7 +1,7 @@
 import { DirectedGraph } from "graphology";
 import * as R from "remeda";
 
-import type { BaseNodeTypeMap } from "./BaseNodeTypeMap";
+import type { BaseEntityTypeMap } from "./BaseEntityTypeMap";
 import type { GraplixInput } from "./GraplixInput";
 import type { ValueOf } from "./utils";
 import {
@@ -13,60 +13,38 @@ import {
 
 export type QueryParameters<
   Context extends {},
-  NodeTypeMap extends BaseNodeTypeMap,
+  EntityTypeMap extends BaseEntityTypeMap,
 > = {
-  /**
-   * @description 인가을 요청한 사용자 Node
-   */
-  user: ValueOf<NodeTypeMap>;
-
-  /**
-   * @description 인가 대상 Node
-   */
-  object: ValueOf<NodeTypeMap>;
-
-  /**
-   * @description 사용자와 인가 대상 사이를 연결하는 관계
-   */
+  user: ValueOf<EntityTypeMap>;
+  object: ValueOf<EntityTypeMap>;
   relation: string;
-
-  /**
-   * @description Resolver 실행에 전달되는 `context` 값
-   */
   context: Context;
 };
 
 export type QueryOptions<
   Context extends {},
-  NodeTypeMap extends BaseNodeTypeMap,
+  EntityTypeMap extends BaseEntityTypeMap,
 > = {
-  /**
-   * @description (private) 재귀 함수의 순환 참조 문제를 알아내기 위한 초기 파라미터
-   */
-  initialParams?: QueryParameters<Context, NodeTypeMap>;
-
-  /**
-   * @description (private) 암묵적 관계 추론을 위한 flag
-   */
+  initialParams?: QueryParameters<Context, EntityTypeMap>;
   implicit?: boolean;
 };
 
 export async function query<
   Context extends {},
-  NodeTypeMap extends BaseNodeTypeMap,
+  EntityTypeMap extends BaseEntityTypeMap,
 >(
-  input: GraplixInput<Context, NodeTypeMap>,
-  params: QueryParameters<Context, NodeTypeMap>,
-  options?: QueryOptions<Context, NodeTypeMap>,
+  input: GraplixInput<Context, EntityTypeMap>,
+  params: QueryParameters<Context, EntityTypeMap>,
+  options?: QueryOptions<Context, EntityTypeMap>,
 ): Promise<
   DirectedGraph<{ node: any; matched: boolean }, { relation: string }>
 > {
   const object = params.object;
-  const { type: objectType } = input.identifyNode(object);
-  const objectNodeId = compileNodeId(input.identifyNode(object));
+  const { type: objectType } = input.identify(object);
+  const objectNodeId = compileNodeId(input.identify(object));
 
   const user = params.user;
-  const userNodeId = compileNodeId(input.identifyNode(user));
+  const userNodeId = compileNodeId(input.identify(user));
 
   const graph = new DirectedGraph<
     { node: any; matched: boolean },
@@ -81,7 +59,7 @@ export async function query<
   const isCircularDependency =
     options?.initialParams &&
     isEqual(
-      (t) => compileNodeId(input.identifyNode(t)),
+      (t) => compileNodeId(input.identify(t)),
       params.object,
       options.initialParams.object,
     ) &&
@@ -122,11 +100,11 @@ export async function query<
         .then((o) => normalizeArrayable(o));
 
       for (const nextNode of nextNodes) {
-        const nextNodeId = compileNodeId(input.identifyNode(nextNode));
+        const nextNodeId = compileNodeId(input.identify(nextNode));
 
         /**
-         * - implicit relation이라면 false
-         * - implicit relation이 아니고, nextNodeId와 userNodeId가 같다면 true
+         * - if implicit relation, return false
+         * - if not implicit relation and nextNodeId is equal to userNodeId, return true
          */
         const matched = !options?.implicit && nextNodeId === userNodeId;
 
@@ -148,7 +126,7 @@ export async function query<
   );
 
   /**
-   * { when: "...", ... }
+   * { when: "...", ?? }
    */
   await R.pipe(
     relationDefinitions,

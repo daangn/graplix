@@ -1,12 +1,15 @@
-import type { BaseNodeTypeMap } from "./BaseNodeTypeMap";
+import type { BaseEntityTypeMap } from "./BaseEntityTypeMap";
 import type { GraplixInput } from "./GraplixInput";
 import { query } from "./query";
 import type { ValueOf } from "./utils";
 
-export type Graplix<Context extends {}, NodeTypeMap extends BaseNodeTypeMap> = {
+export type Graplix<
+  Context extends {},
+  EntityTypeMap extends BaseEntityTypeMap,
+> = {
   check: (args: {
-    user: ValueOf<NodeTypeMap>;
-    object: ValueOf<NodeTypeMap>;
+    user: ValueOf<EntityTypeMap>;
+    object: ValueOf<EntityTypeMap>;
     relation: string;
     context: Context;
   }) => Promise<boolean>;
@@ -14,8 +17,10 @@ export type Graplix<Context extends {}, NodeTypeMap extends BaseNodeTypeMap> = {
 
 export function graplix<
   Context extends {},
-  NodeTypeMap extends BaseNodeTypeMap,
->(input: GraplixInput<Context, NodeTypeMap>): Graplix<Context, NodeTypeMap> {
+  EntityTypeMap extends BaseEntityTypeMap,
+>(
+  input: GraplixInput<Context, EntityTypeMap>,
+): Graplix<Context, EntityTypeMap> {
   return {
     async check({ context, object, relation, user }) {
       const graph = await query(input, {

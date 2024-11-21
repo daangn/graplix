@@ -1,10 +1,10 @@
-import type { BaseNodeTypeMap } from "./BaseNodeTypeMap";
+import type { BaseEntityTypeMap } from "./BaseEntityTypeMap";
 import type { Arrayable } from "./utils";
 
-type GraplixSchemaRelationDefinition<NodeTypeMap extends BaseNodeTypeMap> =
+type GraplixSchemaRelationDefinition<EntityTypeMap extends BaseEntityTypeMap> =
   Arrayable<
     | {
-        type: Extract<keyof NodeTypeMap, string>;
+        type: Extract<keyof EntityTypeMap, string>;
       }
     | {
         when: string;
@@ -12,8 +12,8 @@ type GraplixSchemaRelationDefinition<NodeTypeMap extends BaseNodeTypeMap> =
       }
   >;
 
-export type GraplixSchema<NodeTypeMap extends BaseNodeTypeMap> = {
-  [SelectedNodeTypeName in Extract<keyof NodeTypeMap, string>]: {
-    [relationName: string]: GraplixSchemaRelationDefinition<NodeTypeMap>;
+export type GraplixSchema<EntityTypeMap extends BaseEntityTypeMap> = {
+  [SelectedNodeTypeName in Extract<keyof EntityTypeMap, string>]: {
+    [relationName: string]: GraplixSchemaRelationDefinition<EntityTypeMap>;
   };
 };

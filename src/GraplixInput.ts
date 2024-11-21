@@ -1,16 +1,16 @@
-import type { BaseNodeTypeMap } from "./BaseNodeTypeMap";
+import type { BaseEntityTypeMap } from "./BaseEntityTypeMap";
 import type { GraplixResolvers } from "./GraplixResolvers";
 import type { GraplixSchema } from "./GraplixSchema";
 import type { ValueOf } from "./utils";
 
 export type GraplixInput<
   Context extends {},
-  NodeTypeMap extends BaseNodeTypeMap,
+  EntityTypeMap extends BaseEntityTypeMap,
 > = {
-  schema: GraplixSchema<NodeTypeMap>;
-  resolvers: GraplixResolvers<Context, NodeTypeMap>;
-  identifyNode: (node: ValueOf<NodeTypeMap>) => {
-    type: Extract<keyof NodeTypeMap, string>;
+  schema: GraplixSchema<EntityTypeMap>;
+  resolvers: GraplixResolvers<Context, EntityTypeMap>;
+  identify: (entity: ValueOf<EntityTypeMap>) => {
+    type: Extract<keyof EntityTypeMap, string>;
     id: string;
   };
 };

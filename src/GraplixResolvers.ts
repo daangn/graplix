@@ -1,34 +1,34 @@
-import type { BaseNodeTypeMap } from "./BaseNodeTypeMap";
+import type { BaseEntityTypeMap } from "./BaseEntityTypeMap";
 import type { Arrayable, Nullable } from "./utils";
 
 export type GraplixResolverDefinition<
   Context extends {},
-  NodeTypeMap extends BaseNodeTypeMap,
-  SelectedNodeTypeName extends Extract<keyof NodeTypeMap, string>,
-  TargetNodeTypeName extends Extract<keyof NodeTypeMap, string>,
-> = TargetNodeTypeName extends Extract<keyof NodeTypeMap, string>
+  EntityTypeMap extends BaseEntityTypeMap,
+  SelectedNodeTypeName extends Extract<keyof EntityTypeMap, string>,
+  TargetNodeTypeName extends Extract<keyof EntityTypeMap, string>,
+> = TargetNodeTypeName extends Extract<keyof EntityTypeMap, string>
   ? {
       type: TargetNodeTypeName;
       resolve: (
-        node: NodeTypeMap[SelectedNodeTypeName],
+        entity: EntityTypeMap[SelectedNodeTypeName],
         context: Context,
       ) =>
-        | Promise<Nullable<NodeTypeMap[TargetNodeTypeName]>>
-        | Promise<Array<NodeTypeMap[TargetNodeTypeName]>>;
+        | Promise<Nullable<EntityTypeMap[TargetNodeTypeName]>>
+        | Promise<Array<EntityTypeMap[TargetNodeTypeName]>>;
     }
   : never;
 
 export type GraplixResolvers<
   Context extends {},
-  NodeTypeMap extends BaseNodeTypeMap,
+  EntityTypeMap extends BaseEntityTypeMap,
 > = {
-  [SelectedNodeTypeName in Extract<keyof NodeTypeMap, string>]: {
+  [SelectedNodeTypeName in Extract<keyof EntityTypeMap, string>]: {
     [name: string]: Arrayable<
       GraplixResolverDefinition<
         Context,
-        NodeTypeMap,
+        EntityTypeMap,
         SelectedNodeTypeName,
-        Extract<keyof NodeTypeMap, string>
+        Extract<keyof EntityTypeMap, string>
       >
     >;
   };

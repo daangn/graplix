@@ -136,7 +136,7 @@ export const input: GraplixInput<
 > = {
   schema,
   resolvers,
-  identifyNode(obj) {
+  identify(obj) {
     return {
       type: obj.__typename,
       id: obj.id,

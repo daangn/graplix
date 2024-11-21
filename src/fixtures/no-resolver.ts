@@ -64,7 +64,7 @@ export const resolvers: GraplixResolvers<Context, ObjectTypeMap> = {
 export const input: GraplixInput<Context, ObjectTypeMap> = {
   schema,
   resolvers,
-  identifyNode(obj) {
+  identify(obj) {
     return {
       type: obj.__typename,
       id: obj.id,
