@@ -1,0 +1,44 @@
+{
+  "name": "graplix",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "nanobundle build",
+    "clean": "nanobundle clean",
+    "test": "vitest run ./src",
+    "typecheck": "tsc --noEmit",
+    "format": "biome check --fix"
+  },
+  "resolutions": {
+    "graphology@^0.25.4": "patch:graphology@npm%3A0.25.4#./.yarn/patches/graphology-npm-0.25.4-f37e1f9f63.patch"
+  },
+  "dependencies": {
+    "remeda": "^2.6.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@vitest/coverage-v8": "^2.0.4",
+    "dataloader": "^2.2.2",
+    "graphology": "^0.25.4",
+    "graphology-types": "^0.24.7",
+    "nanobundle": "^2.1.0",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.4"
+  },
+  "packageManager": "yarn@4.5.1"
+}

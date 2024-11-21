@@ -1,0 +1,40 @@
+diff --git a/dist/graphology.esm.js b/dist/graphology.esm.js
+index 2b5578791805b5491efae998a1d9e0cc3a8c9a53..eeb492df679b563d34d0d088ab5ad76a3d5556d2 100644
+--- a/dist/graphology.esm.js
++++ b/dist/graphology.esm.js
+@@ -1,7 +1,11 @@
+ import { EventEmitter } from 'events';
+-import Iterator from 'obliterator/iterator';
+-import take from 'obliterator/take';
+-import chain from 'obliterator/chain';
++import obliterator from 'obliterator'
++
++// import Iterator from 'obliterator/iterator';
++// import take from 'obliterator/take';
++// import chain from 'obliterator/chain';
++
++const { Iterator, take, chain } = obliterator
+ 
+ /**
+  * Graphology Utilities
+diff --git a/package.json b/package.json
+index 6048eadb98aecfafb90caad0f918df763ccfd1b4..aa1e543ddef32b1481cc809a4db2425fa244dbb7 100644
+--- a/package.json
++++ b/package.json
+@@ -1,11 +1,13 @@
+ {
+   "name": "graphology",
+   "version": "0.25.4",
++  "type": "module",
+   "description": "A robust and multipurpose Graph object for JavaScript.",
+-  "main": "dist/graphology.cjs.js",
+-  "module": "dist/graphology.esm.js",
+-  "browser": "dist/graphology.umd.min.js",
+   "types": "dist/graphology.d.ts",
++  "exports": {
++    "require": "./dist/graphology.cjs.js",
++    "default": "./dist/graphology.esm.js"
++  },
+   "scripts": {
+     "clean": "rimraf dist specs",
+     "build": "npm run clean && rollup -c && babel tests --out-dir specs && cp src/endpoint.esm.d.ts dist/graphology.d.ts",
