@@ -1,9 +1,9 @@
 import * as withMultipleDepth from "./fixtures/with-multiple-depth";
 import * as withSelf from "./fixtures/with-self";
-import { graphauth } from "./graphauth";
+import { graplix } from "./graplix";
 
 test("check - with multiple depth - authorized", async () => {
-  const { check } = graphauth(withMultipleDepth.input);
+  const { check } = graplix(withMultipleDepth.input);
 
   const authorized = await check({
     user: withMultipleDepth.users[0],
@@ -16,7 +16,7 @@ test("check - with multiple depth - authorized", async () => {
 });
 
 test("check - with multiple depth - denied", async () => {
-  const { check } = graphauth(withMultipleDepth.input);
+  const { check } = graplix(withMultipleDepth.input);
 
   const authorized = await check({
     user: withMultipleDepth.users[1],
@@ -29,7 +29,7 @@ test("check - with multiple depth - denied", async () => {
 });
 
 test("check - with self - authorized", async () => {
-  const { check } = graphauth(withSelf.input);
+  const { check } = graplix(withSelf.input);
 
   const authorized = await check({
     context: withSelf.context,

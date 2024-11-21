@@ -1,14 +1,14 @@
 import type { BaseNodeTypeMap } from "./BaseNodeTypeMap";
-import type { GraphAuthResolvers } from "./GraphAuthResolvers";
-import type { GraphAuthSchema } from "./GraphAuthSchema";
+import type { GraplixResolvers } from "./GraplixResolvers";
+import type { GraplixSchema } from "./GraplixSchema";
 import type { ValueOf } from "./utils";
 
-export type GraphAuthInput<
+export type GraplixInput<
   Context extends {},
   NodeTypeMap extends BaseNodeTypeMap,
 > = {
-  schema: GraphAuthSchema<NodeTypeMap>;
-  resolvers: GraphAuthResolvers<Context, NodeTypeMap>;
+  schema: GraplixSchema<NodeTypeMap>;
+  resolvers: GraplixResolvers<Context, NodeTypeMap>;
   identifyNode: (node: ValueOf<NodeTypeMap>) => {
     type: Extract<keyof NodeTypeMap, string>;
     id: string;

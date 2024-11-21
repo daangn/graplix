@@ -1,6 +1,5 @@
 import DataLoader from "dataloader";
 import { vi } from "vitest";
-
 import * as noResolver from "./fixtures/no-resolver";
 import * as simple from "./fixtures/simple";
 import * as withCircularDependency from "./fixtures/with-circular-dependency";

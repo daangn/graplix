@@ -1,14 +1,8 @@
-/**
- * @fileoverview
- * 스키마를 기반으로 입력된 `object`에서 출발해 Directed Graph를 생성해요.
- * 이 함수에서 생성한 Directed Graph는 `graphauth()` 함수에서 인가를 수행할 때 사용돼요.
- */
-
 import { DirectedGraph } from "graphology";
 import * as R from "remeda";
 
 import type { BaseNodeTypeMap } from "./BaseNodeTypeMap";
-import type { GraphAuthInput } from "./GraphAuthInput";
+import type { GraplixInput } from "./GraplixInput";
 import type { ValueOf } from "./utils";
 import {
   assignGraph,
@@ -61,7 +55,7 @@ export async function query<
   Context extends {},
   NodeTypeMap extends BaseNodeTypeMap,
 >(
-  input: GraphAuthInput<Context, NodeTypeMap>,
+  input: GraplixInput<Context, NodeTypeMap>,
   params: QueryParameters<Context, NodeTypeMap>,
   options?: QueryOptions<Context, NodeTypeMap>,
 ): Promise<

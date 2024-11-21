@@ -1,8 +1,7 @@
 import DataLoader from "dataloader";
-
-import type { GraphAuthInput } from "../GraphAuthInput";
-import type { GraphAuthResolvers } from "../GraphAuthResolvers";
-import type { GraphAuthSchema } from "../GraphAuthSchema";
+import type { GraplixInput } from "../GraplixInput";
+import type { GraplixResolvers } from "../GraplixResolvers";
+import type { GraplixSchema } from "../GraplixSchema";
 
 type Artifact = {
   entityId: string;
@@ -63,7 +62,7 @@ export const context: Context = {
   },
 };
 
-export const schema: GraphAuthSchema<ObjectTypeMap> = {
+export const schema: GraplixSchema<ObjectTypeMap> = {
   Project: {
     self: {
       type: "Project",
@@ -80,7 +79,7 @@ export const schema: GraphAuthSchema<ObjectTypeMap> = {
   },
 };
 
-export const resolvers: GraphAuthResolvers<Context, ObjectTypeMap> = {
+export const resolvers: GraplixResolvers<Context, ObjectTypeMap> = {
   Project: {
     self: {
       type: "Project",
@@ -99,7 +98,7 @@ export const resolvers: GraphAuthResolvers<Context, ObjectTypeMap> = {
   },
 };
 
-export const input: GraphAuthInput<Context, ObjectTypeMap> = {
+export const input: GraplixInput<Context, ObjectTypeMap> = {
   schema,
   resolvers,
   identifyNode(obj) {

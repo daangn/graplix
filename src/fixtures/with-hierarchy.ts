@@ -1,8 +1,7 @@
 import DataLoader from "dataloader";
-
-import type { GraphAuthInput } from "../GraphAuthInput";
-import type { GraphAuthResolvers } from "../GraphAuthResolvers";
-import type { GraphAuthSchema } from "../GraphAuthSchema";
+import type { GraplixInput } from "../GraplixInput";
+import type { GraplixResolvers } from "../GraplixResolvers";
+import type { GraplixSchema } from "../GraplixSchema";
 import { filterNonError } from "../utils";
 
 type House = {
@@ -56,7 +55,7 @@ export const context: Context = {
   },
 };
 
-export const schema: GraphAuthSchema<ObjectTypeMap> = {
+export const schema: GraplixSchema<ObjectTypeMap> = {
   House: {
     owner: {
       type: "User",
@@ -76,7 +75,7 @@ export const schema: GraphAuthSchema<ObjectTypeMap> = {
   User: {},
 };
 
-export const resolvers: GraphAuthResolvers<Context, ObjectTypeMap> = {
+export const resolvers: GraplixResolvers<Context, ObjectTypeMap> = {
   House: {
     owner: {
       type: "User",
@@ -102,7 +101,7 @@ export const resolvers: GraphAuthResolvers<Context, ObjectTypeMap> = {
   User: {},
 };
 
-export const input: GraphAuthInput<Context, ObjectTypeMap> = {
+export const input: GraplixInput<Context, ObjectTypeMap> = {
   schema,
   resolvers,
   identifyNode(obj) {

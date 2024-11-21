@@ -1,7 +1,7 @@
 import type { BaseNodeTypeMap } from "./BaseNodeTypeMap";
 import type { Arrayable, Nullable } from "./utils";
 
-export type GraphAuthResolverDefinition<
+export type GraplixResolverDefinition<
   Context extends {},
   NodeTypeMap extends BaseNodeTypeMap,
   SelectedNodeTypeName extends Extract<keyof NodeTypeMap, string>,
@@ -18,13 +18,13 @@ export type GraphAuthResolverDefinition<
     }
   : never;
 
-export type GraphAuthResolvers<
+export type GraplixResolvers<
   Context extends {},
   NodeTypeMap extends BaseNodeTypeMap,
 > = {
   [SelectedNodeTypeName in Extract<keyof NodeTypeMap, string>]: {
     [name: string]: Arrayable<
-      GraphAuthResolverDefinition<
+      GraplixResolverDefinition<
         Context,
         NodeTypeMap,
         SelectedNodeTypeName,

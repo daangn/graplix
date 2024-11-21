@@ -1,7 +1,7 @@
 import type { BaseNodeTypeMap } from "./BaseNodeTypeMap";
 import type { Arrayable } from "./utils";
 
-type GraphAuthSchemaRelationDefinition<NodeTypeMap extends BaseNodeTypeMap> =
+type GraplixSchemaRelationDefinition<NodeTypeMap extends BaseNodeTypeMap> =
   Arrayable<
     | {
         type: Extract<keyof NodeTypeMap, string>;
@@ -12,8 +12,8 @@ type GraphAuthSchemaRelationDefinition<NodeTypeMap extends BaseNodeTypeMap> =
       }
   >;
 
-export type GraphAuthSchema<NodeTypeMap extends BaseNodeTypeMap> = {
+export type GraplixSchema<NodeTypeMap extends BaseNodeTypeMap> = {
   [SelectedNodeTypeName in Extract<keyof NodeTypeMap, string>]: {
-    [relationName: string]: GraphAuthSchemaRelationDefinition<NodeTypeMap>;
+    [relationName: string]: GraplixSchemaRelationDefinition<NodeTypeMap>;
   };
 };
