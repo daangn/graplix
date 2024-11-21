@@ -2,6 +2,7 @@
   "name": "graplix",
   "version": "0.0.1",
   "private": true,
+  "repository": "https://github.com/daangn/graplix",
   "type": "module",
   "exports": {
     ".": {
@@ -20,9 +21,9 @@
   "scripts": {
     "build": "nanobundle build",
     "clean": "nanobundle clean",
+    "format": "biome check --fix",
     "test": "vitest run ./src",
-    "typecheck": "tsc --noEmit",
-    "format": "biome check --fix"
+    "typecheck": "tsc --noEmit"
   },
   "resolutions": {
     "graphology@^0.25.4": "patch:graphology@npm%3A0.25.4#./.yarn/patches/graphology-npm-0.25.4-f37e1f9f63.patch"
