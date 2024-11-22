@@ -1,7 +1,10 @@
 {
   "name": "graplix",
   "version": "0.1.0",
-  "repository": "https://github.com/daangn/graplix",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daangn/graplix.git"
+  },
   "type": "module",
   "exports": {
     ".": {
