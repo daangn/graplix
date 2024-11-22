@@ -1,8 +1,6 @@
 # graplix
 
-Authorization Framework that implement ReBAC(Relation-based Access Control) with Resolver
-
-> Inspired by [GraphQL](https://graphql.org)
+Authorization framework for implementing Relation-based Access Control (ReBAC) with the Resolver (Inspired by [GraphQL](https://graphql.org))
 
 ## What is ReBAC?
 
