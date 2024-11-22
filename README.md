@@ -217,7 +217,7 @@ const isAuthorized = await check({
 }); // boolean
 
 if (!isAuthorization) {
-  throw new Error("Not Authorized");
+  throw new Error("Not Authorized!");
 }
 ```
 
