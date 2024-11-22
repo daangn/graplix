@@ -217,7 +217,7 @@ const isAuthorized = await check({
 }); // boolean
 
 if (!isAuthorization) {
-  throw new Error("You are not authorized");
+  throw new Error("Not Authorized");
 }
 ```
 
@@ -232,3 +232,4 @@ if (!isAuthorization) {
 - [OpenFGA](https://openfga.dev/)
 - [OpenFGA Playground](https://play.fga.dev/)
 - [GraphQL](https://graphql.org/)
+
