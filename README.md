@@ -19,7 +19,7 @@ const isAuthorized = await check({
   context,
 });
 
-if (!isAuthorization) {
+if (!isAuthorized) {
   throw new Error("You are not authorized");
 }
 ```
@@ -214,7 +214,7 @@ const isAuthorized = await check({
   context,
 }); // boolean
 
-if (!isAuthorization) {
+if (!isAuthorized) {
   throw new Error("Not Authorized!");
 }
 ```
