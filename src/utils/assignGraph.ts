@@ -14,7 +14,7 @@ export function assignGraph<
 >(
   a: DirectedGraph<NodeAttributes, EdgeAttributes>,
   b: DirectedGraph<NodeAttributes, EdgeAttributes>,
-) {
+): void {
   b.forEachNode((node, attrs) => {
     try {
       a.addNode(node, attrs);
