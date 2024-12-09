@@ -1,5 +1,11 @@
 # graplix
 
+## 0.1.2
+
+### Patch Changes
+
+- e566043: Change bundler to tsdown
+
 ## 0.1.1
 
 ### Patch Changes
