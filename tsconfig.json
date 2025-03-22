@@ -10,6 +10,6 @@
     "skipLibCheck": true,
     "baseUrl": "./src",
     "outDir": "./dist",
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals", "@openfga/sdk"]
   }
 }
