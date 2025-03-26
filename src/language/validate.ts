@@ -11,7 +11,7 @@ export function validate(
 
   // NOTE: Not planning to support conditions anytime soon
   if (model.conditions) {
-    collector.raiseUnimplementedError("Conditions");
+    collector.captureUnimplementedError("Conditions");
   }
 
   for (const typeDef of model.type_definitions) {
@@ -32,23 +32,23 @@ function validateTypeDef({
 }): void {
   const directlyRelatedUserTypes = getDirectlyRelatedUserTypes(typeDef);
   if (directlyRelatedUserTypes.length > 1) {
-    collector.raiseUnimplementedError("Multiple directly related user types");
+    collector.captureUnimplementedError("Multiple directly related user types");
   }
 
   if (hasAndOperator(typeDef)) {
-    collector.raiseUnimplementedError("and operator");
+    collector.captureUnimplementedError("and operator");
   }
 
   if (hasButNotOperator(typeDef)) {
-    collector.raiseUnimplementedError("but not operator");
+    collector.captureUnimplementedError("but not operator");
   }
 
   if (hasTypeRestrictionRelation(typeDef)) {
-    collector.raiseUnimplementedError("type restriction relation");
+    collector.captureUnimplementedError("type restriction relation");
   }
 
   if (hasTypeRestrictionWildcard(typeDef)) {
-    collector.raiseUnimplementedError("type restriction wildcard");
+    collector.captureUnimplementedError("type restriction wildcard");
   }
 }
 
