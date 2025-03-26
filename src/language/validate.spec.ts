@@ -1,5 +1,5 @@
 import { transformer } from "@openfga/syntax-transformer";
-import { UnimplementedError } from "./errors";
+import { MultipleUnimplementedError } from "./MultipleError";
 import { validate } from "./validate";
 
 function transformDSLToJSONObject([data]: TemplateStringsArray) {
@@ -33,7 +33,7 @@ describe("validate", () => {
     expect(() => validate(model)).not.toThrow();
   });
 
-  test("it should throw UnimplementedError when multiple directly related user types are defined", () => {
+  test("it should throw MultipleUnimplementedError when multiple directly related user types are defined", () => {
     const model = transformDSLToJSONObject`
         model
           schema 1.1
@@ -49,7 +49,7 @@ describe("validate", () => {
             define viewer: [user, team]
     `;
 
-    expect(() => validate(model)).toThrow(UnimplementedError);
+    expect(() => validate(model)).toThrow(MultipleUnimplementedError);
   });
 
   test("it should not throw an error when relation is defined with computed set", () => {
@@ -99,7 +99,7 @@ describe("validate", () => {
             define publisher: editor and reviewer
       `;
 
-    expect(() => validate(model)).toThrow(UnimplementedError);
+    expect(() => validate(model)).toThrow(MultipleUnimplementedError);
   });
 
   test("it should throw an error when operator 'but not' is used in relation definition", () => {
@@ -116,7 +116,7 @@ describe("validate", () => {
             define publisher: editor but not reviewer
       `;
 
-    expect(() => validate(model)).toThrow(UnimplementedError);
+    expect(() => validate(model)).toThrow(MultipleUnimplementedError);
   });
 
   test("it should not throw an error when relation is defined with tuple to userset", () => {
@@ -153,7 +153,7 @@ describe("validate", () => {
             define viewer: [team#member]
       `;
 
-    expect(() => validate(model)).toThrow(UnimplementedError);
+    expect(() => validate(model)).toThrow(MultipleUnimplementedError);
   });
 
   test("it should throw an error when type restriction wildcard is used in relation definition", () => {
@@ -172,7 +172,7 @@ describe("validate", () => {
             define viewer: [team:*]
       `;
 
-    expect(() => validate(model)).toThrow(UnimplementedError);
+    expect(() => validate(model)).toThrow(MultipleUnimplementedError);
   });
 
   test("it should throw an error when condition is defined", () => {
@@ -191,7 +191,7 @@ describe("validate", () => {
         }
     `;
 
-    expect(() => validate(model)).toThrow(UnimplementedError);
+    expect(() => validate(model)).toThrow(MultipleUnimplementedError);
   });
 
   test("it should not throw an error when parenthesized relation is used in relation definition", () => {
@@ -206,6 +206,6 @@ describe("validate", () => {
             define member: ([user] or allowed) or blocked
     `;
 
-    expect(() => validate(model)).not.toThrow(UnimplementedError);
+    expect(() => validate(model)).not.toThrow(MultipleUnimplementedError);
   });
 });

@@ -1,12 +1,13 @@
 import type { RelationReference, TypeDefinition, Userset } from "@openfga/sdk";
 import type { transformer } from "@openfga/syntax-transformer";
-import { ExceptionCollector } from "../utils/exceptions";
-import { UnimplementedError, type UnimplementedSingleError } from "./errors";
+import { ExceptionCollector } from "../utils/ExceptionCollector";
+import { MultipleUnimplementedError } from "./MultipleError";
+import type { UnimplementedError } from "./UnimplementedError";
 
 export function validate(
   model: ReturnType<typeof transformer.transformDSLToJSONObject>,
 ): void {
-  const errors: UnimplementedSingleError[] = [];
+  const errors: UnimplementedError[] = [];
   const collector = new ExceptionCollector(errors);
 
   // NOTE: Not planning to support conditions anytime soon
@@ -19,7 +20,7 @@ export function validate(
   }
 
   if (errors.length > 0) {
-    throw new UnimplementedError(errors);
+    throw new MultipleUnimplementedError(errors);
   }
 }
 
