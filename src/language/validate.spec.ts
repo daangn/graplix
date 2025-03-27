@@ -85,6 +85,22 @@ describe("validate", () => {
     expect(() => validate(model)).not.toThrow();
   });
 
+  test("it should throw an error when operator 'or' is used between directly related user types and computed set", () => {
+    const model = transformDSLToJSONObject`
+        model
+          schema 1.1
+
+        type user
+
+        type team
+          relations
+            define member: [user]
+            define admin: [user] or member
+      `;
+
+    expect(() => validate(model)).toThrow(MultipleUnimplementedError);
+  });
+
   test("it should throw an error when operator 'and' is used in relation definition", () => {
     const model = transformDSLToJSONObject`
         model

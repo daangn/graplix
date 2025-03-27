@@ -51,6 +51,12 @@ function validateTypeDef({
   if (hasTypeRestrictionWildcard(typeDef)) {
     collector.captureUnimplementedError("type restriction wildcard");
   }
+
+  if (hasMixedOrOperator(typeDef)) {
+    collector.captureUnimplementedError(
+      "Mixed 'or' operator between directly related user types and computed set",
+    );
+  }
 }
 
 /**
@@ -156,4 +162,26 @@ function hasTypeRestrictionWildcard(typeDefinition: TypeDefinition): boolean {
   return directlyRelatedUserTypes.some(
     (relation) => relation.wildcard !== undefined,
   );
+}
+
+/**
+ * Check if the type definition has mixed 'or' operator between directly related user types and computed set
+ */
+function hasMixedOrOperator(typeDefinition: TypeDefinition): boolean {
+  if (!hasRelations(typeDefinition)) {
+    return false;
+  }
+
+  const directlyRelatedUserTypes = getDirectlyRelatedUserTypes(typeDefinition);
+  if (directlyRelatedUserTypes.length === 0) {
+    return false;
+  }
+
+  for (const relation of Object.values(typeDefinition.relations)) {
+    if (relation.union?.child.some((child) => "this" in child)) {
+      return true;
+    }
+  }
+
+  return false;
 }
