@@ -5,6 +5,8 @@ import type {
   GraplixDirectlyRelatedUserTypes,
   GraplixSchema,
   GraplixSchemaRelationDefinition,
+  GraplixTupleToUsersetRelationDefinition,
+  GraplixUnionRelationDefinition,
 } from "../GraplixSchema";
 import type {
   ValidatedRelationMetadata,
@@ -33,7 +35,7 @@ export function parse<T extends BaseEntityTypeMap>(
     for (const [relationName, relation] of Object.entries(
       typeDefinition.relations ?? {},
     )) {
-      const computedSetRelations = getComputedSetRelations(relation);
+      const computedSetRelations = getUnionRelations(relation);
       if (!computedSetRelations) continue;
 
       typeDef[relationName] = computedSetRelations;
@@ -67,17 +69,48 @@ function getDirectlyRelatedUserTypes<T extends BaseEntityTypeMap>(
 
 function getComputedSetRelations(
   userSet: ValidatedUserset,
-  computedUsersets: GraplixComputedSetRelationDefinition[] = [],
-): GraplixComputedSetRelationDefinition[] {
-  if (userSet.computedUserset?.relation) {
-    computedUsersets.push({
+): GraplixComputedSetRelationDefinition | undefined {
+  if (userSet.computedUserset?.relation)
+    return {
       when: userSet.computedUserset.relation,
-    });
+    };
+
+  return undefined;
+}
+
+function getTupleToUsersetRelations(
+  userSet: ValidatedUserset,
+): GraplixTupleToUsersetRelationDefinition | undefined {
+  if (
+    userSet.tupleToUserset?.computedUserset.relation &&
+    userSet.tupleToUserset.tupleset.relation
+  )
+    return {
+      when: userSet.tupleToUserset.computedUserset.relation,
+      from: userSet.tupleToUserset.tupleset.relation,
+    };
+
+  return undefined;
+}
+
+function getUnionRelations(
+  userSet: ValidatedUserset,
+  computedUsersets: GraplixUnionRelationDefinition[] = [],
+): GraplixUnionRelationDefinition[] {
+  const computedUserset = getComputedSetRelations(userSet);
+  const tupleToUserset = getTupleToUsersetRelations(userSet);
+
+  if (computedUserset) {
+    computedUsersets.push(computedUserset);
+  }
+
+  if (tupleToUserset) {
+    computedUsersets.push(tupleToUserset);
   }
 
   if (userSet.union) {
     for (const child of userSet.union.child) {
-      getComputedSetRelations(child, computedUsersets);
+      getUnionRelations(child, computedUsersets);
     }
   }
 
