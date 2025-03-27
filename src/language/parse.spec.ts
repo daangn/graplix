@@ -1,7 +1,7 @@
 import { parse } from "./parse";
 
 describe("parse", () => {
-  test("should parse basic type definition", () => {
+  test("it should parse basic type definition", () => {
     const input = `
       model
         schema 1.1
@@ -16,7 +16,7 @@ describe("parse", () => {
     });
   });
 
-  test("should not parse comments", () => {
+  test("it should not parse comments", () => {
     const input = `
       model
         schema 1.1
@@ -31,7 +31,7 @@ describe("parse", () => {
     });
   });
 
-  test("should parse relations with directly related user types", () => {
+  test("it should parse relations with directly related user types", () => {
     const input = `
       model
         schema 1.1
@@ -51,7 +51,7 @@ describe("parse", () => {
     });
   });
 
-  test("should parse computed set relations", () => {
+  test("it should parse computed set relations", () => {
     const input = `
       model
         schema 1.1
@@ -75,7 +75,7 @@ describe("parse", () => {
     });
   });
 
-  test("should parse 'or' operator in relations", () => {
+  test("it should parse 'or' operator in relations", () => {
     const input = `
       model
         schema 1.1
@@ -101,7 +101,7 @@ describe("parse", () => {
     });
   });
 
-  test("should parse tuple to userset relations", () => {
+  test("it should parse tuple to userset relations", () => {
     const input = `
       model
         schema 1.1
@@ -130,27 +130,31 @@ describe("parse", () => {
     });
   });
 
-  test("should parse parenthesized relations", () => {
-    // Test parsing of relations with parentheses
-  });
+  test("it should parse parenthesized relations", () => {
+    const input = `
+      model
+        schema 1.1
 
-  test("should throw error for unsupported 'and' operator", () => {
-    // Test error handling for 'and' operator
-  });
+      type user
+      
+      type team
+        relations
+          define member: [user]
+          define admin: member
+          define viewer: member
+          define editor: (member or admin) or viewer
+    `;
 
-  test("should throw error for unsupported 'but not' operator", () => {
-    // Test error handling for 'but not' operator
-  });
+    const result = parse(input);
 
-  test("should throw error for type restriction relations", () => {
-    // Test error handling for type#relation syntax
-  });
-
-  test("should throw error for type restriction wildcards", () => {
-    // Test error handling for type:* syntax
-  });
-
-  test("should throw error for condition definitions", () => {
-    // Test error handling for condition declarations
+    expect(result).toEqual({
+      user: {},
+      team: {
+        member: { type: "user" },
+        admin: [{ when: "member" }],
+        viewer: [{ when: "member" }],
+        editor: [{ when: "member" }, { when: "admin" }, { when: "viewer" }],
+      },
+    });
   });
 });
