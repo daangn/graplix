@@ -21,10 +21,7 @@ type ValidatedTypeDefinition = Omit<
   metadata?: ValidatedMetadata;
 };
 
-type ValidatedUserset = Omit<Userset, "intersection" | "difference"> & {
-  intersection?: never;
-  difference?: never;
-};
+export type ValidatedUserset = Omit<Userset, "intersection" | "difference">;
 
 type ValidatedMetadata = Omit<Metadata, "relations"> & {
   relations?: {
