@@ -17,7 +17,23 @@ describe("parse", () => {
   });
 
   test("should parse relations with directly related user types", () => {
-    // Test parsing of relations with simple user type references
+    const input = `
+      model
+        schema 1.1
+
+      type user
+
+      type team
+        relations
+          define member: [user]
+    `;
+
+    const result = parse(input);
+
+    expect(result).toEqual({
+      user: {},
+      team: { member: { type: "user" } },
+    });
   });
 
   test("should parse computed set relations", () => {

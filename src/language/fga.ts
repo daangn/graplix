@@ -1,11 +1,5 @@
-import { transformer } from "@openfga/syntax-transformer";
-import { validate } from "./validate";
+import { parse } from "./parse";
 
-export function fga([data]: TemplateStringsArray): ReturnType<
-  typeof transformer.transformDSLToJSONObject
-> {
-  const ast = transformer.transformDSLToJSONObject(data);
-  validate(ast);
-
-  return ast;
+export function fga([data]: TemplateStringsArray) {
+  return parse(data);
 }

@@ -3,10 +3,11 @@ import type { transformer } from "@openfga/syntax-transformer";
 import { ExceptionCollector } from "../utils/ExceptionCollector";
 import { MultipleUnimplementedError } from "./MultipleError";
 import type { UnimplementedError } from "./UnimplementedError";
+import type { ValidatedModel } from "./ValidatedModel";
 
 export function validate(
   model: ReturnType<typeof transformer.transformDSLToJSONObject>,
-): void {
+): asserts model is ValidatedModel {
   const errors: UnimplementedError[] = [];
   const collector = new ExceptionCollector(errors);
 

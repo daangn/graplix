@@ -1,7 +1,7 @@
 import type { BaseEntityTypeMap } from "./BaseEntityTypeMap";
 import type { Arrayable } from "./utils";
 
-type GraplixSchemaRelationDefinition<EntityTypeMap extends BaseEntityTypeMap> =
+export type GraplixSchemaRelationDefinition<EntityTypeMap extends BaseEntityTypeMap> =
   Arrayable<
     | {
         type: Extract<keyof EntityTypeMap, string>;
