@@ -66,8 +66,6 @@ describe("parse", () => {
 
     const result = parse(input);
 
-    console.log(result);
-
     expect(result).toEqual({
       user: {},
       team: {
@@ -127,7 +125,7 @@ describe("parse", () => {
       folder: { viwer: { type: "user" } },
       document: {
         parent_folder: { type: "folder" },
-        can_view: { when: "viwer", from: "parent_folder" },
+        can_view: [{ when: "viwer", from: "parent_folder" }],
       },
     });
   });

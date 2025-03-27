@@ -12,17 +12,20 @@ export type GraplixComputedSetRelationDefinition = {
   from?: never;
 };
 
-type GraplixTupleToUsersetRelationDefinition = {
+export type GraplixTupleToUsersetRelationDefinition = {
   when: string;
   from: string;
 };
+
+export type GraplixUnionRelationDefinition =
+  | GraplixComputedSetRelationDefinition
+  | GraplixTupleToUsersetRelationDefinition;
 
 export type GraplixSchemaRelationDefinition<
   EntityTypeMap extends BaseEntityTypeMap,
 > = Arrayable<
   | GraplixDirectlyRelatedUserTypes<EntityTypeMap>
-  | GraplixComputedSetRelationDefinition
-  | GraplixTupleToUsersetRelationDefinition
+  | GraplixUnionRelationDefinition
 >;
 
 export type GraplixSchema<EntityTypeMap extends BaseEntityTypeMap> = {
