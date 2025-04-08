@@ -3,7 +3,7 @@ enum ErrorCode {
 }
 
 export class UnimplementedError extends Error {
-  code = ErrorCode.UNIMPLEMENTED;
+  code: ErrorCode = ErrorCode.UNIMPLEMENTED;
 
   constructor(featureName: string) {
     super(`${featureName} is not implemented`);
