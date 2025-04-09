@@ -16,7 +16,7 @@ export function validate(
     collector.captureUnimplementedError("Conditions");
   }
 
-  for (const typeDef of model.type_definitions) {
+  for (const typeDef of model.type_definitions ?? []) {
     validateTypeDef({ typeDef, collector });
   }
 
@@ -74,7 +74,9 @@ function getDirectlyRelatedUserTypes(
     return [];
   }
 
-  for (const relation of Object.values(typeDefinition.metadata.relations)) {
+  for (const relation of Object.values(
+    typeDefinition.metadata.relations ?? {},
+  )) {
     if (
       relation.directly_related_user_types &&
       relation.directly_related_user_types.length > 0
@@ -94,7 +96,7 @@ function hasAndOperator(typeDefinition: TypeDefinition): boolean {
     return false;
   }
 
-  for (const relation of Object.values(typeDefinition.relations)) {
+  for (const relation of Object.values(typeDefinition.relations ?? {})) {
     if (relation.intersection) {
       return true;
     }
@@ -111,7 +113,7 @@ function hasButNotOperator(typeDefinition: TypeDefinition): boolean {
     return false;
   }
 
-  for (const relation of Object.values(typeDefinition.relations)) {
+  for (const relation of Object.values(typeDefinition.relations ?? {})) {
     if (relation.difference) return true;
   }
 
@@ -178,7 +180,7 @@ function hasMixedOrOperator(typeDefinition: TypeDefinition): boolean {
     return false;
   }
 
-  for (const relation of Object.values(typeDefinition.relations)) {
+  for (const relation of Object.values(typeDefinition.relations ?? {})) {
     if (relation.union?.child.some((child) => "this" in child)) {
       return true;
     }

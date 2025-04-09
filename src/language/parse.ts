@@ -27,7 +27,7 @@ export function parse<T extends BaseEntityTypeMap>(
 
   validate(ast);
 
-  for (const typeDefinition of ast.type_definitions) {
+  for (const typeDefinition of ast.type_definitions ?? []) {
     const typeDef: {
       [relationName: string]: GraplixSchemaRelationDefinition<T>;
     } = {};
@@ -109,7 +109,7 @@ function getUnionRelations(
   }
 
   if (userSet.union) {
-    for (const child of userSet.union.child) {
+    for (const child of userSet.union.child ?? []) {
       getUnionRelations(child, computedUsersets);
     }
   }
