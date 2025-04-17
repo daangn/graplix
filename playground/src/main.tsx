@@ -1,8 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "../styles/index.css";
-import { Toaster } from "@/components/ui/sonner.tsx";
-import { ThemeProvider } from "@/components/ui/theme-provider.tsx";
+import { ThemeProvider, Toaster } from "@/components/ui";
 import { App } from "./App.tsx";
 
 // biome-ignore lint/style/noNonNullAssertion: it definitely exists

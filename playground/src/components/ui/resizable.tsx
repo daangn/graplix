@@ -21,18 +21,30 @@ function ResizablePanelGroup({
 
 function ResizablePanel({
   ...props
-}: React.ComponentProps<typeof ResizablePrimitive.Panel> & {
-  header?: React.ReactNode;
-}) {
+}: React.ComponentProps<typeof ResizablePrimitive.Panel>) {
   return (
     <ResizablePrimitive.Panel
       data-slot="resizable-panel"
       {...props}
       className={cn("flex flex-col", props.className)}
     >
-      {props.header}
       {props.children}
     </ResizablePrimitive.Panel>
+  );
+}
+
+function ResizablePanelHeader({
+  title,
+  suffix,
+}: {
+  title: string;
+  suffix?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between pr-2 pl-4 h-12">
+      <h3 className="text-sm font-medium">{title}</h3>
+      {suffix}
+    </div>
   );
 }
 
@@ -61,4 +73,9 @@ function ResizableHandle({
   );
 }
 
-export { ResizablePanelGroup, ResizablePanel, ResizableHandle };
+export {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+  ResizablePanelHeader,
+};

@@ -24,12 +24,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@ui/*": ["./src/components/ui/*"],
-      "@lib/*": ["./src/lib/*"],
-      "@hooks/*": ["./src/hooks/*"],
-      "@helpers/*": ["./src/helpers/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"]
