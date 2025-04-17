@@ -1,4 +1,4 @@
-import { useTheme } from "@/components/ui/theme-provider";
+import { useTheme } from "@/components/ui";
 import { editorDarkTheme, editorLightTheme } from "@/lib/editor-theme";
 import CodeMirror from "@uiw/react-codemirror";
 

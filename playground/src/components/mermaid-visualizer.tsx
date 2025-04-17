@@ -1,8 +1,8 @@
+import { useTheme } from "@/components/ui";
 import { generateMermaidSyntax } from "@/helpers/generate-mermaid-syntax";
 import type { GraplixSchema } from "graplix";
 import Mermaid from "mermaid-react";
 import { useEffect, useState } from "react";
-import { useTheme } from "./ui/theme-provider";
 
 interface MermaidVisualizerProps {
   schema: GraplixSchema<any>;
