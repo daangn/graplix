@@ -15,7 +15,7 @@ export function ThemeDropdownMenuButton() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-label="테마 변경"
+          aria-label="change theme"
           variant="ghost"
           size="icon"
           className="transition-none"
@@ -29,19 +29,19 @@ export function ThemeDropdownMenuButton() {
           checked={theme === "light"}
           onClick={() => setTheme("light")}
         >
-          라이트
+          Light
         </DropdownMenuCheckboxItem>
         <DropdownMenuCheckboxItem
           checked={theme === "dark"}
           onClick={() => setTheme("dark")}
         >
-          다크
+          Dark
         </DropdownMenuCheckboxItem>
         <DropdownMenuCheckboxItem
           checked={theme === "system"}
           onClick={() => setTheme("system")}
         >
-          시스템
+          System
         </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>

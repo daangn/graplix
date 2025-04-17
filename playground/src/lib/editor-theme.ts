@@ -7,6 +7,7 @@ export const editorDarkTheme = atomoneInit({
     gutterBackground: "#171717",
     gutterActiveForeground: "#d4d4d4",
     lineHighlight: "#202020",
+    selection: "#202020",
   },
 });
 
@@ -17,5 +18,6 @@ export const editorLightTheme = atomoneInit({
     gutterBackground: "#ffffff",
     gutterActiveForeground: "#171717",
     lineHighlight: "#f0f0f0",
+    selection: "#d4d4d4",
   },
 });
