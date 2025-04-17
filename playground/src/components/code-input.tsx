@@ -1,5 +1,6 @@
+import { useTheme } from "@/components/ui/theme-provider";
+import { editorDarkTheme, editorLightTheme } from "@/lib/editor-theme";
 import CodeMirror from "@uiw/react-codemirror";
-import { editorTheme } from "../helpers";
 
 interface CodeInputProps {
   value: string;
@@ -7,13 +8,15 @@ interface CodeInputProps {
 }
 
 export function CodeInput({ value, onChange }: CodeInputProps) {
+  const { isDark } = useTheme();
+
   return (
     <CodeMirror
       value={value}
       onChange={onChange}
       height="100%"
       className="w-full h-full"
-      theme={editorTheme}
+      theme={isDark ? editorDarkTheme : editorLightTheme}
       basicSetup={{
         syntaxHighlighting: false,
       }}
