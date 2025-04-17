@@ -1,13 +1,10 @@
-import { type GraplixSchema, parse } from "graplix";
+import { parse } from "graplix";
 import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
   Background,
   BackgroundVariant,
-  Controls,
   type Edge,
-  MiniMap,
   type Node,
-  Panel,
   ReactFlowProvider,
   applyEdgeChanges,
   applyNodeChanges,
@@ -15,14 +12,17 @@ import ReactFlow, {
   type EdgeChange,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { generateReactFlowData } from "../helpers";
+import { generateReactFlowData } from "@helpers/generate-react-flow-data";
+import { getElkLayout } from "@helpers/get-elk-layout";
 
 interface VisualizerProps {
   code: string;
 }
 
+/**
+ * WIP
+ */
 function SchemaFlow({ code }: VisualizerProps) {
-  const [schema, setSchema] = useState<GraplixSchema<any>>(() => parse(code));
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
 
@@ -31,6 +31,7 @@ function SchemaFlow({ code }: VisualizerProps) {
       setNodes((nds) => applyNodeChanges(changes, nds)),
     [],
   );
+
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) =>
       setEdges((eds) => applyEdgeChanges(changes, eds)),
@@ -40,10 +41,15 @@ function SchemaFlow({ code }: VisualizerProps) {
   useEffect(() => {
     try {
       const newSchema = parse(code);
-      setSchema(newSchema);
       const { nodes, edges } = generateReactFlowData(newSchema);
-      setNodes(nodes);
-      setEdges(edges);
+
+      getElkLayout({
+        nodes,
+        edges,
+      }).then(({ nodes, edges }) => {
+        setNodes(nodes);
+        setEdges(edges);
+      });
 
       // 디버깅용 출력
       console.log("생성된 노드:", nodes);

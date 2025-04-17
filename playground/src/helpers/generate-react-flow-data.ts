@@ -45,7 +45,7 @@ export function generateReactFlowData(schema: GraplixSchema<any>): {
         });
       }
 
-      // 권한 규칙 배열 (can_view, can_edit, can_delete 등)
+      // 권한 규칙 배열
       if (Array.isArray(relationDef)) {
         let ruleIndex = 0;
         for (const rule of relationDef) {
@@ -62,72 +62,46 @@ export function generateReactFlowData(schema: GraplixSchema<any>): {
             const intermediateType =
               schema[entityType][rule.from]?.type || "Unknown";
 
+            // edges.push({
+            //   id: `${entityType}-${relationName}-via-${intermediatePath}-${ruleIndex}`,
+            //   source: entityType,
+            //   target: intermediateType,
+            //   label: `${relationName} via ${intermediatePath}`,
+            //   type: "step",
+            //   animated: true,
+            //   style: { strokeDasharray: "5, 5" },
+            // });
             edges.push({
-              id: `${entityType}-${relationName}-via-${intermediatePath}-${ruleIndex}`,
+              id: `${entityType}-${relationName}-${intermediateType}`,
               source: entityType,
               target: intermediateType,
-              label: `${relationName} via ${intermediatePath}`,
-              type: "step",
-              animated: true,
-              style: { strokeDasharray: "5, 5" },
+              label: relationName,
+              type: "default",
+              animated: false,
             });
           } else {
-            // 직접 관계 표현
             edges.push({
-              id: `${entityType}-${relationName}-when-${rule.when}-${ruleIndex}`,
+              id: `${entityType}-${relationName}-${targetType}`,
               source: entityType,
               target: targetType,
-              label: `${relationName} when ${rule.when}`,
-              type: "step",
-              animated: true,
-              style: { strokeDasharray: "5, 5" },
+              label: relationName,
+              type: "default",
+              animated: false,
             });
+            // 직접 관계 표현
+            // edges.push({
+            //   id: `${entityType}-${relationName}-when-${rule.when}-${ruleIndex}`,
+            //   source: entityType,
+            //   target: targetType,
+            //   label: `${relationName} when ${rule.when}`,
+            //   type: "step",
+            //   animated: true,
+            //   style: { strokeDasharray: "5, 5" },
+            // });
           }
           ruleIndex++;
         }
       }
-    }
-  }
-
-  // 노드 위치 자동 계산 (간단한 레이아웃)
-  // 각 노드를 가로로 배치하고 간선을 기반으로 y 위치 조정
-  const nodePositions = new Map();
-
-  // 초기 위치 설정
-  for (const node of nodes) {
-    nodePositions.set(node.id, { level: 0, processed: false });
-  }
-
-  // 엣지를 사용하여 레벨 계산
-  let changed = true;
-  while (changed) {
-    changed = false;
-    for (const edge of edges) {
-      const sourcePos = nodePositions.get(edge.source);
-      const targetPos = nodePositions.get(edge.target);
-
-      if (sourcePos && targetPos) {
-        if (targetPos.level <= sourcePos.level) {
-          targetPos.level = sourcePos.level + 1;
-          changed = true;
-        }
-      }
-    }
-  }
-
-  // 최종 위치 적용
-  for (const node of nodes) {
-    const pos = nodePositions.get(node.id);
-    if (pos) {
-      node.position = {
-        x: initialX + pos.level * xGap,
-        y:
-          initialY +
-          Array.from(nodePositions.values())
-            .filter((p) => p.level === pos.level)
-            .findIndex((p) => p === pos) *
-            yGap,
-      };
     }
   }
 
