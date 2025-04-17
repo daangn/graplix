@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
+import "../styles/index.css";
 import { Toaster } from "@/components/ui/sonner.tsx";
 import { ThemeProvider } from "@/components/ui/theme-provider.tsx";
 import { App } from "./App.tsx";
