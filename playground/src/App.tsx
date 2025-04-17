@@ -7,9 +7,11 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { RESIZABLE_STORAGE_KEY } from "@/lib/constants";
-import { useRef, useState } from "react";
+import { type GraplixSchema, parse } from "graplix";
+import { useEffect, useRef, useState } from "react";
 import type { ImperativePanelGroupHandle } from "react-resizable-panels";
-
+import { ClipboardCopy, ClipboardCopyIcon } from "./components/clipboard-copy";
+import { Button } from "./components/ui/button";
 const INITIAL_LAYOUT = [50, 50];
 
 export function App() {
@@ -22,8 +24,19 @@ export function App() {
   type user
 
   type team
-  relations
-  define member: [user]`);
+    relations
+      define member: [user]`);
+  const [schema, setSchema] = useState<GraplixSchema<any>>(() => parse(code));
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      setSchema(parse(code));
+      setError(null);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Unknown error");
+    }
+  }, [code]);
 
   const resetLayout = () => {
     resizablePanelGroupRef.current?.setLayout(INITIAL_LAYOUT);
@@ -40,12 +53,40 @@ export function App() {
             autoSaveId={RESIZABLE_STORAGE_KEY}
             storage={localStorage}
           >
-            <ResizablePanel title="Input">
+            <ResizablePanel
+              minSize={20}
+              collapsedSize={1}
+              collapsible
+              header={
+                <div className="flex items-center justify-between pr-2 pl-4 py-1">
+                  <h3 className="text-sm font-medium">Input</h3>
+                  <ClipboardCopy data={code} asChild>
+                    <Button variant="ghost" size="icon">
+                      <ClipboardCopyIcon className="size-4" />
+                    </Button>
+                  </ClipboardCopy>
+                </div>
+              }
+            >
               <CodeInput value={code} onChange={setCode} />
             </ResizablePanel>
             <ResizableHandle onDoubleClickCapture={resetLayout} />
-            <ResizablePanel title="Output">
-              <OutputDisplay code={code} />
+            <ResizablePanel
+              minSize={20}
+              collapsedSize={1}
+              collapsible
+              header={
+                <div className="flex items-center justify-between pr-2 pl-4 py-1">
+                  <h3 className="text-sm font-medium">Output</h3>
+                  <ClipboardCopy data={JSON.stringify(schema, null, 2)} asChild>
+                    <Button variant="ghost" size="icon">
+                      <ClipboardCopyIcon className="size-4" />
+                    </Button>
+                  </ClipboardCopy>
+                </div>
+              }
+            >
+              <OutputDisplay schema={schema} error={error} />
             </ResizablePanel>
           </ResizablePanelGroup>
         </main>
