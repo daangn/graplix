@@ -2,9 +2,9 @@ import { atomoneInit } from "@uiw/codemirror-theme-atomone";
 
 export const editorDarkTheme = atomoneInit({
   settings: {
-    background: "#171717",
+    background: "#0A0A0A",
     foreground: "#d4d4d4",
-    gutterBackground: "#171717",
+    gutterBackground: "#0A0A0A",
     gutterActiveForeground: "#d4d4d4",
     lineHighlight: "#202020",
     selection: "#202020",
