@@ -1,3 +1,6 @@
 export type BaseEntityTypeMap = {
-  [typeName: string]: {};
+  [typeName: string]: {
+    type: string;
+    [identifier: string]: string;
+  };
 };

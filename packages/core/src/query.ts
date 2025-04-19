@@ -40,11 +40,19 @@ export async function query<
   DirectedGraph<{ node: any; matched: boolean }, { relation: string }>
 > {
   const object = params.object;
-  const { type: objectType } = input.identify(object);
-  const objectNodeId = compileNodeId(input.identify(object));
+  const objectType = object.type;
+  const objectId = input.resolvers[objectType].identify(params.object);
+  const objectNodeId = compileNodeId({
+    type: objectType,
+    id: objectId,
+  });
 
   const user = params.user;
-  const userNodeId = compileNodeId(input.identify(user));
+  const userId = input.resolvers[user.type].identify(user);
+  const userNodeId = compileNodeId({
+    type: user.type,
+    id: userId,
+  });
 
   const graph = new DirectedGraph<
     { node: any; matched: boolean },
@@ -59,7 +67,11 @@ export async function query<
   const isCircularDependency =
     options?.initialParams &&
     isEqual(
-      (t) => compileNodeId(input.identify(t)),
+      (t) =>
+        compileNodeId({
+          type: t.type,
+          id: input.resolvers[t.type].identify(t),
+        }),
       params.object,
       options.initialParams.object,
     ) &&
@@ -75,7 +87,7 @@ export async function query<
     input.schema[objectType][params.relation],
   );
   const resolverDefinitions = normalizeArrayable(
-    input.resolvers[objectType][params.relation],
+    input.resolvers[objectType].relations?.[params.relation],
   );
 
   /**
@@ -100,7 +112,10 @@ export async function query<
         .then((o) => normalizeArrayable(o));
 
       for (const nextNode of nextNodes) {
-        const nextNodeId = compileNodeId(input.identify(nextNode));
+        const nextNodeId = compileNodeId({
+          type: nextNode.type,
+          id: input.resolvers[nextNode.type].identify(nextNode),
+        });
 
         /**
          * - if implicit relation, return false

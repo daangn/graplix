@@ -23,13 +23,16 @@ export type GraplixResolvers<
   EntityTypeMap extends BaseEntityTypeMap,
 > = {
   [SelectedNodeTypeName in Extract<keyof EntityTypeMap, string>]: {
-    [name: string]: Arrayable<
-      GraplixResolverDefinition<
-        Context,
-        EntityTypeMap,
-        SelectedNodeTypeName,
-        Extract<keyof EntityTypeMap, string>
-      >
-    >;
+    identify: (entity: EntityTypeMap[SelectedNodeTypeName]) => string;
+    relations?: {
+      [relationName: string]: Arrayable<
+        GraplixResolverDefinition<
+          Context,
+          EntityTypeMap,
+          SelectedNodeTypeName,
+          Extract<keyof EntityTypeMap, string>
+        >
+      >;
+    };
   };
 };
