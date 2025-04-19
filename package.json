@@ -1,55 +1,23 @@
 {
-  "name": "graplix",
-  "version": "0.1.2",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/daangn/graplix.git"
-  },
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
-    }
-  },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.mts",
-  "files": [
-    "dist",
-    "src",
-    "README.md"
+  "name": "root",
+  "private": true,
+  "workspaces": [
+    "playground",
+    "core"
   ],
   "scripts": {
-    "build": "tsdown",
     "format": "biome check --fix",
     "release": "changeset publish",
-    "test": "vitest run ./src",
     "typecheck": "tsc --noEmit"
   },
   "resolutions": {
     "graphology@^0.25.4": "patch:graphology@npm%3A0.25.4#./.yarn/patches/graphology-npm-0.25.4-f37e1f9f63.patch"
   },
-  "dependencies": {
-    "@openfga/syntax-transformer": "^0.2.0-beta.22",
-    "remeda": "^2.6.0"
-  },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@changesets/cli": "^2.27.10",
-    "@openfga/sdk": "^0.8.0",
     "@vitest/coverage-v8": "^2.0.4",
-    "dataloader": "^2.2.2",
-    "graphology": "^0.25.4",
-    "graphology-types": "^0.24.7",
-    "tsdown": "^0.4.1",
-    "typescript": "^5.5.4",
-    "vitest": "^2.0.4"
+    "typescript": "^5.5.4"
   },
-  "packageManager": "yarn@4.5.1",
-  "workspaces": [
-    ".",
-    "playground"
-  ]
+  "packageManager": "yarn@4.5.1"
 }

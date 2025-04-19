@@ -27,7 +27,7 @@ jobs:
         run: yarn
 
       - name: Build
-        run: yarn build
+        run: yarn workspace graplix build
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
