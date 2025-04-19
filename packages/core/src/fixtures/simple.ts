@@ -5,13 +5,13 @@ import type { GraplixSchema } from "../GraplixSchema";
 import { filterNonError } from "../utils";
 
 type House = {
-  __typename: "House";
+  type: "House";
   id: string;
   ownerIds: string[];
 };
 
 type User = {
-  __typename: "User";
+  type: "User";
   id: string;
 };
 
@@ -21,15 +21,15 @@ type ObjectTypeMap = {
 };
 
 export const users: User[] = [
-  { __typename: "User", id: "0" },
-  { __typename: "User", id: "1" },
-  { __typename: "User", id: "2" },
-  { __typename: "User", id: "3" },
+  { type: "User", id: "0" },
+  { type: "User", id: "1" },
+  { type: "User", id: "2" },
+  { type: "User", id: "3" },
 ];
 
 export const houses: House[] = [
   {
-    __typename: "House",
+    type: "House",
     id: "0",
     ownerIds: ["0", "1"],
   },
@@ -69,27 +69,26 @@ export const schema: GraplixSchema<ObjectTypeMap> = {
 
 export const resolvers: GraplixResolvers<Context, ObjectTypeMap> = {
   House: {
-    own: {
-      type: "User",
-      async resolve(obj, ctx) {
-        const users = ctx.loaders.user
-          .loadMany(obj.ownerIds)
-          .then(filterNonError);
+    identify: (entity) => entity.id,
+    relations: {
+      own: {
+        type: "User",
+        async resolve(obj, ctx) {
+          const users = ctx.loaders.user
+            .loadMany(obj.ownerIds)
+            .then(filterNonError);
 
-        return users;
+          return users;
+        },
       },
     },
   },
-  User: {},
+  User: {
+    identify: (entity) => entity.id,
+  },
 };
 
 export const input: GraplixInput<Context, ObjectTypeMap> = {
   schema,
   resolvers,
-  identify(obj) {
-    return {
-      type: obj.__typename,
-      id: obj.id,
-    };
-  },
 };
