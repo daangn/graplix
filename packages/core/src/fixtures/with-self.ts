@@ -4,6 +4,7 @@ import type { GraplixResolvers } from "../GraplixResolvers";
 import type { GraplixSchema } from "../GraplixSchema";
 
 type Artifact = {
+  type: "Artifact";
   entityId: string;
   entityName: "Artifact";
   state: {
@@ -12,6 +13,7 @@ type Artifact = {
 };
 
 type Project = {
+  type: "Project";
   entityId: string;
   entityName: "Project";
   state: {
@@ -26,6 +28,7 @@ type ObjectTypeMap = {
 
 export const artifacts: Artifact[] = [
   {
+    type: "Artifact",
     entityId: "0",
     entityName: "Artifact",
     state: {
@@ -36,6 +39,7 @@ export const artifacts: Artifact[] = [
 
 export const projects: Project[] = [
   {
+    type: "Project",
     entityId: "0",
     entityName: "Project",
     state: {
@@ -81,18 +85,24 @@ export const schema: GraplixSchema<ObjectTypeMap> = {
 
 export const resolvers: GraplixResolvers<Context, ObjectTypeMap> = {
   Project: {
-    self: {
-      type: "Project",
-      async resolve(obj) {
-        return obj;
+    identify: (entity) => entity.entityId,
+    relations: {
+      self: {
+        type: "Project",
+        async resolve(obj) {
+          return obj;
+        },
       },
     },
   },
   Artifact: {
-    parent: {
-      type: "Project",
-      async resolve(obj, ctx) {
-        return ctx.loaders.project.load(obj.state.projectId);
+    identify: (entity) => entity.entityId,
+    relations: {
+      parent: {
+        type: "Project",
+        async resolve(obj, ctx) {
+          return ctx.loaders.project.load(obj.state.projectId);
+        },
       },
     },
   },
@@ -101,10 +111,4 @@ export const resolvers: GraplixResolvers<Context, ObjectTypeMap> = {
 export const input: GraplixInput<Context, ObjectTypeMap> = {
   schema,
   resolvers,
-  identify(obj) {
-    return {
-      type: obj.entityName,
-      id: obj.entityId,
-    };
-  },
 };
