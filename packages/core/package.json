@@ -35,6 +35,7 @@
   ],
   "dependencies": {
     "@openfga/syntax-transformer": "^0.2.0-beta.22",
+    "commander": "^13.1.0",
     "remeda": "^2.6.0"
   },
   "devDependencies": {

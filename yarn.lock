@@ -3344,6 +3344,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^20.11.24":
+  version: 20.17.30
+  resolution: "@types/node@npm:20.17.30"
+  dependencies:
+    undici-types: "npm:~6.19.2"
+  checksum: 10c0/649782c7822367d751472d70c948bcc50cded1a4744610f706f81cd54e1fc015523567d7e3e17f6b19e3e2797f6f23b653e898bdb4a2f21f8759ceba49976310
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^22.14.1":
   version: 22.14.1
   resolution: "@types/node@npm:22.14.1"
@@ -4006,6 +4015,20 @@ __metadata:
   version: 7.2.0
   resolution: "commander@npm:7.2.0"
   checksum: 10c0/8d690ff13b0356df7e0ebbe6c59b4712f754f4b724d4f473d3cc5b3fdcf978e3a5dc3078717858a2ceb50b0f84d0660a7f22a96cdc50fb877d0c9bb31593d23a
+  languageName: node
+  linkType: hard
+
+"commander@npm:^12.0.0":
+  version: 12.1.0
+  resolution: "commander@npm:12.1.0"
+  checksum: 10c0/6e1996680c083b3b897bfc1cfe1c58dfbcd9842fd43e1aaf8a795fbc237f65efcc860a3ef457b318e73f29a4f4a28f6403c3d653d021d960e4632dd45bde54a9
+  languageName: node
+  linkType: hard
+
+"commander@npm:^13.1.0":
+  version: 13.1.0
+  resolution: "commander@npm:13.1.0"
+  checksum: 10c0/7b8c5544bba704fbe84b7cab2e043df8586d5c114a4c5b607f83ae5060708940ed0b5bd5838cf8ce27539cde265c1cbd59ce3c8c6b017ed3eec8943e3a415164
   languageName: node
   linkType: hard
 
@@ -5614,12 +5637,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graplix-cli@workspace:packages/cli":
+  version: 0.0.0-use.local
+  resolution: "graplix-cli@workspace:packages/cli"
+  dependencies:
+    "@types/node": "npm:^20.11.24"
+    commander: "npm:^12.0.0"
+    graplix: "workspace:*"
+    typescript: "npm:^5.3.3"
+  bin:
+    graplix: dist/index.js
+  languageName: unknown
+  linkType: soft
+
 "graplix@workspace:*, graplix@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "graplix@workspace:packages/core"
   dependencies:
     "@openfga/sdk": "npm:^0.8.0"
     "@openfga/syntax-transformer": "npm:^0.2.0-beta.22"
+    commander: "npm:^13.1.0"
     dataloader: "npm:^2.2.2"
     graphology: "npm:^0.25.4"
     graphology-types: "npm:^0.24.7"
@@ -7681,7 +7718,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.5.4":
+"typescript@npm:^5.3.3, typescript@npm:^5.5.4":
   version: 5.8.3
   resolution: "typescript@npm:5.8.3"
   bin:
@@ -7691,7 +7728,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.5.4#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A^5.3.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.5.4#optional!builtin<compat/typescript>":
   version: 5.8.3
   resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=cef18b"
   bin:
@@ -7716,6 +7753,13 @@ __metadata:
     defu: "npm:^6.1.4"
     importx: "npm:^0.5.1"
   checksum: 10c0/cfdf536f366cf76294a83e05ae9388a534324ca4a7e39d3e87a1e14c2eeb62809a41267b3fb02e7794077d5224b011385afa83e812a0ee43d90284f1c653ef52
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~6.19.2":
+  version: 6.19.8
+  resolution: "undici-types@npm:6.19.8"
+  checksum: 10c0/078afa5990fba110f6824823ace86073b4638f1d5112ee26e790155f481f2a868cc3e0615505b6f4282bdf74a3d8caad715fd809e870c2bb0704e3ea6082f344
   languageName: node
   linkType: hard
 

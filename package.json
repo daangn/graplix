@@ -3,7 +3,9 @@
   "private": true,
   "workspaces": [
     "playground",
-    "packages/core"
+    "packages/core",
+    "example",
+    "packages/cli"
   ],
   "scripts": {
     "format": "biome check --fix",

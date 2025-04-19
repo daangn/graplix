@@ -1,0 +1,28 @@
+{
+  "name": "graplix-cli",
+  "version": "0.1.0",
+  "description": "CLI tool for Graplix",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "graplix": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "generate": "DEV=true ts-node src/index.ts generate"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "graplix": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3"
+  }
+}
