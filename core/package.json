@@ -3,7 +3,13 @@
   "description": "Authorization framework for implementing Relation-based Access Control (ReBAC) with the Resolver (Inspired by [GraphQL](https://graphql.org))",
   "type": "module",
   "version": "0.1.2",
-  "keywords": ["authorization", "access control", "graphql", "resolver", "rebac"],
+  "keywords": [
+    "authorization",
+    "access control",
+    "graphql",
+    "resolver",
+    "rebac"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/daangn/graplix.git"
