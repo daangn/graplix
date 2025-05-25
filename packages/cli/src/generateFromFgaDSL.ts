@@ -4,7 +4,10 @@ import { parse } from "graplix";
 import { generateEntityScaffold } from "./generateEntityScaffold.ts";
 import { generateSchemaFile } from "./generateSchemaFile.ts";
 
-export function generateFromFgaDsl(dsl: string, outDir = "__generated__") {
+export function generateFromFgaDsl(
+  dsl: string,
+  outDir = "__generated__",
+): void {
   const model = parse(dsl);
   const typeNames = Object.keys(model);
 

@@ -1,11 +1,9 @@
 import { header } from "./header.ts";
 
-export function generateEntityScaffold(typeNames: string[]) {
+export function generateEntityScaffold(typeNames: string[]): string {
   const lines = [
     ...header,
-    `import { defineEntity } from "${
-      process.env.DEV === "true" ? "graplix" : "@daangn/graplix"
-    }";`,
+    'import { defineEntity } from "@daangn/graplix";',
     "",
     "export const entityDefinitions = {",
     ...typeNames.map(
