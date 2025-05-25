@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { parse } from "graplix";
+import { parse } from "@daangn/graplix";
 import { generateEntityScaffold } from "./generateEntityScaffold.ts";
 import { generateSchemaFile } from "./generateSchemaFile.ts";
 

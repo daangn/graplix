@@ -2,11 +2,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@daangn/graplix": ["../core/dist/index.d.cts"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
