@@ -1,4 +1,4 @@
-import type { GraplixSchema } from "@daangn/graplix";
+import type { GraplixSchema } from "graplix";
 import { header } from "./header.ts";
 
 export function generateSchemaFile(schema: GraplixSchema<any>): string {

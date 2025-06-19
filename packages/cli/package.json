@@ -18,14 +18,12 @@
     "access": "public"
   },
   "dependencies": {
-    "commander": "^12.0.0"
-  },
-  "peerDependencies": {
-    "@daangn/graplix": "*"
+    "commander": "^12.0.0",
+    "graplix": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
-    "graplix": "workspace:^",
+    "graplix": "workspace:*",
     "tsdown": "^0.4.1",
     "typescript": "^5.3.3"
   }
