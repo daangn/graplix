@@ -1,4 +1,4 @@
-import { parse } from "./parse/index";
+import { parse } from "./parse";
 
 describe("parse", () => {
   test("it should parse basic type definition", () => {
