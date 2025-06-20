@@ -1,4 +1,4 @@
-name: Release
+name: Integration
 
 on:
   pull_request:
@@ -22,5 +22,5 @@ jobs:
       - name: Install Dependencies
         run: yarn
 
-      - name: Build
-        run: yarn test
+      - name: Run Tests
+        run: yarn workspace graplix test
