@@ -5,7 +5,7 @@ import type { GraplixSchema } from "../GraplixSchema";
 import { filterNonError } from "../utils";
 
 type Repository = {
-  __typename: "Repository";
+  $type: "Repository";
   id: string;
   owner:
     | {
@@ -19,13 +19,13 @@ type Repository = {
 };
 
 type Organization = {
-  __typename: "Organization";
+  $type: "Organization";
   id: string;
   memberIds: string[];
 };
 
 type User = {
-  __typename: "User";
+  $type: "User";
   id: string;
 };
 
@@ -37,7 +37,7 @@ type ObjectTypeMap = {
 
 export const repositories: Repository[] = [
   {
-    __typename: "Repository",
+    $type: "Repository",
     id: "0",
     owner: {
       type: "Organization",
@@ -48,7 +48,7 @@ export const repositories: Repository[] = [
 
 export const organizations: Organization[] = [
   {
-    __typename: "Organization",
+    $type: "Organization",
     id: "0",
     memberIds: ["0"],
   },
@@ -56,7 +56,7 @@ export const organizations: Organization[] = [
 
 export const users: User[] = [
   {
-    __typename: "User",
+    $type: "User",
     id: "0",
   },
 ];
@@ -101,29 +101,37 @@ export const schema: GraplixSchema<ObjectTypeMap> = {
 
 export const resolvers: GraplixResolvers<Context, ObjectTypeMap> = {
   Repository: {
-    own: {
-      type: "Organization",
-      async resolve(obj, ctx) {
-        if (obj.owner.type !== "Organization") {
-          return null;
-        }
-        return ctx.loaders.organization.load(obj.owner.id);
+    identify: (entity) => entity.id,
+    relations: {
+      own: {
+        type: "Organization",
+        async resolve(obj, ctx) {
+          if (obj.owner.type !== "Organization") {
+            return null;
+          }
+          return ctx.loaders.organization.load(obj.owner.id);
+        },
       },
     },
   },
   Organization: {
-    member: {
-      type: "User",
-      async resolve(organization, ctx) {
-        const users = ctx.loaders.user
-          .loadMany(organization.memberIds)
-          .then(filterNonError);
+    identify: (entity) => entity.id,
+    relations: {
+      member: {
+        type: "User",
+        async resolve(organization, ctx) {
+          const users = ctx.loaders.user
+            .loadMany(organization.memberIds)
+            .then(filterNonError);
 
-        return users;
+          return users;
+        },
       },
     },
   },
-  User: {},
+  User: {
+    identify: (entity) => entity.id,
+  },
 };
 
 export const input: GraplixInput<
@@ -136,10 +144,4 @@ export const input: GraplixInput<
 > = {
   schema,
   resolvers,
-  identify(obj) {
-    return {
-      type: obj.__typename,
-      id: obj.id,
-    };
-  },
 };

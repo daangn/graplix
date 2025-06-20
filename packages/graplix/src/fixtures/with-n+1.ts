@@ -5,6 +5,7 @@ import type { GraplixSchema } from "../GraplixSchema";
 import { filterNonError } from "../utils";
 
 type Artifact = {
+  $type: "Artifact";
   entityId: string;
   entityName: "Artifact";
   state: {
@@ -13,6 +14,7 @@ type Artifact = {
 };
 
 type Project = {
+  $type: "Project";
   entityId: string;
   entityName: "Project";
   state: {
@@ -21,6 +23,7 @@ type Project = {
 };
 
 type Team = {
+  $type: "Team";
   entityId: string;
   entityName: "Team";
   state: {
@@ -32,6 +35,7 @@ type Team = {
 };
 
 type User = {
+  $type: "User";
   entityId: string;
   entityName: "User";
   state: {};
@@ -46,6 +50,7 @@ type ObjectTypeMap = {
 
 export const artifacts: Artifact[] = [
   {
+    $type: "Artifact",
     entityId: "0",
     entityName: "Artifact",
     state: {
@@ -56,6 +61,7 @@ export const artifacts: Artifact[] = [
 
 export const projects: Project[] = [
   {
+    $type: "Project",
     entityId: "0",
     entityName: "Project",
     state: {
@@ -66,6 +72,7 @@ export const projects: Project[] = [
 
 export const teams: Team[] = [
   {
+    $type: "Team",
     entityId: "0",
     entityName: "Team",
     state: {
@@ -76,6 +83,7 @@ export const teams: Team[] = [
     },
   },
   {
+    $type: "Team",
     entityId: "1",
     entityName: "Team",
     state: {
@@ -88,10 +96,10 @@ export const teams: Team[] = [
 ];
 
 export const users: User[] = [
-  { entityId: "0", entityName: "User", state: {} },
-  { entityId: "1", entityName: "User", state: {} },
-  { entityId: "2", entityName: "User", state: {} },
-  { entityId: "3", entityName: "User", state: {} },
+  { $type: "User", entityId: "0", entityName: "User", state: {} },
+  { $type: "User", entityId: "1", entityName: "User", state: {} },
+  { $type: "User", entityId: "2", entityName: "User", state: {} },
+  { $type: "User", entityId: "3", entityName: "User", state: {} },
 ];
 
 type Context = {
@@ -154,65 +162,70 @@ export const schema: GraplixSchema<ObjectTypeMap> = {
 
 export const resolvers: GraplixResolvers<Context, ObjectTypeMap> = {
   Artifact: {
-    parent: {
-      type: "Project",
-      async resolve(artifact, ctx) {
-        return ctx.loaders.project.load(artifact.state.projectId);
+    identify: (entity) => entity.entityId,
+    relations: {
+      parent: {
+        type: "Project",
+        async resolve(artifact, ctx) {
+          return ctx.loaders.project.load(artifact.state.projectId);
+        },
       },
     },
   },
   Project: {
-    parent: {
-      type: "Team",
-      async resolve(project, ctx) {
-        const teams = await ctx.loaders.team
-          .loadMany(project.state.teamId)
-          .then(filterNonError);
+    identify: (entity) => entity.entityId,
+    relations: {
+      parent: {
+        type: "Team",
+        async resolve(project, ctx) {
+          const teams = await ctx.loaders.team
+            .loadMany(project.state.teamId)
+            .then(filterNonError);
 
-        return teams;
+          return teams;
+        },
       },
     },
   },
   Team: {
-    owner: {
-      type: "User",
-      async resolve(team, ctx) {
-        const users = await ctx.loaders.user
-          .loadMany(
-            team.state.members
-              .filter(({ role }) => role === "Owner")
-              .map(({ userId }) => userId),
-          )
-          .then(filterNonError);
+    identify: (entity) => entity.entityId,
+    relations: {
+      owner: {
+        type: "User",
+        async resolve(team, ctx) {
+          const users = await ctx.loaders.user
+            .loadMany(
+              team.state.members
+                .filter(({ role }) => role === "Owner")
+                .map(({ userId }) => userId),
+            )
+            .then(filterNonError);
 
-        return users;
+          return users;
+        },
       },
-    },
-    member: {
-      type: "User",
-      async resolve(team, ctx) {
-        const users = await ctx.loaders.user
-          .loadMany(
-            team.state.members
-              .filter(({ role }) => role === "Member")
-              .map(({ userId }) => userId),
-          )
-          .then(filterNonError);
+      member: {
+        type: "User",
+        async resolve(team, ctx) {
+          const users = await ctx.loaders.user
+            .loadMany(
+              team.state.members
+                .filter(({ role }) => role === "Member")
+                .map(({ userId }) => userId),
+            )
+            .then(filterNonError);
 
-        return users;
+          return users;
+        },
       },
     },
   },
-  User: {},
+  User: {
+    identify: (entity) => entity.entityId,
+  },
 };
 
 export const input: GraplixInput<Context, ObjectTypeMap> = {
   schema,
   resolvers,
-  identify(obj) {
-    return {
-      type: obj.entityName,
-      id: obj.entityId,
-    };
-  },
 };
