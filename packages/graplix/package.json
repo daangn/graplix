@@ -42,8 +42,8 @@
     "dataloader": "^2.2.2",
     "graphology": "^0.25.4",
     "graphology-types": "^0.24.7",
-    "tsdown": "^0.4.1",
-    "vitest": "^2.0.4"
+    "tsdown": "^0.12.8",
+    "vitest": "^3.2.4"
   },
   "publishConfig": {
     "access": "public"
