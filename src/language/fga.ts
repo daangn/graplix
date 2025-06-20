@@ -1,11 +1,9 @@
-import { transformer } from "@openfga/syntax-transformer";
-import { validate } from "./validate";
+import type { BaseEntityTypeMap } from "BaseEntityTypeMap";
+import type { GraplixSchema } from "GraplixSchema";
+import { parse } from "./parse";
 
-export function fga([data]: TemplateStringsArray): ReturnType<
-  typeof transformer.transformDSLToJSONObject
-> {
-  const ast = transformer.transformDSLToJSONObject(data);
-  validate(ast);
-
-  return ast;
+export function fga([
+  data,
+]: TemplateStringsArray): GraplixSchema<BaseEntityTypeMap> {
+  return parse(data);
 }
