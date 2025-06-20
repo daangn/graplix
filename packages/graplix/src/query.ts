@@ -1,6 +1,5 @@
 import { DirectedGraph } from "graphology";
 import * as R from "remeda";
-
 import type { BaseEntityTypeMap } from "./BaseEntityTypeMap";
 import type { GraplixInput } from "./GraplixInput";
 import type { ValueOf } from "./utils";

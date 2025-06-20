@@ -1,5 +1,5 @@
-import type { GraplixComputedSetRelationDefinition } from "GraplixSchema";
-import type { ValidatedUserset } from "language/ValidatedModel";
+import type { GraplixComputedSetRelationDefinition } from "../../GraplixSchema";
+import type { ValidatedUserset } from "../ValidatedModel";
 
 export function getComputedSetRelations(
   userSet: ValidatedUserset,

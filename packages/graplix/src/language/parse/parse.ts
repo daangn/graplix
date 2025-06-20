@@ -1,5 +1,5 @@
 import { transformer } from "@openfga/syntax-transformer";
-import type { BaseEntityTypeMap } from "BaseEntityTypeMap";
+import type { BaseEntityTypeMap } from "../../BaseEntityTypeMap";
 import type {
   GraplixSchema,
   GraplixSchemaRelationDefinition,

@@ -1,6 +1,6 @@
-import type { BaseEntityTypeMap } from "BaseEntityTypeMap";
-import type { GraplixDirectlyRelatedUserTypes } from "GraplixSchema";
-import type { ValidatedRelationMetadata } from "language/ValidatedModel";
+import type { BaseEntityTypeMap } from "../../BaseEntityTypeMap";
+import type { GraplixDirectlyRelatedUserTypes } from "../../GraplixSchema";
+import type { ValidatedRelationMetadata } from "../ValidatedModel";
 
 export function getDirectlyRelatedUserTypes<T extends BaseEntityTypeMap>(
   relation: ValidatedRelationMetadata,

@@ -1,5 +1,5 @@
-import type { GraplixUnionRelationDefinition } from "GraplixSchema";
-import type { ValidatedUserset } from "language/ValidatedModel";
+import type { GraplixUnionRelationDefinition } from "../../GraplixSchema";
+import type { ValidatedUserset } from "../ValidatedModel";
 import { getComputedSetRelations } from "./getComputedSetRelations";
 import { getTupleToUsersetRelations } from "./getTupleToUsersetRelations";
 

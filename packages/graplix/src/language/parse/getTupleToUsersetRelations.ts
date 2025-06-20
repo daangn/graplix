@@ -1,5 +1,5 @@
-import type { GraplixTupleToUsersetRelationDefinition } from "GraplixSchema";
-import type { ValidatedUserset } from "language/ValidatedModel";
+import type { GraplixTupleToUsersetRelationDefinition } from "../../GraplixSchema";
+import type { ValidatedUserset } from "../ValidatedModel";
 
 export function getTupleToUsersetRelations(
   userSet: ValidatedUserset,
