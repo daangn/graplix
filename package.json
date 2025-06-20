@@ -3,7 +3,7 @@
   "private": true,
   "workspaces": [
     "playground",
-    "packages/core"
+    "packages/*"
   ],
   "scripts": {
     "format": "biome check --fix",
