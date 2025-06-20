@@ -5614,9 +5614,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graplix@workspace:*, graplix@workspace:packages/core":
+"graplix@workspace:*, graplix@workspace:packages/graplix":
   version: 0.0.0-use.local
-  resolution: "graplix@workspace:packages/core"
+  resolution: "graplix@workspace:packages/graplix"
   dependencies:
     "@openfga/sdk": "npm:^0.8.0"
     "@openfga/syntax-transformer": "npm:^0.2.0-beta.22"
