@@ -30,7 +30,9 @@
       ".yarn/**/*",
       "node_modules",
       "package.json",
-      "dist/**/*"
+      "dist/**/*",
+      "**/tsconfig.json",
+      "**/tsconfig.*.json"
     ]
   }
 }
