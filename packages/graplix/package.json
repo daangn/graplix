@@ -1,0 +1,51 @@
+{
+  "name": "graplix",
+  "description": "Authorization framework for implementing Relation-based Access Control (ReBAC) with the Resolver (Inspired by [GraphQL](https://graphql.org))",
+  "type": "module",
+  "version": "0.1.2",
+  "keywords": [
+    "authorization",
+    "access control",
+    "graphql",
+    "resolver",
+    "rebac"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daangn/graplix.git"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run ./src"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "dependencies": {
+    "@openfga/syntax-transformer": "^0.2.0-beta.22",
+    "remeda": "^2.6.0"
+  },
+  "devDependencies": {
+    "@openfga/sdk": "^0.8.0",
+    "dataloader": "^2.2.2",
+    "graphology": "^0.25.4",
+    "graphology-types": "^0.24.7",
+    "tsdown": "^0.12.8",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
