@@ -2,7 +2,7 @@
   "name": "graplix",
   "description": "Authorization framework for implementing Relation-based Access Control (ReBAC) with the Resolver (Inspired by [GraphQL](https://graphql.org))",
   "type": "module",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "keywords": [
     "authorization",
     "access control",
