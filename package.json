@@ -1,6 +1,6 @@
 {
   "name": "graplix",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/daangn/graplix.git"
@@ -10,11 +10,11 @@
     ".": {
       "types": "./dist/index.d.mts",
       "require": "./dist/index.cjs",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
     }
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "files": [
     "dist",
