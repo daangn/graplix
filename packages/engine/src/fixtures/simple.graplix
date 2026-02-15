@@ -1,6 +1,0 @@
-type user
-
-type house
-  relations
-    define owner: [user]
-    define can_enter: owner

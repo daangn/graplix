@@ -1,6 +1,0 @@
-type user
-
-type house
-  relations
-    define resolver_type_not_matched: [user]
-    define resolver_not_found: [user]

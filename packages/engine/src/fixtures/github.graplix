@@ -1,0 +1,59 @@
+type user
+
+type house
+  relations
+    define owner: [user]
+    define member: [user]
+    define can_enter: owner or member
+
+type organization
+  relations
+    define admin: [user]
+    define member: [user]
+
+type team
+  relations
+    define owner: [user]
+    define maintainer: [user]
+    define triager: [user]
+    define member: [user]
+
+type project
+  relations
+    define team: [team]
+    define triage_team: [team]
+    define approver: [user]
+    define owner: owner from team
+    define self: [project]
+
+type repository
+  relations
+    define owner: [user]
+    define team: [team]
+    define organization: [organization]
+    define member: [user]
+    define can_delete: member from organization
+    define write: owner or maintainer from team
+    define admin: write or admin from organization
+type artifact
+  relations
+    define project: [project]
+    define can_delete: owner from project
+    define can_touch: self from project
+
+type label
+  relations
+    define reviewer: [user]
+
+type issue
+  relations
+    define reporter: [user]
+    define assignee: [user]
+    define project: [project]
+    define label: [label]
+    define triager: triage_team from project
+    define approver: approver from project
+    define reviewer: reviewer from label
+    define can_edit: assignee or triager
+    define can_approve: approver or reviewer or reporter
+    define can_close: can_edit or can_approve

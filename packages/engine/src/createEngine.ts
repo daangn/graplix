@@ -8,19 +8,14 @@ import type { LangiumDocument } from "langium";
 
 export type ResolverValue<T> = T | ReadonlyArray<T> | null;
 
-export interface ResolverContext {
-  readonly requestId?: string;
-}
+type DefaultRootContext = object;
 
 export interface EntityRef {
   readonly type: string;
   readonly id: string;
 }
 
-export interface TypeResolver<
-  TEntity,
-  TRootContext extends ResolverContext = {},
-> {
+export interface TypeResolver<TEntity, TRootContext = DefaultRootContext> {
   id(entity: TEntity): string;
 
   load(id: string, context: TRootContext): Promise<TEntity | null>;
@@ -33,18 +28,18 @@ export interface TypeResolver<
   };
 }
 
-export type Resolvers<TRootContext extends ResolverContext = {}> = {
+export type Resolvers<TRootContext = DefaultRootContext> = {
   [typeName: string]: TypeResolver<unknown, TRootContext>;
 };
 
-export interface CheckQuery<TRootContext extends ResolverContext = {}> {
+export interface CheckQuery<TRootContext = DefaultRootContext> {
   readonly user: unknown;
   readonly object: unknown;
   readonly relation: string;
   readonly context?: TRootContext;
 }
 
-export interface GraplixRuntime<TContext extends ResolverContext = {}> {
+export interface GraplixRuntime<TContext = DefaultRootContext> {
   check(query: CheckQuery<TContext>): Promise<boolean>;
 }
 
@@ -61,7 +56,7 @@ interface RelationDefinition {
   readonly directTargetTypes: ReadonlySet<string>;
 }
 
-interface InternalState<TContext extends ResolverContext> {
+interface InternalState<TContext> {
   readonly context: TContext;
   readonly schema: RuntimeSchema;
   readonly resolvers: Resolvers<TContext>;
@@ -70,12 +65,12 @@ interface InternalState<TContext extends ResolverContext> {
   readonly visited: Set<string>;
 }
 
-export interface GraplixOptions<TContext extends ResolverContext = {}> {
+export interface GraplixOptions<TContext = DefaultRootContext> {
   readonly schema: string;
   readonly resolvers: Resolvers<TContext>;
 }
 
-export function createEngine<TContext extends ResolverContext = {}>(
+export function createEngine<TContext = DefaultRootContext>(
   options: GraplixOptions<TContext>,
 ): GraplixRuntime<TContext> {
   const compiledSchema = (async (): Promise<RuntimeSchema> => {
@@ -164,7 +159,7 @@ function isEntityRef(value: unknown): value is EntityRef {
   );
 }
 
-async function toEntityRef<TContext extends ResolverContext>(
+async function toEntityRef<TContext>(
   value: unknown,
   state: InternalState<TContext>,
 ): Promise<EntityRef> {
@@ -205,7 +200,7 @@ async function toEntityRef<TContext extends ResolverContext>(
   );
 }
 
-async function evaluateRelation<TContext extends ResolverContext>(
+async function evaluateRelation<TContext>(
   state: InternalState<TContext>,
   object: EntityRef,
   relationName: string,
@@ -241,7 +236,7 @@ async function evaluateRelation<TContext extends ResolverContext>(
   }
 }
 
-async function evaluateRelationTerm<TContext extends ResolverContext>(
+async function evaluateRelationTerm<TContext>(
   state: InternalState<TContext>,
   term: GraplixRelationTerm,
   object: EntityRef,
@@ -290,7 +285,7 @@ function entityMatches(left: EntityRef, right: EntityRef): boolean {
   return left.type === right.type && left.id === right.id;
 }
 
-async function getRelationValues<TContext extends ResolverContext>(
+async function getRelationValues<TContext>(
   state: InternalState<TContext>,
   object: EntityRef,
   relation: string,
@@ -329,7 +324,7 @@ async function getRelationValues<TContext extends ResolverContext>(
   return normalizedValues;
 }
 
-async function toEntityRefList<TContext extends ResolverContext>(
+async function toEntityRefList<TContext>(
   state: InternalState<TContext>,
   value: unknown,
   allowedTargetTypes?: ReadonlySet<string>,
@@ -354,7 +349,7 @@ async function toEntityRefList<TContext extends ResolverContext>(
   return resolved;
 }
 
-async function loadEntity<TContext extends ResolverContext>(
+async function loadEntity<TContext>(
   state: InternalState<TContext>,
   object: EntityRef,
 ): Promise<unknown | null> {

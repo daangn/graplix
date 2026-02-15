@@ -1,8 +1,0 @@
-type project
-  relations
-    define self: [project]
-
-type artifact
-  relations
-    define project: [project]
-    define can_touch: self from project
