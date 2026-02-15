@@ -5,11 +5,17 @@ import { URI } from "vscode-uri";
 import type { GraplixDocument } from "./__generated__/ast";
 import { createGraplixServices } from "./services";
 
+/**
+ * Parsing options for in-memory Graplix text.
+ */
 export interface GraplixParseOptions {
   readonly documentUri?: string;
   readonly validation?: boolean;
 }
 
+/**
+ * Parses Graplix source text into a Langium document.
+ */
 export async function parse(
   text: string,
   {

@@ -9,6 +9,9 @@ import {
 
 let client: LanguageClient;
 
+/**
+ * Activates the Graplix VS Code extension and starts the language client.
+ */
 export function activate(context: ExtensionContext) {
   // The server is implemented in node
   const serverModule = context.asAbsolutePath(
@@ -51,6 +54,9 @@ export function activate(context: ExtensionContext) {
   client.start();
 }
 
+/**
+ * Stops the language client when the extension is deactivated.
+ */
 export function deactivate(): Thenable<void> | undefined {
   if (!client) {
     return undefined;

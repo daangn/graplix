@@ -12,14 +12,17 @@ import {
 } from "./__generated__/module";
 import { GraplixValidator, registerValidationChecks } from "./validator";
 
+/** Additional Graplix services layered over Langium defaults. */
 export type GraplixAddedServices = {
   validation: {
     GraplixValidator: GraplixValidator;
   };
 };
 
+/** Full Graplix service type used by parser and language server. */
 export type GraplixServices = LangiumServices & GraplixAddedServices;
 
+/** Runtime module that wires Graplix-specific service implementations. */
 export const GraplixModule: Module<
   GraplixServices,
   PartialLangiumServices & GraplixAddedServices
@@ -29,6 +32,9 @@ export const GraplixModule: Module<
   },
 };
 
+/**
+ * Creates and registers Langium shared/language services for Graplix.
+ */
 export function createGraplixServices(context: DefaultSharedModuleContext): {
   shared: LangiumSharedServices;
   Graplix: GraplixServices;

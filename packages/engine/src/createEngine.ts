@@ -9,6 +9,9 @@ import { resolveSchema } from "./private/resolveSchema";
 import type { TraceState } from "./private/TraceState";
 import type { Query } from "./Query";
 
+/**
+ * Creates a Graplix evaluation engine for a schema and resolver set.
+ */
 export function createEngine<TContext = object>(
   options: GraplixOptions<TContext>,
 ): GraplixEngine<TContext> {
