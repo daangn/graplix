@@ -1,4 +1,0 @@
-
-page detail = /jobs/:job_id {
-  sortOrder: string;
-}

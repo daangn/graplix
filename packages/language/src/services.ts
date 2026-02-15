@@ -7,51 +7,35 @@ import type {
 } from "langium/lsp";
 import { createDefaultModule, createDefaultSharedModule } from "langium/lsp";
 import {
-  URLSpecGeneratedModule,
-  URLSpecGeneratedSharedModule,
+  GraplixGeneratedModule,
+  GraplixGeneratedSharedModule,
 } from "./__generated__/module";
-import { URLSpecValidator } from "./validator";
 
-export type URLSpecAddedServices = {
-  validation: {
-    URLSpecValidator: URLSpecValidator;
-  };
-};
+export type GraplixAddedServices = {};
 
-export type URLSpecServices = LangiumServices & URLSpecAddedServices;
+export type GraplixServices = LangiumServices & GraplixAddedServices;
 
-export const URLSpecModule: Module<
-  URLSpecServices,
-  PartialLangiumServices & URLSpecAddedServices
-> = {
-  validation: {
-    URLSpecValidator: () => new URLSpecValidator(),
-  },
-};
+export const GraplixModule: Module<
+  GraplixServices,
+  PartialLangiumServices & GraplixAddedServices
+> = {};
 
-export function createURLSpecServices(context: DefaultSharedModuleContext): {
+export function createGraplixServices(context: DefaultSharedModuleContext): {
   shared: LangiumSharedServices;
-  URLSpec: URLSpecServices;
+  Graplix: GraplixServices;
 } {
   const shared = inject(
     createDefaultSharedModule(context),
-    URLSpecGeneratedSharedModule,
+    GraplixGeneratedSharedModule,
   );
 
-  const URLSpec = inject(
+  const Graplix = inject(
     createDefaultModule({ shared }),
-    URLSpecGeneratedModule,
-    URLSpecModule,
+    GraplixGeneratedModule,
+    GraplixModule,
   );
 
-  shared.ServiceRegistry.register(URLSpec);
+  shared.ServiceRegistry.register(Graplix);
 
-  // Register validation checks after the service is registered
-  // In Langium 4.x, we need to ensure the reflection is properly set up first
-  const validator = URLSpec.validation.URLSpecValidator;
-  const checks = validator.registerChecks(URLSpec);
-  // Pass validator as thisObj (second parameter) for proper context binding
-  URLSpec.validation.ValidationRegistry.register(checks, validator, "fast");
-
-  return { shared, URLSpec };
+  return { shared, Graplix };
 }

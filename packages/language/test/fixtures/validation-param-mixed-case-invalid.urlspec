@@ -1,5 +1,0 @@
-
-page list = /jobs {
-  user_ID: string;
-  Sort_Order?: string;
-}

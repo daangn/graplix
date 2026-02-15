@@ -34,7 +34,7 @@
   "scripts": {
     "build": "yarn langium:generate && tsdown",
     "langium:generate": "langium generate",
-    "test": "vitest --run",
+    "test": "vitest --run --passWithNoTests",
     "test:watch": "vitest watch"
   },
   "dependencies": {

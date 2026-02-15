@@ -1,5 +1,0 @@
-
-page detail = /jobs/:job_id/comments/:comment_id {
-  job_id: string;
-  comment_id: string;
-}

@@ -1,4 +1,4 @@
-import { createURLSpecServices } from "@urlspec/language";
+import { createGraplixServices } from "@graplix/language";
 import { startLanguageServer } from "langium/lsp";
 import { NodeFileSystem } from "langium/node";
 import { createConnection, ProposedFeatures } from "vscode-languageserver/node";
@@ -7,7 +7,7 @@ import { createConnection, ProposedFeatures } from "vscode-languageserver/node";
 const connection = createConnection(ProposedFeatures.all);
 
 // Inject the shared services and language-specific services
-const { shared } = createURLSpecServices({ connection, ...NodeFileSystem });
+const { shared } = createGraplixServices({ connection, ...NodeFileSystem });
 
 // Start the language server with the shared services
 startLanguageServer(shared);

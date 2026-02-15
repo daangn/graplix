@@ -33,18 +33,16 @@ export function activate(context: ExtensionContext) {
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
-    // Register the server for URLSpec documents
-    documentSelector: [{ scheme: "file", language: "urlspec" }],
+    documentSelector: [{ scheme: "file", language: "graplix" }],
     synchronize: {
-      // Notify the server about file changes to '.urlspec' files contained in the workspace
       fileEvents: [],
     },
   };
 
   // Create the language client and start the client.
   client = new LanguageClient(
-    "urlspecLanguageServer",
-    "URLSpec Language Server",
+    "graplixLanguageServer",
+    "Graplix Language Server",
     serverOptions,
     clientOptions,
   );

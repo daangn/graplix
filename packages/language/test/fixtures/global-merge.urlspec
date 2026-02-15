@@ -1,9 +1,0 @@
-
-global {
-  utm_source?: string;
-  referrer?: string;
-}
-
-page list = /jobs {
-  category?: string;
-}

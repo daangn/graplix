@@ -1,5 +1,0 @@
-
-page detail = /jobs/:job_id {
-  job_id: string;
-  preview?: "true" | "false";
-}

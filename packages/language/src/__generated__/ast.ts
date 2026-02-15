@@ -6,388 +6,73 @@
 /* eslint-disable */
 import * as langium from 'langium';
 
-export const URLSpecTerminals = {
-    SL_COMMENT: /\/\/[^\n\r]*/,
-    PATH_SEGMENT: /\/[a-zA-Z0-9_-]+/,
-    PARAM_PREFIX: /\/:/,
-    ROOT_PATH: /\//,
-    IDENTIFIER: /[a-zA-Z][a-zA-Z0-9_]*/,
-    STRING: /"([^"\\]|\\.)*"/,
+export const GraplixTerminals = {
+    IDENTIFIER: /[a-zA-Z_][a-zA-Z0-9_]*/,
     WS: /\s+/,
 };
 
-export type URLSpecTerminalNames = keyof typeof URLSpecTerminals;
+export type GraplixTerminalNames = keyof typeof GraplixTerminals;
 
-export type URLSpecKeywordNames =
-    | ":"
-    | ";"
-    | "="
-    | "?"
-    | "global"
-    | "page"
-    | "param"
-    | "string"
-    | "{"
-    | "|"
-    | "}";
+export type GraplixKeywordNames = never;
 
-export type URLSpecTokenNames = URLSpecTerminalNames | URLSpecKeywordNames;
+export type GraplixTokenNames = GraplixTerminalNames | GraplixKeywordNames;
 
-export interface GlobalBlock extends langium.AstNode {
-    readonly $container: URLSpecDocument;
-    readonly $type: 'GlobalBlock';
-    parameters: Array<ParameterDeclaration>;
+export interface GraplixDocument extends langium.AstNode {
+    readonly $type: 'GraplixDocument';
+    statements: Array<GraplixStatement>;
 }
 
-export const GlobalBlock = {
-    $type: 'GlobalBlock',
-    parameters: 'parameters'
+export const GraplixDocument = {
+    $type: 'GraplixDocument',
+    statements: 'statements'
 } as const;
 
-export function isGlobalBlock(item: unknown): item is GlobalBlock {
-    return reflection.isInstance(item, GlobalBlock.$type);
+export function isGraplixDocument(item: unknown): item is GraplixDocument {
+    return reflection.isInstance(item, GraplixDocument.$type);
 }
 
-export interface PageDeclaration extends langium.AstNode {
-    readonly $container: URLSpecDocument;
-    readonly $type: 'PageDeclaration';
-    name: string;
-    parameters: Array<ParameterDeclaration>;
-    path: Path;
-}
-
-export const PageDeclaration = {
-    $type: 'PageDeclaration',
-    name: 'name',
-    parameters: 'parameters',
-    path: 'path'
-} as const;
-
-export function isPageDeclaration(item: unknown): item is PageDeclaration {
-    return reflection.isInstance(item, PageDeclaration.$type);
-}
-
-export interface ParameterDeclaration extends langium.AstNode {
-    readonly $container: GlobalBlock | PageDeclaration;
-    readonly $type: 'ParameterDeclaration';
-    name: ParameterName;
-    optional?: '?';
-    type: Type;
-}
-
-export const ParameterDeclaration = {
-    $type: 'ParameterDeclaration',
-    name: 'name',
-    optional: 'optional',
-    type: 'type'
-} as const;
-
-export function isParameterDeclaration(item: unknown): item is ParameterDeclaration {
-    return reflection.isInstance(item, ParameterDeclaration.$type);
-}
-
-export type ParameterName = 'global' | 'page' | 'param' | 'string' | string;
-
-export function isParameterName(item: unknown): item is ParameterName {
-    return item === 'page' || item === 'param' || item === 'global' || item === 'string' || (typeof item === 'string' && (/[a-zA-Z][a-zA-Z0-9_]*/.test(item)));
-}
-
-export interface ParamTypeDeclaration extends langium.AstNode {
-    readonly $container: URLSpecDocument;
-    readonly $type: 'ParamTypeDeclaration';
-    name: string;
-    type: Type;
-}
-
-export const ParamTypeDeclaration = {
-    $type: 'ParamTypeDeclaration',
-    name: 'name',
-    type: 'type'
-} as const;
-
-export function isParamTypeDeclaration(item: unknown): item is ParamTypeDeclaration {
-    return reflection.isInstance(item, ParamTypeDeclaration.$type);
-}
-
-export interface Path extends langium.AstNode {
-    readonly $container: PageDeclaration;
-    readonly $type: 'Path';
-    root?: string;
-    segments: Array<PathSegment>;
-}
-
-export const Path = {
-    $type: 'Path',
-    root: 'root',
-    segments: 'segments'
-} as const;
-
-export function isPath(item: unknown): item is Path {
-    return reflection.isInstance(item, Path.$type);
-}
-
-export interface PathSegment extends langium.AstNode {
-    readonly $container: Path;
-    readonly $type: 'PathSegment';
-    parameter?: ParameterName;
-    static?: string;
-}
-
-export const PathSegment = {
-    $type: 'PathSegment',
-    parameter: 'parameter',
-    static: 'static'
-} as const;
-
-export function isPathSegment(item: unknown): item is PathSegment {
-    return reflection.isInstance(item, PathSegment.$type);
-}
-
-export interface StringKeyword extends langium.AstNode {
-    readonly $container: ParamTypeDeclaration | ParameterDeclaration;
-    readonly $type: 'StringKeyword';
-    value: 'string';
-}
-
-export const StringKeyword = {
-    $type: 'StringKeyword',
-    value: 'value'
-} as const;
-
-export function isStringKeyword(item: unknown): item is StringKeyword {
-    return reflection.isInstance(item, StringKeyword.$type);
-}
-
-export interface StringLiteralType extends langium.AstNode {
-    readonly $container: ParamTypeDeclaration | ParameterDeclaration | UnionType;
-    readonly $type: 'StringLiteralType';
+export interface GraplixStatement extends langium.AstNode {
+    readonly $container: GraplixDocument;
+    readonly $type: 'GraplixStatement';
     value: string;
 }
 
-export const StringLiteralType = {
-    $type: 'StringLiteralType',
+export const GraplixStatement = {
+    $type: 'GraplixStatement',
     value: 'value'
 } as const;
 
-export function isStringLiteralType(item: unknown): item is StringLiteralType {
-    return reflection.isInstance(item, StringLiteralType.$type);
+export function isGraplixStatement(item: unknown): item is GraplixStatement {
+    return reflection.isInstance(item, GraplixStatement.$type);
 }
 
-export type Type = StringKeyword | StringLiteralType | TypeReference | UnionType;
-
-export const Type = {
-    $type: 'Type'
-} as const;
-
-export function isType(item: unknown): item is Type {
-    return reflection.isInstance(item, Type.$type);
+export type GraplixAstType = {
+    GraplixDocument: GraplixDocument
+    GraplixStatement: GraplixStatement
 }
 
-export interface TypeReference extends langium.AstNode {
-    readonly $container: ParamTypeDeclaration | ParameterDeclaration;
-    readonly $type: 'TypeReference';
-    ref: langium.Reference<ParamTypeDeclaration>;
-}
-
-export const TypeReference = {
-    $type: 'TypeReference',
-    ref: 'ref'
-} as const;
-
-export function isTypeReference(item: unknown): item is TypeReference {
-    return reflection.isInstance(item, TypeReference.$type);
-}
-
-export interface UnionType extends langium.AstNode {
-    readonly $container: ParamTypeDeclaration | ParameterDeclaration;
-    readonly $type: 'UnionType';
-    types: Array<StringLiteralType>;
-}
-
-export const UnionType = {
-    $type: 'UnionType',
-    types: 'types'
-} as const;
-
-export function isUnionType(item: unknown): item is UnionType {
-    return reflection.isInstance(item, UnionType.$type);
-}
-
-export interface URLSpecDocument extends langium.AstNode {
-    readonly $type: 'URLSpecDocument';
-    global?: GlobalBlock;
-    pages: Array<PageDeclaration>;
-    paramTypes: Array<ParamTypeDeclaration>;
-}
-
-export const URLSpecDocument = {
-    $type: 'URLSpecDocument',
-    global: 'global',
-    pages: 'pages',
-    paramTypes: 'paramTypes'
-} as const;
-
-export function isURLSpecDocument(item: unknown): item is URLSpecDocument {
-    return reflection.isInstance(item, URLSpecDocument.$type);
-}
-
-export type URLSpecAstType = {
-    GlobalBlock: GlobalBlock
-    PageDeclaration: PageDeclaration
-    ParamTypeDeclaration: ParamTypeDeclaration
-    ParameterDeclaration: ParameterDeclaration
-    Path: Path
-    PathSegment: PathSegment
-    StringKeyword: StringKeyword
-    StringLiteralType: StringLiteralType
-    Type: Type
-    TypeReference: TypeReference
-    URLSpecDocument: URLSpecDocument
-    UnionType: UnionType
-}
-
-export class URLSpecAstReflection extends langium.AbstractAstReflection {
+export class GraplixAstReflection extends langium.AbstractAstReflection {
     override readonly types = {
-        GlobalBlock: {
-            name: GlobalBlock.$type,
+        GraplixDocument: {
+            name: GraplixDocument.$type,
             properties: {
-                parameters: {
-                    name: GlobalBlock.parameters,
+                statements: {
+                    name: GraplixDocument.statements,
                     defaultValue: []
                 }
             },
             superTypes: []
         },
-        PageDeclaration: {
-            name: PageDeclaration.$type,
-            properties: {
-                name: {
-                    name: PageDeclaration.name
-                },
-                parameters: {
-                    name: PageDeclaration.parameters,
-                    defaultValue: []
-                },
-                path: {
-                    name: PageDeclaration.path
-                }
-            },
-            superTypes: []
-        },
-        ParamTypeDeclaration: {
-            name: ParamTypeDeclaration.$type,
-            properties: {
-                name: {
-                    name: ParamTypeDeclaration.name
-                },
-                type: {
-                    name: ParamTypeDeclaration.type
-                }
-            },
-            superTypes: []
-        },
-        ParameterDeclaration: {
-            name: ParameterDeclaration.$type,
-            properties: {
-                name: {
-                    name: ParameterDeclaration.name
-                },
-                optional: {
-                    name: ParameterDeclaration.optional
-                },
-                type: {
-                    name: ParameterDeclaration.type
-                }
-            },
-            superTypes: []
-        },
-        Path: {
-            name: Path.$type,
-            properties: {
-                root: {
-                    name: Path.root
-                },
-                segments: {
-                    name: Path.segments,
-                    defaultValue: []
-                }
-            },
-            superTypes: []
-        },
-        PathSegment: {
-            name: PathSegment.$type,
-            properties: {
-                parameter: {
-                    name: PathSegment.parameter
-                },
-                static: {
-                    name: PathSegment.static
-                }
-            },
-            superTypes: []
-        },
-        StringKeyword: {
-            name: StringKeyword.$type,
+        GraplixStatement: {
+            name: GraplixStatement.$type,
             properties: {
                 value: {
-                    name: StringKeyword.value
-                }
-            },
-            superTypes: [Type.$type]
-        },
-        StringLiteralType: {
-            name: StringLiteralType.$type,
-            properties: {
-                value: {
-                    name: StringLiteralType.value
-                }
-            },
-            superTypes: [Type.$type]
-        },
-        Type: {
-            name: Type.$type,
-            properties: {
-            },
-            superTypes: []
-        },
-        TypeReference: {
-            name: TypeReference.$type,
-            properties: {
-                ref: {
-                    name: TypeReference.ref,
-                    referenceType: ParamTypeDeclaration.$type
-                }
-            },
-            superTypes: [Type.$type]
-        },
-        URLSpecDocument: {
-            name: URLSpecDocument.$type,
-            properties: {
-                global: {
-                    name: URLSpecDocument.global
-                },
-                pages: {
-                    name: URLSpecDocument.pages,
-                    defaultValue: []
-                },
-                paramTypes: {
-                    name: URLSpecDocument.paramTypes,
-                    defaultValue: []
+                    name: GraplixStatement.value
                 }
             },
             superTypes: []
-        },
-        UnionType: {
-            name: UnionType.$type,
-            properties: {
-                types: {
-                    name: UnionType.types,
-                    defaultValue: []
-                }
-            },
-            superTypes: [Type.$type]
         }
     } as const satisfies langium.AstMetaData
 }
 
-export const reflection = new URLSpecAstReflection();
+export const reflection = new GraplixAstReflection();

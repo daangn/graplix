@@ -4,22 +4,22 @@
  ******************************************************************************/
 
 import type { LangiumSharedCoreServices, LangiumCoreServices, LangiumGeneratedCoreServices, LangiumGeneratedSharedCoreServices, LanguageMetaData, Module } from 'langium';
-import { URLSpecAstReflection } from './ast.js';
-import { URLSpecGrammar } from './grammar.js';
+import { GraplixAstReflection } from './ast.js';
+import { GraplixGrammar } from './grammar.js';
 
-export const URLSpecLanguageMetaData = {
-    languageId: 'urlspec',
-    fileExtensions: ['.urlspec'],
+export const GraplixLanguageMetaData = {
+    languageId: 'graplix',
+    fileExtensions: ['.graplix'],
     caseInsensitive: false,
     mode: 'development'
 } as const satisfies LanguageMetaData;
 
-export const URLSpecGeneratedSharedModule: Module<LangiumSharedCoreServices, LangiumGeneratedSharedCoreServices> = {
-    AstReflection: () => new URLSpecAstReflection()
+export const GraplixGeneratedSharedModule: Module<LangiumSharedCoreServices, LangiumGeneratedSharedCoreServices> = {
+    AstReflection: () => new GraplixAstReflection()
 };
 
-export const URLSpecGeneratedModule: Module<LangiumCoreServices, LangiumGeneratedCoreServices> = {
-    Grammar: () => URLSpecGrammar(),
-    LanguageMetaData: () => URLSpecLanguageMetaData,
+export const GraplixGeneratedModule: Module<LangiumCoreServices, LangiumGeneratedCoreServices> = {
+    Grammar: () => GraplixGrammar(),
+    LanguageMetaData: () => GraplixLanguageMetaData,
     parser: {}
 };

@@ -1,4 +1,0 @@
-
-page detail = /jobs/:jobId {
-  jobId: string;
-}
