@@ -1,5 +1,5 @@
-import type { TypeResolver } from "./TypeResolver";
+import type { Resolver } from "./Resolver";
 
 export type Resolvers<TRootContext = object> = {
-  [typeName: string]: TypeResolver<unknown, TRootContext>;
+  [typeName: string]: Resolver<unknown, TRootContext>;
 };

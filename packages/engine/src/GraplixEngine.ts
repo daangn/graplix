@@ -1,5 +1,7 @@
-import type { CheckQuery } from "./CheckQuery";
+import type { CheckExplainResult } from "./CheckExplainResult";
+import type { Query } from "./Query";
 
 export interface GraplixEngine<TContext = object> {
-  check(query: CheckQuery<TContext>): Promise<boolean>;
+  check(query: Query<TContext>): Promise<boolean>;
+  explain(query: Query<TContext>): Promise<CheckExplainResult>;
 }

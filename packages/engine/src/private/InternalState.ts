@@ -2,6 +2,7 @@ import type { Resolvers } from "../Resolvers";
 import type { ResolveType } from "../ResolveType";
 import type { EntityRef } from "./EntityRef";
 import type { ResolvedSchema } from "./ResolvedSchema";
+import type { TraceState } from "./TraceState";
 
 export interface InternalState<TContext> {
   readonly context: TContext;
@@ -11,4 +12,5 @@ export interface InternalState<TContext> {
   readonly relationValuesCache: Map<string, readonly EntityRef[]>;
   readonly entityCache: Map<string, unknown | null>;
   readonly visited: Set<string>;
+  readonly trace?: TraceState;
 }

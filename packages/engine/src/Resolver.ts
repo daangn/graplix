@@ -1,6 +1,6 @@
-import type { ResolverValue } from "./ResolverValue";
+type ResolverValue<T> = T | ReadonlyArray<T> | null;
 
-export interface TypeResolver<TEntity, TRootContext = object> {
+export interface Resolver<TEntity, TRootContext = object> {
   id(entity: TEntity): string;
 
   load(id: string, context: TRootContext): Promise<TEntity | null>;

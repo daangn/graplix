@@ -255,6 +255,46 @@ describe("createEngine", () => {
     ).toBe(false);
   });
 
+  test("github - explain returns matched path when allowed", async () => {
+    const engine = createEngine({
+      schema: githubFixture.schema,
+      resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
+    });
+
+    const result = await engine.explain({
+      user: "user:user-1",
+      object: "repository:repository-1",
+      relation: "owner",
+    });
+
+    expect(result.allowed).toBe(true);
+    expect(result.matchedPath).not.toBeNull();
+    expect(result.matchedPath).toContainEqual({
+      from: "repository:repository-1",
+      relation: "owner",
+      to: "user:user-1",
+    });
+  });
+
+  test("github - explain returns explored edges when denied", async () => {
+    const engine = createEngine({
+      schema: githubFixture.schema,
+      resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
+    });
+
+    const result = await engine.explain({
+      user: "user:user-4",
+      object: "house:house-0",
+      relation: "can_enter",
+    });
+
+    expect(result.allowed).toBe(false);
+    expect(result.matchedPath).toBeNull();
+    expect(result.exploredEdges.length).toBeGreaterThan(0);
+  });
+
   test("circular - stops recursive relation cycles", async () => {
     const engine = createEngine({
       schema: circularFixture.schema,

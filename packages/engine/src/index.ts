@@ -1,8 +1,9 @@
-export type { CheckEntityInput, CheckQuery } from "./CheckQuery";
+export type { CheckEdge } from "./CheckEdge";
+export type { CheckExplainResult } from "./CheckExplainResult";
 export { createEngine } from "./createEngine";
 export type { GraplixEngine } from "./GraplixEngine";
 export type { GraplixOptions } from "./GraplixOptions";
+export type { Query, QueryEntityInput } from "./Query";
+export type { Resolver } from "./Resolver";
 export type { Resolvers } from "./Resolvers";
-export type { ResolverValue } from "./ResolverValue";
 export type { ResolveType } from "./ResolveType";
-export type { TypeResolver } from "./TypeResolver";

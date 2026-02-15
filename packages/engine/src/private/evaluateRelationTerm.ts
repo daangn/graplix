@@ -6,6 +6,7 @@ import { entityMatches } from "./entityMatches";
 import { evaluateRelation } from "./evaluateRelation";
 import { getRelationValues } from "./getRelationValues";
 import type { InternalState } from "./InternalState";
+import { toEntityKey } from "./toEntityKey";
 
 export async function evaluateRelationTerm<TContext>(
   state: InternalState<TContext>,
@@ -25,7 +26,30 @@ export async function evaluateRelationTerm<TContext>(
       allowedTargets,
     );
 
-    return relationValues.some((candidate) => entityMatches(candidate, user));
+    for (const candidate of relationValues) {
+      if (state.trace !== undefined) {
+        const edge = {
+          from: toEntityKey(object),
+          relation: currentRelation,
+          to: toEntityKey(candidate),
+        };
+
+        state.trace.exploredEdges.push(edge);
+        state.trace.currentPath.push(edge);
+      }
+
+      if (entityMatches(candidate, user)) {
+        if (state.trace !== undefined && state.trace.matchedPath === null) {
+          state.trace.matchedPath = [...state.trace.currentPath];
+        }
+
+        return true;
+      }
+
+      state.trace?.currentPath.pop();
+    }
+
+    return false;
   }
 
   if (isGraplixRelationFrom(term)) {
@@ -41,9 +65,22 @@ export async function evaluateRelationTerm<TContext>(
     );
 
     for (const sourceRef of sourceRelationValues) {
+      if (state.trace !== undefined) {
+        const edge = {
+          from: toEntityKey(object),
+          relation: term.source,
+          to: toEntityKey(sourceRef),
+        };
+
+        state.trace.exploredEdges.push(edge);
+        state.trace.currentPath.push(edge);
+      }
+
       if (await evaluateRelation(state, sourceRef, term.relation, user)) {
         return true;
       }
+
+      state.trace?.currentPath.pop();
     }
 
     return false;
