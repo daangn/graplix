@@ -17,7 +17,8 @@ const document = await parse(`
   type user
 
   type repository
-    relation owner: user
+    relations
+      define owner: [user]
 `);
 
 if ((document.diagnostics?.length ?? 0) > 0) {

@@ -14,10 +14,11 @@ yarn add @graplix/engine @graplix/language
 import { createEngine } from "@graplix/engine";
 
 const schema = `
-type user
+  type user
 
-type repository
-  relation owner: user
+  type repository
+    relations
+      define owner: [user]
 `;
 
 const engine = createEngine({
