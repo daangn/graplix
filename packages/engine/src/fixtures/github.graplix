@@ -1,11 +1,5 @@
 type user
 
-type house
-  relations
-    define owner: [user]
-    define member: [user]
-    define can_enter: owner or member
-
 type organization
   relations
     define admin: [user]
@@ -35,6 +29,7 @@ type repository
     define can_delete: member from organization
     define write: owner or maintainer from team
     define admin: write or admin from organization
+
 type artifact
   relations
     define project: [project]

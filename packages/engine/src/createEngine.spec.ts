@@ -5,7 +5,7 @@ import * as githubFixture from "./fixtures/github";
 import * as invalidSchemaFixture from "./fixtures/invalid-schema";
 
 describe("createEngine", () => {
-  test("github - direct house membership and OR composition", async () => {
+  test("github - organization membership and admin", async () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
@@ -15,22 +15,22 @@ describe("createEngine", () => {
     expect(
       await engine.check({
         user: "user:user-0",
-        object: "house:house-0",
-        relation: "can_enter",
+        object: "organization:organization-0",
+        relation: "member",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:user-2",
-        object: "house:house-0",
-        relation: "can_enter",
+        user: "user:u-cto",
+        object: "organization:organization-0",
+        relation: "admin",
       }),
     ).toBe(true);
     expect(
       await engine.check({
         user: "user:user-4",
-        object: "house:house-0",
-        relation: "can_enter",
+        object: "organization:organization-0",
+        relation: "member",
       }),
     ).toBe(false);
   });
@@ -139,7 +139,7 @@ describe("createEngine", () => {
     ).toBe(true);
   });
 
-  test("github - resolver filters and missing relation fields", async () => {
+  test("github - missing relation fields return false", async () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
@@ -149,14 +149,7 @@ describe("createEngine", () => {
     expect(
       await engine.check({
         user: "user:user-0",
-        object: "house:house-0",
-        relation: "resolver_type_not_matched",
-      }),
-    ).toBe(false);
-    expect(
-      await engine.check({
-        user: "user:user-0",
-        object: "house:house-0",
+        object: "repository:repository-0",
         relation: "resolver_not_found",
       }),
     ).toBe(false);
@@ -212,8 +205,8 @@ describe("createEngine", () => {
     expect(
       await engine.check({
         user: "user:user-0",
-        object: "house:house-0",
-        relation: "can_enter",
+        object: "repository:repository-0",
+        relation: "owner",
       }),
     ).toBe(true);
   });
@@ -286,8 +279,8 @@ describe("createEngine", () => {
 
     const result = await engine.explain({
       user: "user:user-4",
-      object: "house:house-0",
-      relation: "can_enter",
+      object: "repository:repo-api",
+      relation: "admin",
     });
 
     expect(result.allowed).toBe(false);

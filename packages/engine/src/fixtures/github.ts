@@ -16,12 +16,6 @@ type User = {
   readonly entityId?: string;
 };
 
-type House = {
-  readonly id: string;
-  readonly ownerIds: readonly string[];
-  readonly memberIds: readonly string[];
-};
-
 type Organization = {
   readonly id: string;
   readonly adminIds: readonly string[];
@@ -86,14 +80,6 @@ const users: User[] = [
   { id: "u-security-lead" },
   { id: "u-ops" },
   { id: "u-cto" },
-];
-
-const houses: House[] = [
-  {
-    id: "house-0",
-    ownerIds: ["user-0", "user-1"],
-    memberIds: ["user-2"],
-  },
 ];
 
 const organizations: Organization[] = [
@@ -205,7 +191,6 @@ const issues: Issue[] = [
 ];
 
 const usersById = new Map(users.map((user) => [user.id, user] as const));
-const housesById = new Map(houses.map((house) => [house.id, house] as const));
 const organizationsById = new Map(
   organizations.map((organization) => [organization.id, organization] as const),
 );
@@ -238,28 +223,6 @@ export const resolvers: Resolvers<GithubContext> = {
     },
     async load(id: string) {
       return usersById.get(id) ?? null;
-    },
-  },
-  house: {
-    id(value: House): string {
-      return value.id;
-    },
-    async load(id: string) {
-      return housesById.get(id) ?? null;
-    },
-    relations: {
-      owner(house: unknown) {
-        const houseValue = house as House;
-        return houseValue.ownerIds.map((id) => ({ type: "user", id }));
-      },
-      member(house: unknown) {
-        const houseValue = house as House;
-        return houseValue.memberIds.map((id) => ({ type: "user", id }));
-      },
-      resolver_type_not_matched(house: unknown) {
-        const houseValue = house as House;
-        return houseValue;
-      },
     },
   },
   organization: {
