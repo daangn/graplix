@@ -3434,9 +3434,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graplix-vscode-extension@workspace:packages/graplix-vscode-extension":
+"graplix-vscode-extension@workspace:packages/vscode-extension":
   version: 0.0.0-use.local
-  resolution: "graplix-vscode-extension@workspace:packages/graplix-vscode-extension"
+  resolution: "graplix-vscode-extension@workspace:packages/vscode-extension"
   dependencies:
     "@graplix/language": "npm:^0.0.0"
     "@types/vscode": "npm:^1.80.0"
