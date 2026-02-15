@@ -7,6 +7,7 @@ export default defineConfig({
   target: "node18",
   clean: true,
   dts: false,
+  inlineOnly: false,
   external: ["vscode"],
   noExternal: [
     "@graplix/language",
