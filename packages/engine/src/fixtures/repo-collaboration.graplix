@@ -1,0 +1,17 @@
+type user
+
+type organization
+  relations
+    define admin: [user]
+
+type team
+  relations
+    define maintainer: [user]
+
+type repository
+  relations
+    define owner: [user]
+    define team: [team]
+    define organization: [organization]
+    define write: owner or maintainer from team
+    define admin: write or admin from organization

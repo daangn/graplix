@@ -1,0 +1,5 @@
+type repository
+  relations
+    define a: b
+    define b: c
+    define c: a

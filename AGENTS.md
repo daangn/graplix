@@ -6,6 +6,7 @@
 - Workspaces:
   - `packages/language`
   - `packages/graplix-vscode-extension`
+  - `packages/engine`
 - Tech stack: TypeScript, Langium, VS Code extension APIs, Yarn workspaces.
 
 ## Existing Repo Instructions
@@ -14,6 +15,19 @@
 - `.cursor/rules/` not found.
 - `.cursorrules` not found.
 - `.github/copilot-instructions.md` not found.
+
+## Tech Spec Workflow
+
+- Technical specifications are stored under `.tech-specs/` with filenames in this pattern:
+  - `YYYY-MM-DD-####-<spec-name>.md`
+  - Example: `2026-02-15-0001-check-runtime-interface-and-codegen.md`
+- Keep each specification self-contained with sections for scope, requirements, implementation plan, and acceptance criteria.
+- Before implementation of a multi-step feature, create a matching spec file and treat it as the source of truth for design decisions.
+- Use spec items to coordinate work order:
+  1. confirm interface and data model
+  2. define generation/codegen path
+  3. implement runtime behavior
+  4. add validation tests that match the spec acceptance criteria
 
 ## Environment / Compiler
 

@@ -839,6 +839,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@graplix/engine@workspace:packages/engine":
+  version: 0.0.0-use.local
+  resolution: "@graplix/engine@workspace:packages/engine"
+  dependencies:
+    "@graplix/language": "npm:^0.0.0"
+    "@types/node": "npm:^24"
+    tsdown: "npm:^0.20.0-beta.3"
+    vitest: "npm:^3.0.5"
+  languageName: unknown
+  linkType: soft
+
 "@graplix/language@npm:^0.0.0, @graplix/language@workspace:packages/language":
   version: 0.0.0-use.local
   resolution: "@graplix/language@workspace:packages/language"

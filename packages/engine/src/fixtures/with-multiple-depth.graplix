@@ -1,0 +1,15 @@
+type user
+
+type team
+  relations
+    define owner: [user]
+
+type project
+  relations
+    define team: [team]
+    define owner: owner from team
+
+type artifact
+  relations
+    define project: [project]
+    define can_delete: owner from project

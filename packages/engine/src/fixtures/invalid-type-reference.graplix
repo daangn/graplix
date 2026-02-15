@@ -1,0 +1,5 @@
+type user
+
+type repository
+  relations
+    define owner: [organization]

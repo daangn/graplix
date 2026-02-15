@@ -1,0 +1,10 @@
+type user
+
+type organization
+  relations
+    define member: [user]
+
+type repository
+  relations
+    define owner: [organization]
+    define can_delete: member from owner
