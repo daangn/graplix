@@ -2,13 +2,14 @@
 type user
 
 type organization
+  relations
+    define owner: [user]
 
 // repository type defines owner, reader and admin relations
 type repository
   relations
-    // Direct and computed relation forms are both allowed.
-    define owner: [user] // direct reference
+    define parent: [organization]
     // reader follows owner directly.
-    define reader: owner
+    define reader: parent
     // admin uses a from-clause relation source.
-    define admin: owner from owner
+    define admin: owner from parent

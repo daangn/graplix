@@ -14,6 +14,7 @@ import {
 import type { GraplixServices } from "./services";
 
 const RELATION_PROPERTY = "relation";
+const SOURCE_PROPERTY = "source";
 
 type RelationName = string;
 type TypeName = string;
@@ -34,19 +35,30 @@ export class GraplixValidator {
     accept: ValidationAcceptor,
   ): void {
     const declaredTypeNames = new Set(document.types.map((type) => type.name));
+    const typeByName = new Map<TypeName, GraplixTypeDeclaration>(
+      document.types.map((type) => [type.name, type]),
+    );
 
     for (const typeDeclaration of document.types) {
       const declaredRelations = new Set(
         typeDeclaration.relations?.relations.map((relation) => relation.name) ??
           [],
       );
+      const relationByName = new Map<RelationName, GraplixRelationDefinition>(
+        typeDeclaration.relations?.relations.map((relation) => [
+          relation.name,
+          relation,
+        ]) ?? [],
+      );
 
       for (const relation of typeDeclaration.relations?.relations ?? []) {
         this.validateRelation(
           relation,
           typeDeclaration,
+          typeByName,
           declaredTypeNames,
           declaredRelations,
+          relationByName,
           accept,
         );
       }
@@ -56,8 +68,10 @@ export class GraplixValidator {
   private validateRelation(
     relation: GraplixRelationDefinition,
     typeDeclaration: GraplixTypeDeclaration,
+    typeByName: Map<TypeName, GraplixTypeDeclaration>,
     declaredTypeNames: Set<TypeName>,
     declaredRelations: Set<RelationName>,
+    relationByName: Map<RelationName, GraplixRelationDefinition>,
     accept: ValidationAcceptor,
   ): void {
     for (const term of relation.expression.terms) {
@@ -69,8 +83,10 @@ export class GraplixValidator {
         this.validateComputedRelation(
           term,
           typeDeclaration,
-          declaredRelations,
+          typeByName,
+          relationByName,
           accept,
+          declaredRelations,
         );
       }
     }
@@ -99,23 +115,74 @@ export class GraplixValidator {
   private validateComputedRelation(
     term: GraplixRelationFrom,
     typeDeclaration: GraplixTypeDeclaration,
-    declaredRelations: Set<RelationName>,
+    typeByName: Map<TypeName, GraplixTypeDeclaration>,
+    relationByName: Map<RelationName, GraplixRelationDefinition>,
     accept: ValidationAcceptor,
+    declaredRelations: Set<RelationName>,
   ): void {
-    if (!declaredRelations.has(term.relation)) {
-      accept(
-        "error",
-        `Relation "${term.relation}" is not declared in type "${typeDeclaration.name}".`,
-        { node: term, property: RELATION_PROPERTY },
-      );
+    if (term.source === undefined) {
+      if (!declaredRelations.has(term.relation)) {
+        accept(
+          "error",
+          `Relation "${term.relation}" is not declared in type "${typeDeclaration.name}".`,
+          { node: term, property: RELATION_PROPERTY },
+        );
+      }
+      return;
     }
 
-    if (term.source !== undefined && !declaredRelations.has(term.source)) {
+    if (!declaredRelations.has(term.source)) {
       accept(
         "error",
         `Relation source "${term.source}" is not declared in type "${typeDeclaration.name}".`,
-        { node: term, property: "source" },
+        { node: term, property: SOURCE_PROPERTY },
+      );
+      return;
+    }
+
+    const sourceRelation = relationByName.get(term.source);
+    if (sourceRelation === undefined) {
+      return;
+    }
+
+    const targetTypeNames = new Set<TypeName>(
+      sourceRelation.expression.terms
+        .filter(isGraplixDirectTypes)
+        .flatMap((sourceTerm) => sourceTerm.targets),
+    );
+    const relationExistsInSourceType = this.isRelationDeclaredInTargetTypes(
+      term.relation,
+      targetTypeNames,
+      typeByName,
+    );
+
+    if (!relationExistsInSourceType) {
+      const targetTypeList = [...targetTypeNames].join(", ");
+      accept(
+        "error",
+        `Relation "${term.relation}" is not declared in relation source type(s) ${targetTypeList}.`,
+        { node: term, property: RELATION_PROPERTY },
       );
     }
+  }
+
+  private isRelationDeclaredInTargetTypes(
+    relationName: RelationName,
+    targetTypeNames: Set<TypeName>,
+    typeByName: Map<TypeName, GraplixTypeDeclaration>,
+  ): boolean {
+    if (targetTypeNames.size === 0) {
+      return false;
+    }
+
+    return [...targetTypeNames].some((targetTypeName) => {
+      return (
+        typeByName
+          .get(targetTypeName)
+          ?.relations?.relations.some(
+            (relation) => relation.name === relationName,
+          ) ?? false
+      );
+    });
   }
 }
