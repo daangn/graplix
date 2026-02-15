@@ -1,208 +1,163 @@
-# Repository Agent Instructions
+# Graplix Repository Agent Instructions
 
 ## Scope
 
-- This file applies to the whole repository at `/Users/tony/workspaces/daangn/graplix`.
-- The repo is a Yarn 4 workspace with package roots:
+- Applies to `/Users/tony/workspaces/daangn/graplix`.
+- Workspaces:
   - `packages/language`
   - `packages/graplix-vscode-extension`
-- Current implementation status is intentionally minimal/bootstrapped Langium + VS Code extension boilerplate.
+- Tech stack: TypeScript, Langium, VS Code extension APIs, Yarn workspaces.
 
-## Discovery notes
+## Existing Repo Instructions
 
-- No existing repository-level instruction files were found:
-  - `AGENTS.md`: none
-  - `.cursor/rules/`: none
-  - `.cursorrules`: none
-  - `.github/copilot-instructions.md`: none
-- There is a minimal top-level `README.md` only, with no operational guidance.
-- `biome.json` is the authoritative formatter/linter source.
+- `AGENTS.md`: this file is the repo source-of-truth.
+- `.cursor/rules/` not found.
+- `.cursorrules` not found.
+- `.github/copilot-instructions.md` not found.
 
-## Environment and assumptions
+## Environment / Compiler
 
-- Working directory: `/Users/tony/workspaces/daangn/graplix`
-- Package manager: `yarn` with workspace support (`yarn@4.12.0` in repo root `packageManager`).
-- TypeScript is strict and module-oriented.
-- Source formatting style is enforced via Biome.
+- Yarn 4 workspace (`yarn@4.12.0`).
+- Root package is private workspace with `ultra` runner (`yarn build`).
+- TypeScript is strict (`strict`, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, `erasableSyntaxOnly`).
+- Repo uses ESM packages by default and UTF-8 text.
 
-## Tooling inventory
-
-- Build tool: `tsdown`
-- Language generation tool: `langium generate`
-- Language test runner: `vitest`
-- Formatter/linter/fixer: `biome`
-- VSIX packaging: `vsce`
-
-## Must-know commands
+## Primary Commands
 
 ### Root
 
 - `yarn build`
-  - Runs the monorepo build pipeline (`ultra -r build`).
+  - Runs workspace build pipeline (`ultra -r build`).
 - `yarn format`
-  - Runs Biome checks/fixes across applicable files.
-  - Equivalent command in root `package.json`:
-    - `yarn format`
+  - Runs `biome check --fix --unsafe`.
+- No root `lint` script is currently defined.
+- `yarn changeset:publish`, `yarn changeset:version`
+  - Release workflow only.
 
-### Language package (`packages/language`)
+### `packages/language`
 
 - `yarn workspace @graplix/language langium:generate`
-  - Re-runs Langium grammar generation from `src/graplix.langium`.
-  - Rewrites:
-    - `src/__generated__/grammar.ts`
-    - `src/__generated__/ast.ts`
-    - `src/__generated__/module.ts`
-    - `syntaxes/graplix.tmLanguage.json`
+  - Regenerates parser artifacts and TextMate grammar.
 - `yarn workspace @graplix/language build`
-  - Runs:
-    - generation step
-    - tsdown build to `packages/language/dist`
+  - Runs `langium:generate` then `tsdown`.
 - `yarn workspace @graplix/language test`
-  - Current behavior: `vitest --run --passWithNoTests`
-  - Returns success even when no test files exist.
-- `yarn workspace @graplix/language test --run parser.test.ts`
-  - Run a single test file path directly if tests are added later.
-- `yarn workspace @graplix/language vitest run packages/language/test/parser.test.ts`
-  - Explicit one-file run example; useful when scripts are changed.
+  - Runs `vitest --run --passWithNoTests`.
+  - No package-level `lint` script is defined.
 
-### VS Code extension package (`packages/graplix-vscode-extension`)
+Single-test options:
+
+- From repository root:
+  - `yarn workspace @graplix/language vitest run src/validator.spec.ts`
+  - `yarn workspace @graplix/language vitest run src/validator.spec.ts --runInBand`
+- From `packages/language` directory:
+  - `yarn vitest run src/validator.spec.ts`
+- Via the existing test script:
+  - `yarn workspace @graplix/language test --run src/validator.spec.ts`
+
+### `packages/graplix-vscode-extension`
 
 - `yarn workspace graplix-vscode-extension build`
-  - Runs `tsdown` and generates `.vsix` via `vsce`.
+  - Builds `dist` and creates VSIX via `vsce package --no-dependencies`.
 - `yarn workspace graplix-vscode-extension watch`
-  - Optional watch mode for local iterative builds (if requested).
-- Manual VSIX install command (after `build`):
-  - open VSCode Extensions -> Install from VSIX / path to generated `graplix-vscode-extension-0.0.0.vsix`.
+  - Rebuilds extension continuously.
+- No package-level `lint` or `test` script is defined.
 
-### Repository-wide checks (recommended sequence)
+Recommended full verification for language changes:
 
-1. `yarn format`
-2. `yarn workspace @graplix/language langium:generate`
-3. `yarn workspace @graplix/language build`
-4. `yarn workspace @graplix/language test`
-5. `yarn workspace graplix-vscode-extension build`
+1. `yarn workspace @graplix/language test`
+2. `yarn workspace @graplix/language build`
+3. `yarn workspace graplix-vscode-extension build`
+4. `yarn build`
 
-## Core code style rules
+## Formatting and Linting
 
-- Use **double quotes** for JS/TS strings.
-- Use **2 spaces** indentation (Biome formatter default).
-- Keep semicolons consistent with existing files.
-- Prefer `type`-only imports and exports where appropriate.
-- Prefer explicit, named imports over namespace imports.
-- Use sorted, organized imports.
-  - Biome `organizeImports` is enabled, so let it normalize automatically.
-- Keep source files UTF-8 and avoid unnecessary non-ASCII characters.
+- Controlled by `biome.json`.
+- Use 2-space indentation and double quotes for strings.
+- Keep imports organized; run Biome organize/import fix from root when needed.
+- Avoid touching generated files manually.
 
-## TypeScript conventions
+## Import Conventions
 
-- `strict: true` is enabled in base tsconfig.
-- Prefer explicit interfaces/types for public API shapes.
-- Use `readonly` for immutable payloads where practical.
-- Keep return types explicit for exported functions.
-- Use `as const` where literal inference is beneficial and safe.
-- Avoid `any`; do not add:
-  - `as any`
-  - `// @ts-ignore`
-  - `@ts-expect-error`
+- Group imports in stable order:
+  1) `import type` statements (type-only)
+  2) external deps
+  3) workspace/package imports
+  4) relative imports
+- Keep type-only imports explicit.
+- Prefer named imports over namespace imports when possible.
+- Keep each import group separated for readability.
 
-## Naming conventions
+Example:
 
-- Language identifier: `graplix`.
-- Service factory naming convention: `createGraplixServices`.
-- Service module naming convention: `GraplixModule`, `GraplixGeneratedModule`.
-- Language file extension: `.graplix`.
-- AST node interfaces/types follow PascalCase (for generated and manual files).
-- Constants use camelCase for in-file constants and `UPPER_CASE` for true enums only when semantically required.
+```ts
+import type { ValidationAcceptor, ValidationChecks } from "langium";
 
-## File-level conventions
+import { NodeFileSystem } from "langium/node";
 
-- Files under `src/__generated__/` are generated.
-  - Do not hand-edit generated outputs.
-  - Re-run generator when grammar changes.
-- Keep runtime extensions and entry points minimal until DSL features are defined.
-- Source code should live in `src/`.
-- Do not keep stale artifacts committed unless intentionally vendored.
+import type { GraplixServices } from "./services";
+import { createGraplixServices } from "./services";
+```
 
-## Error handling conventions
+## Naming Conventions
 
-- Never leave empty `catch` blocks.
-- On error:
-  - preserve original error object for context,
-  - wrap with actionable message where needed,
-  - avoid swallowing stack traces.
-- Prefer typed error handling (`unknown` + narrowing) over stringly-typed assumptions.
+- `Graplix*` prefix for language core APIs:
+  - `GraplixValidator`
+  - `GraplixModule`
+  - `GraplixServices`
+  - `createGraplixServices`
+- PascalCase for classes/types.
+- camelCase for functions/variables/constants.
+- File names in `src/` should stay lowercase with hyphen separators when needed.
+- Prefer `.spec.ts` for test filenames.
 
-## Dependency and import hygiene
+## Error Handling
 
-- Prefer workspace packages via package names rather than deep relative cross-package paths.
-- Keep external dependency additions minimal in this minimal-boilerplate phase.
-- If adding new dependencies, update only package-level `package.json` and workspace lock artifacts accordingly.
+- Do not use empty catch blocks.
+- Preserve error context; avoid swallowing or suppressing stack traces.
+- Prefer typed checks (`unknown` narrowing) over broad casts.
+- Never add `as any`, `@ts-ignore`, or `@ts-expect-error`.
+- For startup paths, fail fast with meaningful logs instead of silent termination.
 
-## Langium-specific conventions
+## Async / Promise Usage
 
-- Language grammar lives in `packages/language/src/graplix.langium`.
-- Regenerated grammar outputs include:
-  - `src/__generated__/grammar.ts`
-  - `src/__generated__/ast.ts`
-  - `src/__generated__/module.ts`
-  - `src/syntaxes/graplix.tmLanguage.json`
-- Keep syntax IDs, scope names, file extension, and metadata aligned:
-  - Language ID: `graplix`
-  - Scope: `source.graplix`
-  - Extension: `.graplix`
-- If you introduce new custom services (validator/resolver/parser/printer/etc.):
-  - create dedicated modules,
-  - wire in `GraplixModule` in `services.ts`,
-  - update tests accordingly.
+- Use `async`/`await` for asynchronous flows.
+- Keep async helper functions narrow and testable (`loadFixture`, parser helpers).
+- If the function does async work, mark it `async` and await it at call site.
 
-## VS Code extension conventions
+## Type Rules
 
-- Activate command IDs and names should stay consistent:
-  - client id: `graplixLanguageServer`
-  - server/client display: `Graplix Language Server`
-- Language contribution block should point to:
-  - `./syntaxes/graplix.tmLanguage.json`
-  - file extension `.graplix`
-- `packages/graplix-vscode-extension/package.json` `files` list must include runtime and syntax assets used by VSCE packaging.
+- Prefer explicit return types on exported/public functions.
+- Prefer `type` declarations for strict utility aliases.
+- Use `readonly` for immutable model data where practical.
+- Avoid implicit `any`, including helper arguments.
+- Use `noUncheckedSideEffectImports` conventions by keeping imports used and valid.
 
-## Verification expectations for agentic edits
+## Langium / Grammar Conventions
 
-- For changed code files, run relevant build commands.
-- If modifying generated grammar or extension config:
-  - run `yarn workspace @graplix/language build`
-  - and `yarn workspace graplix-vscode-extension build`
-- For test impact, run `yarn workspace @graplix/language test` (or targeted vitest run).
-- Keep git status clean by design at handoff unless intentional incremental work is requested.
+- Grammar source: `packages/language/src/graplix.langium`.
+- Generated outputs in `packages/language/src/__generated__` and `packages/language/syntaxes` are derived.
+- On grammar change, regenerate before validation/build.
+- Validation logic goes in `validator.ts`; register checks via `registerValidationChecks`.
+- Keep diagnostics concise and contextual (`Type ... not declared`, `Relation ... not declared`).
+- Test both success and failure paths in fixtures.
 
-## Common gotchas
+## VS Code Extension Conventions
 
-- `langium generate` will rewrite `*.tmLanguage.json`; if custom grammar-highlighting is needed, keep a source-of-truth convention and regenerate intentionally.
-- VSIX packaging includes `syntaxes` from package `files`, so ensure `syntaxes/` exists and contains final TextMate grammar JSON.
-- Do not commit generated `.vsix` artifacts unless explicitly requested.
-- Current repo has minimal/empty tests, so `--passWithNoTests` is intentionally used to avoid false-negative CI failures.
+- Language ID: `graplix`, scope: `source.graplix`, extension: `.graplix`.
+- Keep `contributes.grammars` and `contributes.languages` coherent with server startup options.
+- Ensure syntax files stay aligned with generated grammar updates.
+- Extension packaging should include `syntaxes`, `dist`, `language-configuration.json`.
 
-## Suggested onboarding checklist for new DSL tasks
+## Test / Fixture Practices
 
-- Add/update grammar in `packages/language/src/graplix.langium`.
-- Run `yarn workspace @graplix/language langium:generate`.
-- Update extension syntax mapping if token scopes changed.
-- Add/update tests in `packages/language/test`.
-- Re-run sequence: generate -> language build -> language test -> extension build.
-- Validate `.graplix` files open in extension with proper language registration.
+- Keep grammar fixtures in `packages/language/src/fixtures/*`.
+- Read fixtures via `readFile(new URL(...), "utf8")` to keep test portability.
+- Use fixture-based fixtures for parser and validator behavior:
+  - one valid fixture
+  - focused negative fixtures for each validation error class
 
-## Single command cheat sheet
+## Common Goto List
 
-- Generate + build language in one pass: `yarn workspace @graplix/language build`
-- Run language tests: `yarn workspace @graplix/language test`
-- Build extension package: `yarn workspace graplix-vscode-extension build`
-- Run formatter: `yarn format`
-
-## Versioning / release notes (context)
-
-- `changeset` directory exists for versioning workflow.
-- Version bump/release steps are not part of day-to-day language iteration unless release is requested.
-
-## Ownership and scope reminders
-
-- This file is intended for coding agents and automation.
-- Keep it authoritative and source-of-truth for command and style expectations.
+- Root: `package.json`, `tsconfig.json`, `biome.json`
+- Language: `packages/language/package.json`, `packages/language/src/validator.ts`, `packages/language/src/fixtures`
+- Extension: `packages/graplix-vscode-extension/package.json`, `src/extension.ts`, `src/language-server.ts`
