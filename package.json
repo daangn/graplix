@@ -17,9 +17,9 @@
     "format": "biome check --fix --unsafe"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
+    "@biomejs/biome": "^2.3.15",
     "@changesets/cli": "^2.29.8",
-    "@types/node": "24",
+    "@types/node": "24.10.13",
     "typescript": "^5.9.3",
     "ultra-runner": "^3.10.5"
   },
