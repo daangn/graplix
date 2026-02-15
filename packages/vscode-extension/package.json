@@ -1,15 +1,17 @@
 {
   "name": "graplix-vscode-extension",
   "displayName": "Graplix Language Support",
-  "version": "0.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "VS Code language support for Graplix - a type-safe URL definition language",
+  "description": "VS Code extension for Graplix syntax highlighting and language server features",
   "keywords": [
     "graplix",
-    "url",
+    "rebac",
     "dsl",
+    "vscode-extension",
     "syntax-highlighting",
-    "language-server"
+    "language-server",
+    "langium"
   ],
   "repository": {
     "type": "git",

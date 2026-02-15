@@ -1,7 +1,6 @@
 {
   "name": "@graplix/monorepo",
   "private": true,
-  "description": "A type-safe, declarative language for defining and documenting URL structures in web applications",
   "repository": {
     "type": "git",
     "url": "https://github.com/daangn/graplix.git"

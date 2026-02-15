@@ -1,14 +1,15 @@
 {
   "name": "@graplix/language",
-  "version": "0.0.0",
-  "description": "Core language implementation for Graplix using Langium",
+  "version": "2.0.0",
+  "description": "Langium-based parser, validator, and language services for Graplix schemas",
   "keywords": [
     "graplix",
-    "url",
+    "rebac",
     "dsl",
     "langium",
     "parser",
-    "type-safe"
+    "validator",
+    "language-server"
   ],
   "repository": {
     "type": "git",

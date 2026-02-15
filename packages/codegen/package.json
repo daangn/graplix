@@ -1,11 +1,15 @@
 {
   "name": "@graplix/codegen",
-  "version": "0.0.0",
-  "description": "TypeScript code generator for Graplix schemas",
+  "version": "2.0.0",
+  "description": "Code generation toolkit and CLI for Graplix TypeScript helpers",
   "keywords": [
     "graplix",
     "codegen",
-    "typescript"
+    "cli",
+    "typescript",
+    "rebac",
+    "mappers",
+    "schema"
   ],
   "repository": {
     "type": "git",

@@ -1,11 +1,13 @@
 {
   "name": "@graplix/engine",
-  "version": "0.0.0",
-  "description": "Runtime check engine for Graplix schemas",
+  "version": "2.0.0",
+  "description": "Runtime ReBAC engine for evaluating Graplix relation checks",
   "keywords": [
     "graplix",
+    "permissions",
     "authorization",
     "rebac",
+    "engine",
     "runtime",
     "typescript"
   ],
