@@ -1,6 +1,6 @@
 {
   "name": "@graplix/engine",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Runtime ReBAC engine for evaluating Graplix relation checks",
   "keywords": [
     "graplix",
@@ -37,7 +37,7 @@
     "test": "vitest --run --passWithNoTests"
   },
   "dependencies": {
-    "@graplix/language": "^2.0.0"
+    "@graplix/language": "^2.0.1"
   },
   "devDependencies": {
     "@types/node": "^24.10.13",
