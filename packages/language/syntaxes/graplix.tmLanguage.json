@@ -1,9 +1,7 @@
 {
   "name": "graplix",
   "scopeName": "source.graplix",
-  "fileTypes": [
-    ".graplix"
-  ],
+  "fileTypes": [".graplix"],
   "patterns": [
     {
       "include": "#comments"
