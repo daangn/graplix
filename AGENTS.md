@@ -1,177 +1,167 @@
-# Graplix Repository Agent Instructions
+# Graplix Agent Guide
 
 ## Scope
 
 - Applies to `/Users/tony/workspaces/daangn/graplix`.
-- Workspaces:
+- Yarn workspaces monorepo (`yarn@4.12.0`).
+- Primary workspaces:
   - `packages/language`
-  - `packages/graplix-vscode-extension`
   - `packages/engine`
-- Tech stack: TypeScript, Langium, VS Code extension APIs, Yarn workspaces.
+  - `packages/codegen`
+  - `packages/vscode-extension`
 
-## Existing Repo Instructions
+## Rule Files
 
-- `AGENTS.md`: this file is the repo source-of-truth.
-- `.cursor/rules/` not found.
-- `.cursorrules` not found.
-- `.github/copilot-instructions.md` not found.
+- `.cursor/rules/`: not found.
+- `.cursorrules`: not found.
+- `.github/copilot-instructions.md`: not found.
+- This file is the repository-level source of truth for agent behavior.
 
-## Tech Spec Workflow
+## Core Stack
 
-- Technical specifications are stored under `.tech-specs/` with filenames in this pattern:
-  - `YYYY-MM-DD-####-<spec-name>.md`
-  - Example: `2026-02-15-0001-check-runtime-interface-and-codegen.md`
-- Keep each specification self-contained with sections for scope, requirements, implementation plan, and acceptance criteria.
-- Before implementation of a multi-step feature, create a matching spec file and treat it as the source of truth for design decisions.
-- Use spec items to coordinate work order:
-  1. confirm interface and data model
-  2. define generation/codegen path
-  3. implement runtime behavior
-  4. add validation tests that match the spec acceptance criteria
+- TypeScript (strict mode via root `tsconfig.json`).
+- Langium (`packages/language`).
+- Runtime authorization engine (`packages/engine`).
+- TypeScript generator CLI (`packages/codegen`).
+- VS Code extension (`packages/vscode-extension`).
 
-## Environment / Compiler
-
-- Yarn 4 workspace (`yarn@4.12.0`).
-- Root package is private workspace with `ultra` runner (`yarn build`).
-- TypeScript is strict (`strict`, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, `erasableSyntaxOnly`).
-- Repo uses ESM packages by default and UTF-8 text.
-
-## Primary Commands
+## Build, Test, Lint, Format Commands
 
 ### Root
 
 - `yarn build`
-  - Runs workspace build pipeline (`ultra -r build`).
+  - Runs workspace builds (`ultra -r build`).
 - `yarn format`
-  - Runs `biome check --fix --unsafe`.
-- No root `lint` script is currently defined.
-- `yarn changeset:publish`, `yarn changeset:version`
-  - Release workflow only.
+  - Runs Biome formatting/lint autofix (`biome check --fix --unsafe`).
 
-### `packages/language`
+### Language (`@graplix/language`)
 
 - `yarn workspace @graplix/language langium:generate`
-  - Regenerates parser artifacts and TextMate grammar.
+  - Regenerates grammar outputs.
 - `yarn workspace @graplix/language build`
   - Runs `langium:generate` then `tsdown`.
 - `yarn workspace @graplix/language test`
   - Runs `vitest --run --passWithNoTests`.
-  - No package-level `lint` script is defined.
-
-Single-test options:
-
-- From repository root:
+- Single test examples:
   - `yarn workspace @graplix/language vitest run src/validator.spec.ts`
-  - `yarn workspace @graplix/language vitest run src/validator.spec.ts --runInBand`
-- From `packages/language` directory:
-  - `yarn vitest run src/validator.spec.ts`
-- Via the existing test script:
-  - `yarn workspace @graplix/language test --run src/validator.spec.ts`
+  - `yarn workspace @graplix/language vitest run src/parse.spec.ts`
 
-### `packages/graplix-vscode-extension`
+### Engine (`@graplix/engine`)
+
+- `yarn workspace @graplix/engine build`
+- `yarn workspace @graplix/engine test`
+- Single test examples:
+  - `yarn workspace @graplix/engine vitest run src/createEngine.spec.ts`
+  - `yarn workspace @graplix/engine vitest run src/createEngine.spec.ts -t "explain"`
+
+### Codegen (`@graplix/codegen`)
+
+- `yarn workspace @graplix/codegen build`
+- `yarn workspace @graplix/codegen test`
+- `yarn workspace @graplix/codegen codegen ./schema.graplix`
+- Single test examples:
+  - `yarn workspace @graplix/codegen vitest run src/generate.spec.ts`
+  - `yarn workspace @graplix/codegen vitest run src/generate.spec.ts -t "mapper"`
+
+### VS Code Extension (`graplix-vscode-extension`)
 
 - `yarn workspace graplix-vscode-extension build`
-  - Builds `dist` and creates VSIX via `vsce package --no-dependencies`.
+  - Builds extension bundle and packages VSIX.
 - `yarn workspace graplix-vscode-extension watch`
-  - Rebuilds extension continuously.
-- No package-level `lint` or `test` script is defined.
+- No workspace `test` script currently defined.
 
-Recommended full verification for language changes:
+## Recommended Verification Flow
 
-1. `yarn workspace @graplix/language test`
-2. `yarn workspace @graplix/language build`
-3. `yarn workspace graplix-vscode-extension build`
-4. `yarn build`
+Use the smallest relevant scope first, then expand.
 
-## Formatting and Linting
+1. Package-level tests for changed package.
+2. Package-level build for changed package.
+3. If grammar or language services changed:
+   - `yarn workspace @graplix/language build`
+   - `yarn workspace graplix-vscode-extension build`
+4. Final confidence run: `yarn build`.
 
-- Controlled by `biome.json`.
-- Use 2-space indentation and double quotes for strings.
-- Keep imports organized; run Biome organize/import fix from root when needed.
-- Avoid touching generated files manually.
+## Formatting and Lint Rules
+
+From `biome.json`:
+
+- Use spaces, width 2.
+- JavaScript/TypeScript strings use double quotes.
+- Organize imports is enabled.
+- Linter recommended rules are enabled.
+- Repository includes all files except `**/__generated__`.
 
 ## Import Conventions
 
-- Group imports in stable order:
-  1) `import type` statements (type-only)
-  2) external deps
-  3) workspace/package imports
+- Prefer explicit `import type` for type-only imports.
+- Keep import groups stable:
+  1) type-only imports
+  2) external packages
+  3) workspace package imports
   4) relative imports
-- Keep type-only imports explicit.
-- Prefer named imports over namespace imports when possible.
-- Keep each import group separated for readability.
+- Avoid unused imports and side-effect-only imports unless required.
 
-Example:
+## TypeScript Conventions
 
-```ts
-import type { ValidationAcceptor, ValidationChecks } from "langium";
-
-import { NodeFileSystem } from "langium/node";
-
-import type { GraplixServices } from "./services";
-import { createGraplixServices } from "./services";
-```
+- Strict typing is mandatory.
+- Avoid `any`, `@ts-ignore`, and `@ts-expect-error`.
+- Prefer explicit return types on exported APIs.
+- Use `readonly` for immutable fields where practical.
+- Keep exported types/interfaces in stable public files (`src/index.ts` exports).
 
 ## Naming Conventions
 
-- `Graplix*` prefix for language core APIs:
-  - `GraplixValidator`
-  - `GraplixModule`
-  - `GraplixServices`
-  - `createGraplixServices`
-- PascalCase for classes/types.
-- camelCase for functions/variables/constants.
-- File names in `src/` should stay lowercase with hyphen separators when needed.
-- Prefer `.spec.ts` for test filenames.
+- PascalCase for interfaces/types/classes.
+- camelCase for variables/functions.
+- Keep file names lowercase; use hyphens when needed.
+- Test files should end with `.spec.ts`.
 
-## Error Handling
+## Error Handling Conventions
 
-- Do not use empty catch blocks.
-- Preserve error context; avoid swallowing or suppressing stack traces.
-- Prefer typed checks (`unknown` narrowing) over broad casts.
-- Never add `as any`, `@ts-ignore`, or `@ts-expect-error`.
-- For startup paths, fail fast with meaningful logs instead of silent termination.
+- Fail fast with clear error messages.
+- Do not swallow errors in empty `catch` blocks.
+- Preserve context when rethrowing.
+- For schema parsing/validation, include diagnostics text in thrown errors.
 
-## Async / Promise Usage
+## Async and Promise Conventions
 
-- Use `async`/`await` for asynchronous flows.
-- Keep async helper functions narrow and testable (`loadFixture`, parser helpers).
-- If the function does async work, mark it `async` and await it at call site.
+- Prefer `async`/`await` over chained `.then`.
+- Await promise assertions in tests (`await expect(...).rejects...`).
+- Keep async helper functions focused and deterministic.
 
-## Type Rules
+## Generated and Fixture Files
 
-- Prefer explicit return types on exported/public functions.
-- Prefer `type` declarations for strict utility aliases.
-- Use `readonly` for immutable model data where practical.
-- Avoid implicit `any`, including helper arguments.
-- Use `noUncheckedSideEffectImports` conventions by keeping imports used and valid.
+- Do not manually edit language generated files under:
+  - `packages/language/src/__generated__`
+  - `packages/language/syntaxes/graplix.tmLanguage.json`
+- If grammar changes, run `langium:generate` before tests/build.
+- Keep fixtures representative of domain intent (for example GitHub fixtures stay GitHub-only).
 
-## Langium / Grammar Conventions
+## Codegen-Specific Notes
 
-- Grammar source: `packages/language/src/graplix.langium`.
-- Generated outputs in `packages/language/src/__generated__` and `packages/language/syntaxes` are derived.
-- On grammar change, regenerate before validation/build.
-- Validation logic goes in `validator.ts`; register checks via `registerValidationChecks`.
-- Keep diagnostics concise and contextual (`Type ... not declared`, `Relation ... not declared`).
-- Test both success and failure paths in fixtures.
+- CLI supports config discovery via `cosmiconfig`.
+- Supported config names include `graplix.codegen.*` and `graplix-codegen.config.*`.
+- CLI precedence: command-line args override config values.
+- Prefer `defineConfig` from `@graplix/codegen` for typed config files.
 
-## VS Code Extension Conventions
+## Tech Spec Workflow
 
-- Language ID: `graplix`, scope: `source.graplix`, extension: `.graplix`.
-- Keep `contributes.grammars` and `contributes.languages` coherent with server startup options.
-- Ensure syntax files stay aligned with generated grammar updates.
-- Extension packaging should include `syntaxes`, `dist`, `language-configuration.json`.
+- Store feature specs in `.tech-specs/` using:
+  - `YYYY-MM-DD-####-name.md`
+- For multi-step features, create/update a spec before significant edits.
+- Include scope, requirements, implementation plan, and acceptance criteria.
 
-## Test / Fixture Practices
+## Practical File Map
 
-- Keep grammar fixtures in `packages/language/src/fixtures/*`.
-- Read fixtures via `readFile(new URL(...), "utf8")` to keep test portability.
-- Use fixture-based fixtures for parser and validator behavior:
-  - one valid fixture
-  - focused negative fixtures for each validation error class
+- Root: `package.json`, `tsconfig.json`, `biome.json`, `AGENTS.md`.
+- Language: `packages/language/src/graplix.langium`, `src/validator.ts`, `src/parse.ts`.
+- Engine: `packages/engine/src/createEngine.ts`, `src/private/*`, `src/createEngine.spec.ts`.
+- Codegen: `packages/codegen/src/generate.ts`, `src/cli.ts`, `src/config.ts`.
+- Extension: `packages/vscode-extension/src/extension.ts`, `src/language-server.ts`.
 
-## Common Goto List
+## Agent Checklist Before Final Response
 
-- Root: `package.json`, `tsconfig.json`, `biome.json`
-- Language: `packages/language/package.json`, `packages/language/src/validator.ts`, `packages/language/src/fixtures`
-- Extension: `packages/graplix-vscode-extension/package.json`, `src/extension.ts`, `src/language-server.ts`
+1. Confirm commands were run for the touched package(s).
+2. Confirm no unintended generated-file edits.
+3. Confirm style/format consistency.
+4. Mention any pre-existing issues discovered during verification.

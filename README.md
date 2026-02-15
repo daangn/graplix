@@ -1,56 +1,62 @@
 # Graplix
 
-Graplix는 **ReBAC(Relation-Based Access Control)**를 위한 선언형 DSL입니다.
-`.graplix` 스키마로 정책을 선언하고, 런타임에서 사용자 제공 `resolver`와 결합해 `check()`로 권한 판정을 합니다.
+Graplix is a TypeScript-first toolkit for modeling and evaluating ReBAC (Relation-Based Access Control).
 
-## 패키지 구성
+- Define authorization relationships with `.graplix` schema files.
+- Parse and validate schemas with language tooling.
+- Evaluate permissions at runtime with resolver-driven engine APIs.
+- Generate typed helpers and runtime wrappers with codegen.
+- Use VS Code language support for authoring and navigation.
 
-- `packages/language` — `.graplix` 파서/검증 패키지
-- `packages/graplix-vscode-extension` — 언어 서버 및 구문 강조 지원
-- `packages/engine` — 런타임 체크 엔진 (`@graplix/engine`)
+## Packages
 
-## 빠른 시작
+### `@graplix/language`
 
-```ts
-import { createEngine } from "@graplix/engine";
+Langium-based parser and language services for Graplix schemas.
 
-const { check } = createEngine({
-  schema: `
-    type user
+- Parses `.graplix` documents and returns diagnostics.
+- Exposes language services used by runtime/codegen/extension.
+- README: [`packages/language/README.md`](packages/language/README.md)
 
-    type repository
-      relations
-        define owner: [user]
-        define can_edit: owner
-  `,
-  resolvers: {
-    repository: {
-      id(repo) {
-        return repo.id;
-      },
-      async load(id) {
-        return null;
-      },
-      relations: {
-        owner(repo) {
-          return repo.ownerIds.map((id: string) => ({ type: "user", id }));
-        },
-      },
-    },
-  },
-});
+### `@graplix/engine`
 
-const allowed = await check({
-  user: { type: "user", id: "u1" },
-  object: { type: "repository", id: "repo-1" },
-  relation: "can_edit",
-});
+Runtime evaluator for schema-defined relations.
+
+- `check(query)` for boolean authorization checks.
+- `explain(query)` for traversed relation edges and matched path.
+- README: [`packages/engine/README.md`](packages/engine/README.md)
+
+### `@graplix/codegen`
+
+TypeScript generator for Graplix schemas.
+
+- Generates typed helpers from `.graplix` input.
+- Supports mapper configuration and config-file discovery.
+- README: [`packages/codegen/README.md`](packages/codegen/README.md)
+
+### `graplix-vscode-extension`
+
+VS Code extension package for Graplix language support.
+
+- Syntax highlighting and language registration.
+- Language server client/server bootstrap.
+- README: [`packages/vscode-extension/README.md`](packages/vscode-extension/README.md)
+
+## Monorepo Commands
+
+From the repository root:
+
+```bash
+yarn build
+yarn format
 ```
 
-`check`는 항상 `Promise<boolean>`을 반환하며, 객체/주체/관계를 기준으로 관계식(`or`, `from`)을 평가합니다.
+Package-level commands are documented in each package README.
 
-## 로드맵
+## Repository Layout
 
-- `graplix/codegen` CLI 및 타입 생성기
-- 런타임 에러 정책 정교화(타임아웃/재시도/세밀한 에러 매핑)
-- 확장된 relation 연산자 지원
+- `packages/language`
+- `packages/engine`
+- `packages/codegen`
+- `packages/vscode-extension`
+- `.tech-specs` (implementation specs and plans)
