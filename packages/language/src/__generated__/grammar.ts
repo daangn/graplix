@@ -339,6 +339,17 @@ export const GraplixGrammar = (): Grammar => loadedGraplixGrammar ?? (loadedGrap
         "parenthesized": false
       },
       "fragment": false
+    },
+    {
+      "$type": "TerminalRule",
+      "hidden": true,
+      "name": "COMMENT",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "/\\\\/\\\\/[^\\\\n\\\\r]*/",
+        "parenthesized": false
+      },
+      "fragment": false
     }
   ],
   "imports": [],

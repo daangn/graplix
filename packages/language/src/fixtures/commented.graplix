@@ -1,0 +1,8 @@
+// file-level comment only
+type user
+
+type repository
+  relations
+    // comment between tokens is ignored
+    define owner: [user] // inline comment
+    // comment-only relation line

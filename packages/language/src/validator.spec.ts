@@ -19,6 +19,13 @@ describe("graplix-validator", () => {
     expect(diagnostics).toHaveLength(0);
   });
 
+  test("ignores comments during validation", async () => {
+    const content = await loadFixture("commented.graplix");
+    const { diagnostics = [] } = await validate(content);
+
+    expect(diagnostics).toHaveLength(0);
+  });
+
   test("reports undefined type references in brackets", async () => {
     const content = await loadFixture("undefined-type.graplix");
     const { diagnostics = [] } = await validate(content);

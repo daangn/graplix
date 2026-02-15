@@ -11,5 +11,20 @@
       "match": "\\b(define|from|or|relations|type)\\b"
     }
   ],
-  "repository": {}
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "begin": "//",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.whitespace.comment.leading.graplix"
+            }
+          },
+          "end": "(?=$)",
+          "name": "comment.line.graplix"
+        }
+      ]
+    }
+  }
 }

@@ -12,6 +12,8 @@ Query API, client interfaces, and implementation details are defined in separate
   - a direct type reference (`[user]`, `[user, organization]`), or
   - a surrounding relation reference (`owner`, `member from owner`).
 
+- Line comments using `//` are supported and are ignored by parser and validation.
+
 ## 2. Schema Declaration
 
 Schema files are composed of type declarations only.
@@ -106,3 +108,17 @@ identifier       ::= [a-zA-Z_][a-zA-Z0-9_]*
 - Userset (`type#relation`) is **not supported**.
 - Relation references are **only identifiers**; tuple-to-userset style referencing is unsupported.
 - The language does not currently include model-level headers or section directives.
+
+## 7. Comments
+
+```graplix
+// This is a full-line comment and is ignored.
+type user
+
+type repository
+  relations
+    define owner: [user] // Inline comment after valid syntax
+```
+
+- Use `//` for full-line or inline comments.
+- Comments are not part of the syntax graph and do not affect validation.

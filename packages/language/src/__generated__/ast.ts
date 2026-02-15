@@ -9,6 +9,7 @@ import * as langium from 'langium';
 export const GraplixTerminals = {
     ID: /[a-zA-Z_][a-zA-Z0-9_]*/,
     WS: /\s+/,
+    COMMENT: /\/\/[^\n\r]*/,
 };
 
 export type GraplixTerminalNames = keyof typeof GraplixTerminals;

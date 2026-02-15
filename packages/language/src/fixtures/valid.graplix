@@ -1,9 +1,14 @@
+// Example with user and repository types
 type user
 
 type organization
 
+// repository type defines owner, reader and admin relations
 type repository
   relations
-    define owner: [user]
+    // Direct and computed relation forms are both allowed.
+    define owner: [user] // direct reference
+    // reader follows owner directly.
     define reader: owner
+    // admin uses a from-clause relation source.
     define admin: owner from owner

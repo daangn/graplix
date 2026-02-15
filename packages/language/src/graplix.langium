@@ -29,3 +29,6 @@ GraplixRelationFrom:
 
 hidden terminal WS:
     /\s+/;
+
+hidden terminal COMMENT:
+    /\/\/[^\n\r]*/;
