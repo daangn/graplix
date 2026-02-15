@@ -1,0 +1,14 @@
+type user
+
+type organization
+  relations
+    define owner: [user]
+
+type team
+  relations
+    define owner: [user]
+
+type repository
+  relations
+    define parent: [organization, team]
+    define admin: owner from parent

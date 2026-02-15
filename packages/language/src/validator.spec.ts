@@ -76,6 +76,50 @@ describe("graplix-validator", () => {
     expect(diagnostics).toHaveLength(0);
   });
 
+  test("supports relation expression disjunction", async () => {
+    const content = await loadFixture("valid-relation-expression-or.graplix");
+    const { diagnostics = [] } = await validate(content);
+
+    expect(diagnostics).toHaveLength(0);
+  });
+
+  test("resolves relation names through a multi-type source relation", async () => {
+    const content = await loadFixture(
+      "valid-relation-source-multi-target.graplix",
+    );
+    const { diagnostics = [] } = await validate(content);
+
+    expect(diagnostics).toHaveLength(0);
+  });
+
+  test("uses only direct-type targets from computed source relations", async () => {
+    const content = await loadFixture(
+      "invalid-relation-source-mixed-terms.graplix",
+    );
+    const { diagnostics = [] } = await validate(content);
+
+    expect(diagnostics).toHaveLength(1);
+    const diagnostic = diagnostics[0];
+
+    expect(diagnostic).toBeDefined();
+    expect(diagnostic?.message).toBe(
+      'Relation "editor" is not declared in relation source type(s) organization.',
+    );
+  });
+
+  test("reports all diagnostics in source target validation", async () => {
+    const content = await loadFixture("invalid-multiple-diagnostics.graplix");
+    const { diagnostics = [] } = await validate(content);
+
+    expect(diagnostics).toHaveLength(2);
+    expect(diagnostics.map((d) => d?.message)).toEqual(
+      expect.arrayContaining([
+        'Type "missingType" is not declared in this schema.',
+        'Relation "editor" is not declared in relation source type(s) group, missingType.',
+      ]),
+    );
+  });
+
   test("rejects relation references that are not valid for source type", async () => {
     const content = await loadFixture("invalid-relation-source-target.graplix");
     const { diagnostics = [] } = await validate(content);

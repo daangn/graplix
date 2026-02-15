@@ -1,0 +1,11 @@
+type user
+
+type group
+  relations
+    define owner: [user]
+
+type repository
+  relations
+    define source: [group, missingType]
+    define admin: editor from source
+    define editor: [user]

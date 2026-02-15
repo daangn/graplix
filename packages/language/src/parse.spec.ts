@@ -10,10 +10,14 @@ describe("graplix-parse", () => {
   test("parses valid content into a document", async () => {
     const content = await loadFixture("valid.graplix");
     const document = await parse(content);
+    const firstType = document.parseResult.value.types[0];
+    const repositoryType = document.parseResult.value.types[2];
 
     expect(document.parseResult.value.types).toHaveLength(3);
+    expect(firstType).toBeDefined();
     expect(document.diagnostics).toHaveLength(0);
-    expect(document.parseResult.value.types[2].name).toBe("repository");
+    expect(repositoryType).toBeDefined();
+    expect(repositoryType?.name).toBe("repository");
   });
 
   test("parses and validates errors into diagnostics", async () => {
@@ -24,5 +28,23 @@ describe("graplix-parse", () => {
     expect(document.diagnostics?.[0]?.message).toBe(
       'Type "organization" is not declared in this schema.',
     );
+  });
+
+  test("parses valid relation expression syntax", async () => {
+    const content = await loadFixture("valid-relation-expression-or.graplix");
+    const document = await parse(content);
+    const repositoryType = document.parseResult.value.types[2];
+
+    expect(document.parseResult.value.types).toHaveLength(3);
+    expect(repositoryType).toBeDefined();
+    expect(repositoryType?.name).toBe("repository");
+    expect(document.diagnostics).toHaveLength(0);
+  });
+
+  test("supports skipping validation for parse-only mode", async () => {
+    const content = await loadFixture("invalid-type-reference.graplix");
+    const document = await parse(content, { validation: false });
+
+    expect(document.diagnostics ?? []).toHaveLength(0);
   });
 });
