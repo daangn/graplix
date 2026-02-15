@@ -9,26 +9,27 @@ describe("createEngine", () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
     });
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "house", id: "house-0" },
+        user: "user:user-0",
+        object: "house:house-0",
         relation: "can_enter",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-2" },
-        object: { type: "house", id: "house-0" },
+        user: "user:user-2",
+        object: "house:house-0",
         relation: "can_enter",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-4" },
-        object: { type: "house", id: "house-0" },
+        user: "user:user-4",
+        object: "house:house-0",
         relation: "can_enter",
       }),
     ).toBe(false);
@@ -38,19 +39,20 @@ describe("createEngine", () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
     });
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "repository", id: "repository-0" },
+        user: "user:user-0",
+        object: "repository:repository-0",
         relation: "can_delete",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-2" },
-        object: { type: "repository", id: "repository-0" },
+        user: "user:user-2",
+        object: "repository:repository-0",
         relation: "can_delete",
       }),
     ).toBe(false);
@@ -60,40 +62,41 @@ describe("createEngine", () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
     });
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "artifact", id: "artifact-0" },
+        user: "user:user-0",
+        object: "artifact:artifact-0",
         relation: "can_delete",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-3" },
-        object: { type: "artifact", id: "artifact-0" },
+        user: "user:user-3",
+        object: "artifact:artifact-0",
         relation: "can_delete",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-2" },
-        object: { type: "artifact", id: "artifact-0" },
+        user: "user:user-2",
+        object: "artifact:artifact-0",
         relation: "can_delete",
       }),
     ).toBe(false);
     expect(
       await engine.check({
-        user: { type: "project", id: "project-core" },
-        object: { type: "project", id: "project-core" },
+        user: "project:project-core",
+        object: "project:project-core",
         relation: "self",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "artifact", id: "artifact-0" },
+        user: "user:user-0",
+        object: "artifact:artifact-0",
         relation: "can_touch",
       }),
     ).toBe(false);
@@ -103,33 +106,34 @@ describe("createEngine", () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
     });
 
     expect(
       await engine.check({
-        user: { type: "user", id: "u-platform-owner" },
-        object: { type: "repository", id: "repo-api" },
+        user: "user:u-platform-owner",
+        object: "repository:repo-api",
         relation: "write",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-platform-maintainer" },
-        object: { type: "repository", id: "repo-api" },
+        user: "user:u-platform-maintainer",
+        object: "repository:repo-api",
         relation: "write",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-cto" },
-        object: { type: "repository", id: "repo-api" },
+        user: "user:u-cto",
+        object: "repository:repo-api",
         relation: "admin",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-platform-owner" },
-        object: { type: "repository", id: "repo-api" },
+        user: "user:u-platform-owner",
+        object: "repository:repo-api",
         relation: "admin",
       }),
     ).toBe(true);
@@ -139,19 +143,20 @@ describe("createEngine", () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
     });
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "house", id: "house-0" },
+        user: "user:user-0",
+        object: "house:house-0",
         relation: "resolver_type_not_matched",
       }),
     ).toBe(false);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "house", id: "house-0" },
+        user: "user:user-0",
+        object: "house:house-0",
         relation: "resolver_not_found",
       }),
     ).toBe(false);
@@ -161,36 +166,54 @@ describe("createEngine", () => {
     const engine = createEngine<githubFixture.GithubContext>({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
     });
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-default" },
-        object: { type: "repository", id: "repo-4" },
+        user: "user:user-default",
+        object: "repository:repo-4",
         relation: "owner",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-default" },
-        object: { type: "repository", id: "repo-4" },
+        user: "user:user-default",
+        object: "repository:repo-4",
         relation: "owner",
         context: { shouldReadOwner: false },
       }),
     ).toBe(false);
   });
 
-  test("github - id inference from entity aliases", async () => {
+  test("github - supports type:id inputs", async () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
     });
 
     expect(
       await engine.check({
-        user: { entityId: "user-1" },
-        object: { type: "repository", id: "repository-1" },
+        user: "user:user-1",
+        object: "repository:repository-1",
         relation: "owner",
+      }),
+    ).toBe(true);
+  });
+
+  test("github - accepts type:id string inputs", async () => {
+    const engine = createEngine({
+      schema: githubFixture.schema,
+      resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
+    });
+
+    expect(
+      await engine.check({
+        user: "user:user-0",
+        object: "house:house-0",
+        relation: "can_enter",
       }),
     ).toBe(true);
   });
@@ -199,33 +222,34 @@ describe("createEngine", () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
     });
 
     expect(
       await engine.check({
-        user: { type: "user", id: "u-qa" },
-        object: { type: "issue", id: "issue-101" },
+        user: "user:u-qa",
+        object: "issue:issue-101",
         relation: "can_edit",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-security" },
-        object: { type: "issue", id: "issue-101" },
+        user: "user:u-security",
+        object: "issue:issue-101",
         relation: "can_approve",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-reporter" },
-        object: { type: "issue", id: "issue-101" },
+        user: "user:u-reporter",
+        object: "issue:issue-101",
         relation: "can_close",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-platform-maintainer" },
-        object: { type: "issue", id: "issue-202" },
+        user: "user:u-platform-maintainer",
+        object: "issue:issue-202",
         relation: "can_edit",
       }),
     ).toBe(false);
@@ -235,12 +259,13 @@ describe("createEngine", () => {
     const engine = createEngine({
       schema: circularFixture.schema,
       resolvers: circularFixture.resolvers,
+      resolveType: circularFixture.resolveType,
     });
 
     expect(
       await engine.check({
-        user: { type: "repository", id: "repository-cycle" },
-        object: { type: "repository", id: "repository-cycle" },
+        user: "repository:repository-cycle",
+        object: "repository:repository-cycle",
         relation: "a",
       }),
     ).toBe(false);
@@ -250,12 +275,13 @@ describe("createEngine", () => {
     const engine = createEngine({
       schema: invalidSchemaFixture.schema,
       resolvers: invalidSchemaFixture.resolvers,
+      resolveType: invalidSchemaFixture.resolveType,
     });
 
-    expect(
+    await expect(
       engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "repository", id: "repository-0" },
+        user: "user:user-0",
+        object: "repository:repository-0",
         relation: "owner",
       }),
     ).rejects.toThrow(/Invalid Graplix schema/);

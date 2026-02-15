@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
-import type { Resolvers } from "../createEngine";
+import type { Resolvers } from "../Resolvers";
+import type { ResolveType } from "../ResolveType";
 
 export const schema = await readFile(
   new URL("./github.graplix", import.meta.url),
@@ -223,6 +224,8 @@ const issuesById = new Map(issues.map((issue) => [issue.id, issue] as const));
 
 const getOwnerRef = (ownerId: string, useEntityIdForOwner?: boolean) =>
   useEntityIdForOwner ? { entityId: ownerId } : { id: ownerId };
+
+export const resolveType: ResolveType<GithubContext> = () => null;
 
 export const resolvers: Resolvers<GithubContext> = {
   user: {

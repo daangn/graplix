@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
-import type { Resolvers } from "../createEngine";
+import type { Resolvers } from "../Resolvers";
+import type { ResolveType } from "../ResolveType";
 
 export const schema = await readFile(
   new URL("./circular.graplix", import.meta.url),
@@ -15,6 +16,8 @@ const repositories: Repository[] = [{ id: "repository-cycle" }];
 const repositoriesById = new Map(
   repositories.map((repository) => [repository.id, repository] as const),
 );
+
+export const resolveType: ResolveType = () => null;
 
 export const resolvers: Resolvers = {
   repository: {
