@@ -4,8 +4,11 @@
   "fileTypes": [".graplix"],
   "patterns": [
     {
-      "name": "variable.other.graplix",
-      "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+      "include": "#comments"
+    },
+    {
+      "name": "keyword.control.graplix",
+      "match": "\\b(define|from|or|relations|type)\\b"
     }
   ],
   "repository": {}

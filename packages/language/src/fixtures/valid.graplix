@@ -1,0 +1,9 @@
+type user
+
+type organization
+
+type repository
+  relations
+    define owner: [user]
+    define reader: owner
+    define admin: owner from owner

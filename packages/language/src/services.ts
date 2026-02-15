@@ -10,15 +10,24 @@ import {
   GraplixGeneratedModule,
   GraplixGeneratedSharedModule,
 } from "./__generated__/module";
+import { GraplixValidator, registerValidationChecks } from "./validator";
 
-export type GraplixAddedServices = {};
+export type GraplixAddedServices = {
+  validation: {
+    GraplixValidator: GraplixValidator;
+  };
+};
 
 export type GraplixServices = LangiumServices & GraplixAddedServices;
 
 export const GraplixModule: Module<
   GraplixServices,
   PartialLangiumServices & GraplixAddedServices
-> = {};
+> = {
+  validation: {
+    GraplixValidator: () => new GraplixValidator(),
+  },
+};
 
 export function createGraplixServices(context: DefaultSharedModuleContext): {
   shared: LangiumSharedServices;
@@ -34,6 +43,8 @@ export function createGraplixServices(context: DefaultSharedModuleContext): {
     GraplixGeneratedModule,
     GraplixModule,
   );
+
+  registerValidationChecks(Graplix);
 
   shared.ServiceRegistry.register(Graplix);
 

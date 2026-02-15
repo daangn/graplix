@@ -1,0 +1,6 @@
+type user
+
+type repository
+  relations
+    define owner: [user]
+    define admin: maintainer

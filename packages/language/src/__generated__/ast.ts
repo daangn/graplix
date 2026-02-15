@@ -7,67 +7,236 @@
 import * as langium from 'langium';
 
 export const GraplixTerminals = {
-    IDENTIFIER: /[a-zA-Z_][a-zA-Z0-9_]*/,
+    ID: /[a-zA-Z_][a-zA-Z0-9_]*/,
     WS: /\s+/,
 };
 
 export type GraplixTerminalNames = keyof typeof GraplixTerminals;
 
-export type GraplixKeywordNames = never;
+export type GraplixKeywordNames =
+    | ","
+    | ":"
+    | "["
+    | "]"
+    | "define"
+    | "from"
+    | "or"
+    | "relations"
+    | "type";
 
 export type GraplixTokenNames = GraplixTerminalNames | GraplixKeywordNames;
 
+export interface GraplixDirectTypes extends langium.AstNode {
+    readonly $container: GraplixRelationExpression;
+    readonly $type: 'GraplixDirectTypes';
+    targets: Array<string>;
+}
+
+export const GraplixDirectTypes = {
+    $type: 'GraplixDirectTypes',
+    targets: 'targets'
+} as const;
+
+export function isGraplixDirectTypes(item: unknown): item is GraplixDirectTypes {
+    return reflection.isInstance(item, GraplixDirectTypes.$type);
+}
+
 export interface GraplixDocument extends langium.AstNode {
     readonly $type: 'GraplixDocument';
-    statements: Array<GraplixStatement>;
+    types: Array<GraplixTypeDeclaration>;
 }
 
 export const GraplixDocument = {
     $type: 'GraplixDocument',
-    statements: 'statements'
+    types: 'types'
 } as const;
 
 export function isGraplixDocument(item: unknown): item is GraplixDocument {
     return reflection.isInstance(item, GraplixDocument.$type);
 }
 
-export interface GraplixStatement extends langium.AstNode {
-    readonly $container: GraplixDocument;
-    readonly $type: 'GraplixStatement';
-    value: string;
+export interface GraplixRelationDefinition extends langium.AstNode {
+    readonly $container: GraplixRelations;
+    readonly $type: 'GraplixRelationDefinition';
+    expression: GraplixRelationExpression;
+    name: string;
 }
 
-export const GraplixStatement = {
-    $type: 'GraplixStatement',
-    value: 'value'
+export const GraplixRelationDefinition = {
+    $type: 'GraplixRelationDefinition',
+    expression: 'expression',
+    name: 'name'
 } as const;
 
-export function isGraplixStatement(item: unknown): item is GraplixStatement {
-    return reflection.isInstance(item, GraplixStatement.$type);
+export function isGraplixRelationDefinition(item: unknown): item is GraplixRelationDefinition {
+    return reflection.isInstance(item, GraplixRelationDefinition.$type);
+}
+
+export interface GraplixRelationExpression extends langium.AstNode {
+    readonly $container: GraplixRelationDefinition;
+    readonly $type: 'GraplixRelationExpression';
+    terms: Array<GraplixRelationTerm>;
+}
+
+export const GraplixRelationExpression = {
+    $type: 'GraplixRelationExpression',
+    terms: 'terms'
+} as const;
+
+export function isGraplixRelationExpression(item: unknown): item is GraplixRelationExpression {
+    return reflection.isInstance(item, GraplixRelationExpression.$type);
+}
+
+export interface GraplixRelationFrom extends langium.AstNode {
+    readonly $container: GraplixRelationExpression;
+    readonly $type: 'GraplixRelationFrom';
+    relation: string;
+    source?: string;
+}
+
+export const GraplixRelationFrom = {
+    $type: 'GraplixRelationFrom',
+    relation: 'relation',
+    source: 'source'
+} as const;
+
+export function isGraplixRelationFrom(item: unknown): item is GraplixRelationFrom {
+    return reflection.isInstance(item, GraplixRelationFrom.$type);
+}
+
+export interface GraplixRelations extends langium.AstNode {
+    readonly $container: GraplixTypeDeclaration;
+    readonly $type: 'GraplixRelations';
+    relations: Array<GraplixRelationDefinition>;
+}
+
+export const GraplixRelations = {
+    $type: 'GraplixRelations',
+    relations: 'relations'
+} as const;
+
+export function isGraplixRelations(item: unknown): item is GraplixRelations {
+    return reflection.isInstance(item, GraplixRelations.$type);
+}
+
+export type GraplixRelationTerm = GraplixDirectTypes | GraplixRelationFrom;
+
+export const GraplixRelationTerm = {
+    $type: 'GraplixRelationTerm'
+} as const;
+
+export function isGraplixRelationTerm(item: unknown): item is GraplixRelationTerm {
+    return reflection.isInstance(item, GraplixRelationTerm.$type);
+}
+
+export interface GraplixTypeDeclaration extends langium.AstNode {
+    readonly $container: GraplixDocument;
+    readonly $type: 'GraplixTypeDeclaration';
+    name: string;
+    relations?: GraplixRelations;
+}
+
+export const GraplixTypeDeclaration = {
+    $type: 'GraplixTypeDeclaration',
+    name: 'name',
+    relations: 'relations'
+} as const;
+
+export function isGraplixTypeDeclaration(item: unknown): item is GraplixTypeDeclaration {
+    return reflection.isInstance(item, GraplixTypeDeclaration.$type);
 }
 
 export type GraplixAstType = {
+    GraplixDirectTypes: GraplixDirectTypes
     GraplixDocument: GraplixDocument
-    GraplixStatement: GraplixStatement
+    GraplixRelationDefinition: GraplixRelationDefinition
+    GraplixRelationExpression: GraplixRelationExpression
+    GraplixRelationFrom: GraplixRelationFrom
+    GraplixRelationTerm: GraplixRelationTerm
+    GraplixRelations: GraplixRelations
+    GraplixTypeDeclaration: GraplixTypeDeclaration
 }
 
 export class GraplixAstReflection extends langium.AbstractAstReflection {
     override readonly types = {
+        GraplixDirectTypes: {
+            name: GraplixDirectTypes.$type,
+            properties: {
+                targets: {
+                    name: GraplixDirectTypes.targets,
+                    defaultValue: []
+                }
+            },
+            superTypes: [GraplixRelationTerm.$type]
+        },
         GraplixDocument: {
             name: GraplixDocument.$type,
             properties: {
-                statements: {
-                    name: GraplixDocument.statements,
+                types: {
+                    name: GraplixDocument.types,
                     defaultValue: []
                 }
             },
             superTypes: []
         },
-        GraplixStatement: {
-            name: GraplixStatement.$type,
+        GraplixRelationDefinition: {
+            name: GraplixRelationDefinition.$type,
             properties: {
-                value: {
-                    name: GraplixStatement.value
+                expression: {
+                    name: GraplixRelationDefinition.expression
+                },
+                name: {
+                    name: GraplixRelationDefinition.name
+                }
+            },
+            superTypes: []
+        },
+        GraplixRelationExpression: {
+            name: GraplixRelationExpression.$type,
+            properties: {
+                terms: {
+                    name: GraplixRelationExpression.terms,
+                    defaultValue: []
+                }
+            },
+            superTypes: []
+        },
+        GraplixRelationFrom: {
+            name: GraplixRelationFrom.$type,
+            properties: {
+                relation: {
+                    name: GraplixRelationFrom.relation
+                },
+                source: {
+                    name: GraplixRelationFrom.source
+                }
+            },
+            superTypes: [GraplixRelationTerm.$type]
+        },
+        GraplixRelationTerm: {
+            name: GraplixRelationTerm.$type,
+            properties: {
+            },
+            superTypes: []
+        },
+        GraplixRelations: {
+            name: GraplixRelations.$type,
+            properties: {
+                relations: {
+                    name: GraplixRelations.relations,
+                    defaultValue: []
+                }
+            },
+            superTypes: []
+        },
+        GraplixTypeDeclaration: {
+            name: GraplixTypeDeclaration.$type,
+            properties: {
+                name: {
+                    name: GraplixTypeDeclaration.name
+                },
+                relations: {
+                    name: GraplixTypeDeclaration.relations
                 }
             },
             superTypes: []
