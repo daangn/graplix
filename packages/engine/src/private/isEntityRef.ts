@@ -1,4 +1,4 @@
-import type { EntityRef } from "../EntityRef";
+import type { EntityRef } from "./EntityRef";
 
 export function isEntityRef(value: unknown): value is EntityRef {
   if (value === null || typeof value !== "object") {

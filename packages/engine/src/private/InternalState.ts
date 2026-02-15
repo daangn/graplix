@@ -1,6 +1,6 @@
-import type { EntityRef } from "../EntityRef";
 import type { Resolvers } from "../Resolvers";
 import type { ResolveType } from "../ResolveType";
+import type { EntityRef } from "./EntityRef";
 import type { ResolvedSchema } from "./ResolvedSchema";
 
 export interface InternalState<TContext> {

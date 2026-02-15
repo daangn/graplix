@@ -1,4 +1,4 @@
-import type { EntityRef } from "../EntityRef";
+import type { EntityRef } from "./EntityRef";
 import { parseEntityRefKey } from "./parseEntityRefKey";
 
 export function requireEntityRefKey(value: string, field: string): EntityRef {

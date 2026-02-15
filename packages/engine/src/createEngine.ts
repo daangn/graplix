@@ -1,7 +1,7 @@
 import type { CheckQuery } from "./CheckQuery";
-import type { EntityRef } from "./EntityRef";
 import type { GraplixEngine } from "./GraplixEngine";
 import type { GraplixOptions } from "./GraplixOptions";
+import type { EntityRef } from "./private/EntityRef";
 import { evaluateRelation } from "./private/evaluateRelation";
 import type { InternalState } from "./private/InternalState";
 import { requireEntityRefKey } from "./private/requireEntityRefKey";

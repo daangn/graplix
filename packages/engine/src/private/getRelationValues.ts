@@ -1,4 +1,4 @@
-import type { EntityRef } from "../EntityRef";
+import type { EntityRef } from "./EntityRef";
 import { getStateKey } from "./getStateKey";
 import type { InternalState } from "./InternalState";
 import { loadEntity } from "./loadEntity";

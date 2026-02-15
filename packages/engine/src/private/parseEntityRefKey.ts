@@ -1,4 +1,4 @@
-import type { EntityRef } from "../EntityRef";
+import type { EntityRef } from "./EntityRef";
 
 export function parseEntityRefKey(value: unknown): EntityRef | undefined {
   if (typeof value !== "string") {
