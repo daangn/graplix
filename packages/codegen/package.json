@@ -1,0 +1,50 @@
+{
+  "name": "@graplix/codegen",
+  "version": "0.0.0",
+  "description": "TypeScript code generator for Graplix schemas",
+  "keywords": [
+    "graplix",
+    "codegen",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daangn/graplix.git",
+    "directory": "packages/codegen"
+  },
+  "license": "MIT",
+  "author": "Danggeun Market Inc.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "bin": {
+    "graplix-codegen": "./dist/cli.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "codegen": "node ./dist/cli.mjs",
+    "test": "vitest --run --passWithNoTests"
+  },
+  "dependencies": {
+    "@graplix/language": "^0.0.0",
+    "cosmiconfig": "^9.0.0",
+    "cosmiconfig-typescript-loader": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "tsdown": "^0.20.0-beta.3",
+    "typescript": "^5.9.3",
+    "vitest": "^3.0.5"
+  }
+}
