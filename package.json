@@ -14,7 +14,8 @@
     "build": "ultra -r build",
     "changeset:publish": "changeset publish",
     "changeset:version": "changeset version && yarn install --mode update-lockfile",
-    "format": "biome check --fix --unsafe"
+    "format": "biome check --fix --unsafe",
+    "test": "ultra -r test"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.15",
