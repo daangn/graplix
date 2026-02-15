@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    // Language and Environment
+    "target": "ES2018",
+    "lib": ["ES2018"],
+
+    // Base Module Configuration
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
+    "noUncheckedSideEffectImports": true, // Side effect only imports must be checked if the module can be resolved.
+
+    // Type Checking
+    "strict": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "erasableSyntaxOnly": true, // For maximum compatibility with node and other environments with typescript support based on type stripping.
+    "skipLibCheck": true,
+
+    // Emit
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    // Module
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
+  }
+}

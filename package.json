@@ -1,0 +1,28 @@
+{
+  "name": "@graplix/monorepo",
+  "private": true,
+  "description": "A type-safe, declarative language for defining and documenting URL structures in web applications",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daangn/graplix.git"
+  },
+  "license": "MIT",
+  "author": "Danggeun Market Inc.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "ultra -r build",
+    "format": "biome check --fix --unsafe",
+    "changeset:publish": "changeset publish",
+    "changeset:version": "changeset version && yarn install --mode update-lockfile"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.11",
+    "@changesets/cli": "^2.29.8",
+    "@types/node": "24",
+    "typescript": "^5.9.3",
+    "ultra-runner": "^3.10.5"
+  },
+  "packageManager": "yarn@4.12.0"
+}

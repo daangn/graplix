@@ -1,0 +1,3 @@
+page detail = /items/:page {
+  page: string;
+}

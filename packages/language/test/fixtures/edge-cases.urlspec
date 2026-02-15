@@ -1,0 +1,19 @@
+// Edge cases for numeric paths and keyword parameters
+
+page notFound = /404 {}
+page serverError = /500 {}
+page mixed = /api/v2/404/error {}
+
+// Multiple numeric segments
+page multiNumeric = /123/456/789 {}
+
+// Keywords as path parameters
+page keywordPath = /items/:page/:param {}
+
+// Complex case
+page complex = /api/404/:string {
+  page?: string;
+  param?: string;
+  global?: string;
+  string?: string;
+}

@@ -1,0 +1,7 @@
+// Testing flexible path segments
+page underscoreStart = /_admin {}
+page hyphenStart = /-admin {}
+page numericHyphen = /4-44 {}
+page mixedStart = /123abc {}
+page complex = /api/v2-beta/test_endpoint/404-error {}
+page allFormats = /_private/-temp/123/abc-def/test_case {}

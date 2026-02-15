@@ -1,0 +1,49 @@
+{
+  "name": "@graplix/language",
+  "version": "0.0.0",
+  "description": "Core language implementation for Graplix using Langium",
+  "keywords": [
+    "graplix",
+    "url",
+    "dsl",
+    "langium",
+    "parser",
+    "type-safe"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daangn/graplix.git",
+    "directory": "packages/language"
+  },
+  "license": "MIT",
+  "author": "Danggeun Market Inc.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "yarn langium:generate && tsdown",
+    "langium:generate": "langium generate",
+    "test": "vitest --run",
+    "test:watch": "vitest watch"
+  },
+  "dependencies": {
+    "langium": "^4.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "langium-cli": "^4.1.0",
+    "tsdown": "^0.20.0-beta.3",
+    "vitest": "^3.0.5"
+  }
+}

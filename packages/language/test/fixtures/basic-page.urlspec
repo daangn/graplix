@@ -1,0 +1,4 @@
+
+page list = /jobs {
+  category?: string;
+}

@@ -1,0 +1,5 @@
+
+global {
+  referrer?: string;
+  utm_source?: string;
+}

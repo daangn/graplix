@@ -1,0 +1,3 @@
+page list = /items {
+  page?: string;
+}

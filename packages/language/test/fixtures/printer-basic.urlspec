@@ -1,0 +1,4 @@
+
+page home = /home {
+  query?: string;
+}

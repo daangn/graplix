@@ -1,0 +1,6 @@
+
+param sortOrder = "recent" | "popular" | "trending";
+
+page list = /jobs {
+  sort: sortOrder;
+}

@@ -1,0 +1,19 @@
+
+param sortOrder = "recent" | "popular" | "trending";
+param jobStatus = "active" | "closed" | "draft";
+
+global {
+  referrer?: "jobs" | "hello";
+  utm_source?: string;
+}
+
+page list = /jobs {
+  category?: string;
+  sort: sortOrder;
+}
+
+page detail = /jobs/:job_id {
+  job_id: string;
+  preview?: "true" | "false";
+  status?: jobStatus;
+}

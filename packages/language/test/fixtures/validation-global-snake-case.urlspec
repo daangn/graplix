@@ -1,0 +1,6 @@
+
+global {
+  utm_source?: string;
+  referrer?: string;
+  is_preview: "true" | "false";
+}

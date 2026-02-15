@@ -1,0 +1,14 @@
+{
+  "projectName": "Graplix",
+  "languages": [
+    {
+      "id": "graplix",
+      "grammar": "src/graplix.langium",
+      "fileExtensions": [".graplix"],
+      "textMate": {
+        "out": "syntaxes/graplix.tmLanguage.json"
+      }
+    }
+  ],
+  "out": "src/__generated__"
+}

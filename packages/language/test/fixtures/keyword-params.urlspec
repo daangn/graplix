@@ -1,0 +1,11 @@
+// Test using keywords as parameter names
+page list = /items {
+  page?: string;
+  param?: string;
+  global?: string;
+  string?: string;
+}
+
+page detail = /items/:page {
+  page: string;
+}

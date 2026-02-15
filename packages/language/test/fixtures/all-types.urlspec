@@ -1,0 +1,7 @@
+
+page test = /test {
+  str: string;
+  literal: "exact";
+  union: "a" | "b" | "c";
+  optional?: string;
+}

@@ -1,0 +1,5 @@
+
+global {
+  utmSource?: string;
+  isPreview: "true" | "false";
+}

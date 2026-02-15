@@ -1,0 +1,6 @@
+
+page list = /jobs {
+  user_id: string;
+  sort_order?: string;
+  is_active: "true" | "false";
+}
