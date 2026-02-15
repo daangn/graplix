@@ -834,6 +834,7 @@ __metadata:
     langium-cli: "npm:^4.2.0"
     tsdown: "npm:^0.20.3"
     vitest: "npm:^3.2.4"
+    vscode-uri: "npm:^3.1.0"
   languageName: unknown
   linkType: soft
 
@@ -6276,7 +6277,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-uri@npm:~3.1.0":
+"vscode-uri@npm:^3.1.0, vscode-uri@npm:~3.1.0":
   version: 3.1.0
   resolution: "vscode-uri@npm:3.1.0"
   checksum: 10c0/5f6c9c10fd9b1664d71fab4e9fbbae6be93c7f75bb3a1d9d74399a88ab8649e99691223fd7cef4644376cac6e94fa2c086d802521b9a8e31c5af3e60f0f35624
