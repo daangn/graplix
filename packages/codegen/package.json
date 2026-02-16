@@ -30,7 +30,9 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
-  "bin": "./dist/cli.mjs",
+  "bin": {
+    "graplix-codegen": "./dist/cli.mjs"
+  },
   "files": [
     "dist",
     "schema.json"

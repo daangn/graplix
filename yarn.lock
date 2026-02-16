@@ -810,7 +810,7 @@ __metadata:
     typescript: "npm:^5.9.3"
     vitest: "npm:^3.2.4"
   bin:
-    codegen: ./dist/cli.mjs
+    graplix-codegen: ./dist/cli.mjs
   languageName: unknown
   linkType: soft
 
