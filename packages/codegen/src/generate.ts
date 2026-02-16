@@ -1,7 +1,10 @@
 import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
-
-import { parse } from "@graplix/language";
+import {
+  isGraplixDirectTypes,
+  isGraplixRelationFrom,
+  parse,
+} from "@graplix/language";
 
 export type MapperConfig = Record<string, string>;
 
@@ -24,6 +27,10 @@ export interface GenerateTypeScriptResult {
 interface ParsedSchema {
   readonly typeNames: readonly string[];
   readonly relationNamesByType: ReadonlyMap<string, readonly string[]>;
+  readonly relationTargetTypeNamesByType: ReadonlyMap<
+    string,
+    ReadonlyMap<string, readonly string[]>
+  >;
 }
 
 interface MapperImportSpec {
@@ -130,6 +137,18 @@ function emitRelationNameType(
   return `  ${typeName}: ${relationUnion};`;
 }
 
+function emitRelationTargetNameType(
+  relationName: string,
+  targetTypeNames: readonly string[],
+): string {
+  if (targetTypeNames.length === 0) {
+    return `    ${relationName}: never;`;
+  }
+
+  const targetUnion = targetTypeNames.map((item) => `"${item}"`).join(" | ");
+  return `    ${relationName}: ${targetUnion};`;
+}
+
 function escapeTemplateLiteral(input: string): string {
   return input.replace(/`/g, "\\`").replace(/\$\{/g, "\\${");
 }
@@ -150,18 +169,166 @@ async function parseSchema(schema: string): Promise<ParsedSchema> {
 
   const typeNames: string[] = [];
   const relationNamesByType = new Map<string, readonly string[]>();
+  const relationDirectTargetTypeNamesByType = new Map<
+    string,
+    Map<string, readonly string[]>
+  >();
+  const relationTermsByType = new Map<
+    string,
+    Map<string, readonly unknown[]>
+  >();
 
   for (const typeDeclaration of root.types) {
     typeNames.push(typeDeclaration.name);
 
-    const relationNames = (typeDeclaration.relations?.relations ?? []).map(
-      (relation) => relation.name,
+    const relationDefinitions = typeDeclaration.relations?.relations ?? [];
+    const relationNames = relationDefinitions.map((relation) => relation.name);
+    const directTargetTypeNamesByRelation = new Map<
+      string,
+      readonly string[]
+    >();
+    const relationTermsByName = new Map<string, readonly unknown[]>();
+
+    for (const relationDefinition of relationDefinitions) {
+      relationTermsByName.set(
+        relationDefinition.name,
+        relationDefinition.expression.terms,
+      );
+
+      const directTargetTypeNames = relationDefinition.expression.terms
+        .filter(isGraplixDirectTypes)
+        .flatMap((term) => term.targets);
+
+      directTargetTypeNamesByRelation.set(
+        relationDefinition.name,
+        directTargetTypeNames,
+      );
+    }
+
+    relationTermsByType.set(typeDeclaration.name, relationTermsByName);
+    relationDirectTargetTypeNamesByType.set(
+      typeDeclaration.name,
+      directTargetTypeNamesByRelation,
     );
 
     relationNamesByType.set(typeDeclaration.name, relationNames);
   }
 
-  return { typeNames, relationNamesByType };
+  const relationTargetTypeNamesByType = new Map<
+    string,
+    Map<string, string[]>
+  >();
+  const relationTargetTypeNameCache = new Map<string, readonly string[]>();
+
+  const getDirectTargetTypeNames = (
+    typeName: string,
+    relationName: string,
+  ): readonly string[] => {
+    return (
+      relationDirectTargetTypeNamesByType.get(typeName)?.get(relationName) ?? []
+    );
+  };
+
+  const pushUnique = (collection: string[], value: string): void => {
+    if (!collection.includes(value)) {
+      collection.push(value);
+    }
+  };
+
+  const resolveTargetTypeNames = (
+    typeName: string,
+    relationName: string,
+    path: ReadonlySet<string>,
+  ): readonly string[] => {
+    const cacheKey = `${typeName}:${relationName}`;
+    const cached = relationTargetTypeNameCache.get(cacheKey);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    if (path.has(cacheKey)) {
+      return [];
+    }
+
+    const relationTerms = relationTermsByType.get(typeName)?.get(relationName);
+    if (relationTerms === undefined) {
+      relationTargetTypeNameCache.set(cacheKey, []);
+      return [];
+    }
+
+    const nextPath = new Set(path);
+    nextPath.add(cacheKey);
+
+    const targetTypeNames: string[] = [];
+
+    for (const term of relationTerms) {
+      if (isGraplixDirectTypes(term)) {
+        for (const targetTypeName of term.targets) {
+          pushUnique(targetTypeNames, targetTypeName);
+        }
+        continue;
+      }
+
+      if (!isGraplixRelationFrom(term)) {
+        continue;
+      }
+
+      if (term.source === undefined) {
+        const nestedTargetTypeNames = resolveTargetTypeNames(
+          typeName,
+          term.relation,
+          nextPath,
+        );
+
+        for (const targetTypeName of nestedTargetTypeNames) {
+          pushUnique(targetTypeNames, targetTypeName);
+        }
+
+        continue;
+      }
+
+      const sourceTargetTypeNames = getDirectTargetTypeNames(
+        typeName,
+        term.source,
+      );
+      for (const sourceTypeName of sourceTargetTypeNames) {
+        const nestedTargetTypeNames = resolveTargetTypeNames(
+          sourceTypeName,
+          term.relation,
+          nextPath,
+        );
+
+        for (const targetTypeName of nestedTargetTypeNames) {
+          pushUnique(targetTypeNames, targetTypeName);
+        }
+      }
+    }
+
+    relationTargetTypeNameCache.set(cacheKey, targetTypeNames);
+    return targetTypeNames;
+  };
+
+  for (const typeName of typeNames) {
+    const relationNames = relationNamesByType.get(typeName) ?? [];
+    const relationTargetTypeNamesByRelation = new Map<string, string[]>();
+
+    for (const relationName of relationNames) {
+      relationTargetTypeNamesByRelation.set(relationName, [
+        ...resolveTargetTypeNames(typeName, relationName, new Set()),
+      ]);
+    }
+
+    relationTargetTypeNamesByType.set(
+      typeName,
+      relationTargetTypeNamesByRelation,
+    );
+  }
+
+  return {
+    typeNames,
+    relationNamesByType,
+    relationTargetTypeNamesByType,
+  };
 }
 
 export async function generateTypeScript(
@@ -192,11 +359,41 @@ export async function generateTypeScript(
     })
     .join("\n");
 
+  const relationTargetEntries = parsedSchema.typeNames
+    .map((typeName) => {
+      const relationNames =
+        parsedSchema.relationNamesByType.get(typeName) ?? [];
+      if (relationNames.length === 0) {
+        return `  ${typeName}: {};`;
+      }
+
+      const relationTargetTypeEntries = relationNames
+        .map((relationName) => {
+          const targetTypeNames =
+            parsedSchema.relationTargetTypeNamesByType
+              .get(typeName)
+              ?.get(relationName) ?? [];
+          return emitRelationTargetNameType(relationName, targetTypeNames);
+        })
+        .join("\n");
+
+      return `  ${typeName}: {\n${relationTargetTypeEntries}\n  };`;
+    })
+    .join("\n");
+
+  const providedMapperEntries = parsedSchema.typeNames
+    .filter((typeName) => mappers[typeName] !== undefined)
+    .map((typeName) => `  ${typeName}: ${mapperTypeFor(typeName, mappers)};`)
+    .join("\n");
+
+  const resolveTypeValue =
+    providedMapperEntries.length === 0
+      ? "unknown"
+      : "GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes]";
+
   const content = `${mapperImports}import {
-  createEngine,
+  createEngine as createBaseEngine,
   type GraplixEngine,
-  type ResolveType,
-  type Resolver,
 } from "@graplix/engine";
 
 export const schema = String.raw\`${escapeTemplateLiteral(options.schema)}\`;
@@ -214,22 +411,82 @@ export interface GraplixRelationNamesByType {
 ${relationEntries}
 }
 
-export type GraplixResolvers<TContext = object> = {
-  [TTypeName in GraplixTypeName]: Resolver<GraplixMapperTypes[TTypeName], TContext>;
+export interface GraplixRelationTargetTypeNamesByType {
+${relationTargetEntries}
+}
+
+export interface GraplixProvidedMapperTypes {
+${providedMapperEntries}
+}
+
+export type GraplixResolveTypeValue = ${resolveTypeValue};
+
+export interface GraplixEntityRef<TTypeName extends GraplixTypeName = GraplixTypeName> {
+  readonly type: TTypeName;
+  readonly id: string;
+}
+
+export type GraplixRelationResolverValue<TTypeName extends GraplixTypeName> =
+  | GraplixMapperTypes[TTypeName]
+  | GraplixEntityRef<TTypeName>;
+
+export type GraplixRelationResolverResult<TTypeName extends GraplixTypeName> =
+  | GraplixRelationResolverValue<TTypeName>
+  | ReadonlyArray<GraplixRelationResolverValue<TTypeName>>
+  | null;
+
+export type GraplixRelationTargetTypeName<
+  TTypeName extends GraplixTypeName,
+  TRelationName extends keyof GraplixRelationTargetTypeNamesByType[TTypeName],
+> = Extract<
+  GraplixRelationTargetTypeNamesByType[TTypeName][TRelationName],
+  GraplixTypeName
+>;
+
+export type GraplixResolverRelations<
+  TTypeName extends GraplixTypeName,
+  TContext = object,
+> = {
+  [TRelationName in keyof GraplixRelationTargetTypeNamesByType[TTypeName]]: (
+    entity: GraplixMapperTypes[TTypeName],
+    context: TContext,
+  ) =>
+    | GraplixRelationResolverResult<
+        GraplixRelationTargetTypeName<TTypeName, TRelationName>
+      >
+    | Promise<
+        GraplixRelationResolverResult<
+          GraplixRelationTargetTypeName<TTypeName, TRelationName>
+        >
+      >;
 };
+
+export type GraplixResolvers<TContext = object> = {
+  [TTypeName in GraplixTypeName]: {
+    id(entity: GraplixMapperTypes[TTypeName]): string;
+    load(id: string, context: TContext): Promise<GraplixMapperTypes[TTypeName] | null>;
+    relations?: GraplixResolverRelations<TTypeName, TContext>;
+  };
+};
+
+export type GraplixResolveType<TContext = object> = (
+  value: GraplixResolveTypeValue,
+  context: TContext,
+) => GraplixTypeName | null | Promise<GraplixTypeName | null>;
 
 export interface CreateGeneratedEngineOptions<TContext = object> {
   readonly resolvers: GraplixResolvers<TContext>;
-  readonly resolveType: ResolveType<TContext>;
-}
+  readonly resolveType: GraplixResolveType<TContext>;
+};
 
-export function createGeneratedEngine<TContext = object>(
+export function createEngine<TContext = object>(
   options: CreateGeneratedEngineOptions<TContext>,
 ): GraplixEngine<TContext> {
-  return createEngine({
+  return createBaseEngine({
     schema,
     resolvers: options.resolvers,
-    resolveType: options.resolveType,
+    resolveType: (value, context) =>
+      options.resolveType(value as GraplixResolveTypeValue, context),
   });
 }
 `;

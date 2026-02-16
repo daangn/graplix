@@ -8,9 +8,9 @@ export type QueryEntityInput = `${string}:${string}`;
 /**
  * Input payload for relation checks and explanations.
  */
-export interface Query<TRootContext = object> {
+export interface Query<TContext = object> {
   readonly user: QueryEntityInput;
   readonly object: QueryEntityInput;
   readonly relation: string;
-  readonly context?: TRootContext;
+  readonly context?: TContext;
 }

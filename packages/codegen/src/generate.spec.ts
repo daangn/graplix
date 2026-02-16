@@ -13,6 +13,19 @@ const schema = `
       define owner: [user]
 `;
 
+const relationSchema = `
+  type user
+
+  type team
+    relations
+      define member: [user]
+
+  type repository
+    relations
+      define team: [team]
+      define viewer: member from team
+`;
+
 describe("generateTypeScript", () => {
   test("generates base helper types from schema", async () => {
     const result = await generateTypeScript({ schema });
@@ -24,7 +37,15 @@ describe("generateTypeScript", () => {
     expect(result.content).toContain("user: unknown;");
     expect(result.content).toContain("repository: unknown;");
     expect(result.content).toContain('repository: "owner";');
-    expect(result.content).toContain("createGeneratedEngine");
+    expect(result.content).toContain(
+      "export interface GraplixRelationTargetTypeNamesByType {",
+    );
+    expect(result.content).toContain('owner: "user";');
+    expect(result.content).toContain(
+      "export type GraplixResolveTypeValue = unknown;",
+    );
+    expect(result.content).toContain("value: GraplixResolveTypeValue,");
+    expect(result.content).toContain("export function createEngine");
   });
 
   test("supports mapper imports and mapper type binding", async () => {
@@ -44,6 +65,19 @@ describe("generateTypeScript", () => {
     );
     expect(result.content).toContain("user: Mapper_user;");
     expect(result.content).toContain("repository: Mapper_repository;");
+    expect(result.content).toContain(
+      "export type GraplixResolveTypeValue = GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes];",
+    );
+  });
+
+  test("infers relation target types across source relations", async () => {
+    const result = await generateTypeScript({ schema: relationSchema });
+
+    expect(result.content).toContain("repository: {");
+    expect(result.content).toContain('viewer: "user";');
+    expect(result.content).toContain(
+      "keyof GraplixRelationTargetTypeNamesByType[TTypeName]",
+    );
   });
 
   test("generates from .graplix file path", async () => {
