@@ -1,5 +1,11 @@
 # @graplix/codegen
 
+## 2.1.2
+
+### Patch Changes
+
+- cdb49e1: fix: indentation and using graplix template literal
+
 ## 2.1.1
 
 ### Patch Changes
