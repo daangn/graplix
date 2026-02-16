@@ -1577,7 +1577,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/vscode@npm:^1.109.0":
+"@types/vscode@npm:^1.80.0":
   version: 1.109.0
   resolution: "@types/vscode@npm:1.109.0"
   checksum: 10c0/25c533178746ee6e647313773b0d30fbb6819a097a3be2e104aeacdb60df00adb2e6e5b6337fc13b281e2673df57af6f49e9622de15a256240428ff9fb9433cd
@@ -3337,7 +3337,7 @@ __metadata:
   resolution: "graplix-vscode-extension@workspace:packages/vscode-extension"
   dependencies:
     "@graplix/language": "npm:^2.0.0"
-    "@types/vscode": "npm:^1.109.0"
+    "@types/vscode": "npm:^1.80.0"
     "@vscode/vsce": "npm:^3.7.1"
     langium: "npm:^4.2.1"
     tsdown: "npm:^0.20.3"
