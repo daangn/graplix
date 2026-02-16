@@ -40,6 +40,9 @@ describe("generateTypeScript", () => {
     expect(result.content).toContain(
       "export interface GraplixRelationTargetTypeNamesByType {",
     );
+    expect(result.content).toContain("const graplix = String.raw;");
+    expect(result.content).toContain("export const schema = graplix`");
+    expect(result.content).toContain("\n    type user\n");
     expect(result.content).toContain('owner: "user";');
     expect(result.content).toContain(
       "export type GraplixResolveTypeValue = unknown;",
@@ -93,7 +96,7 @@ describe("generateTypeScript", () => {
     });
 
     expect(result.fileName).toBe("sample.generated.ts");
-    expect(result.content).toContain("export const schema = String.raw`");
+    expect(result.content).toContain("export const schema = graplix`");
     expect(result.content).toContain("user: Mapper_user;");
   });
 });

@@ -153,6 +153,16 @@ function escapeTemplateLiteral(input: string): string {
   return input.replace(/`/g, "\\`").replace(/\$\{/g, "\\${");
 }
 
+function toSchemaTemplateLiteral(schema: string): string {
+  const normalized = schema.replace(/\r\n/g, "\n").trimEnd();
+  const indented = normalized
+    .split("\n")
+    .map((line) => `  ${line}`)
+    .join("\n");
+
+  return `\n${escapeTemplateLiteral(indented)}\n`;
+}
+
 async function parseSchema(schema: string): Promise<ParsedSchema> {
   const document = await parse(schema);
   const diagnostics = document.diagnostics ?? [];
@@ -390,13 +400,16 @@ export async function generateTypeScript(
     providedMapperEntries.length === 0
       ? "unknown"
       : "GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes]";
+  const schemaLiteral = toSchemaTemplateLiteral(options.schema);
 
   const content = `${mapperImports}import {
   createEngine as createBaseEngine,
   type GraplixEngine,
 } from "@graplix/engine";
 
-export const schema = String.raw\`${escapeTemplateLiteral(options.schema)}\`;
+const graplix = String.raw;
+
+export const schema = graplix\`${schemaLiteral}\`;
 
 export type GraplixTypeName = ${typeNameUnion};
 
