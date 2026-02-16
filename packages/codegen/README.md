@@ -5,14 +5,13 @@ Generates TypeScript helpers from Graplix schema files.
 ## CLI
 
 ```bash
-yarn workspace @graplix/codegen build
-yarn workspace @graplix/codegen codegen ./schema.graplix
+npx @graplix/codegen ./schema.graplix
 ```
 
 With mapper overrides:
 
 ```bash
-yarn workspace @graplix/codegen codegen ./schema.graplix ./schema.generated.ts --mapper user=./models#User --mapper repository=./models#Repository
+npx @graplix/codegen ./schema.graplix ./schema.generated.ts --mapper user=./models#User --mapper repository=./models#Repository
 ```
 
 Config files are also supported (`cosmiconfig`):
@@ -21,10 +20,15 @@ Config files are also supported (`cosmiconfig`):
 - `graplix-codegen.config.json|yaml|yml|js|cjs|mjs|ts|cts|mts`
 - `package.json` with `"graplix-codegen"` key
 
+JSON Schema for editor auto-complete/validation:
+
+- `https://unpkg.com/@graplix/codegen@latest/schema.json`
+
 Example (`graplix.codegen.json`):
 
 ```json
 {
+  "$schema": "https://unpkg.com/@graplix/codegen@latest/schema.json",
   "schema": "./schema.graplix",
   "output": "./schema.generated.ts",
   "mappers": {
@@ -34,20 +38,6 @@ Example (`graplix.codegen.json`):
 ```
 
 CLI args override config values.
-
-Typed config helper:
-
-```ts
-import { defineConfig } from "@graplix/codegen";
-
-export default defineConfig({
-  schema: "./schema.graplix",
-  output: "./schema.generated.ts",
-  mappers: {
-    user: "./models#User",
-  },
-});
-```
 
 ## Programmatic API
 

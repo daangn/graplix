@@ -1,4 +1,4 @@
-export { type CodegenConfig, defineConfig } from "./config";
+export type { CodegenConfig } from "./config";
 export {
   type GenerateTypeScriptFromFileOptions,
   type GenerateTypeScriptOptions,

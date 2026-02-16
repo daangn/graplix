@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unpkg.com/@graplix/codegen@latest/schema.json",
+  "title": "@graplix/codegen configuration",
+  "description": "Configuration for Graplix TypeScript code generation.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional schema URL for editor auto-completion and validation."
+    },
+    "schema": {
+      "type": "string",
+      "description": "Path to the .graplix schema file."
+    },
+    "output": {
+      "type": "string",
+      "description": "Output file path for generated TypeScript."
+    },
+    "mappers": {
+      "type": "object",
+      "description": "Map Graplix type names to TypeScript type references.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["schema"],
+  "additionalProperties": false
+}

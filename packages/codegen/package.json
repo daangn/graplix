@@ -24,16 +24,16 @@
       "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./schema.json": "./schema.json"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
-  "bin": {
-    "graplix-codegen": "./dist/cli.mjs"
-  },
+  "bin": "./dist/cli.mjs",
   "files": [
-    "dist"
+    "dist",
+    "schema.json"
   ],
   "scripts": {
     "build": "tsdown",

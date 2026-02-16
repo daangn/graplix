@@ -31,6 +31,7 @@ Runtime evaluator for schema-defined relations.
 TypeScript generator for Graplix schemas.
 
 - Generates typed helpers from `.graplix` input.
+- Run from npm with `npx @graplix/codegen`.
 - Supports mapper configuration and config-file discovery.
 - README: [`packages/codegen/README.md`](packages/codegen/README.md)
 

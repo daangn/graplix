@@ -22,7 +22,7 @@ interface ResolvedArguments {
 
 function fail(message: string): never {
   throw new Error(
-    `${message}\nUsage: graplix-codegen [schema.graplix] [output.ts] [--config graplix.codegen.json] [--mapper Type=./module#Type]`,
+    `${message}\nUsage: npx @graplix/codegen [schema.graplix] [output.ts] [--config graplix.codegen.json] [--mapper Type=./module#Type]`,
   );
 }
 

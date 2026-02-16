@@ -142,7 +142,7 @@ From `biome.json`:
 - CLI supports config discovery via `cosmiconfig`.
 - Supported config names include `graplix.codegen.*` and `graplix-codegen.config.*`.
 - CLI precedence: command-line args override config values.
-- Prefer `defineConfig` from `@graplix/codegen` for typed config files.
+- Prefer JSON config with `$schema` for editor-validated codegen settings.
 
 ## Tech Spec Workflow
 
