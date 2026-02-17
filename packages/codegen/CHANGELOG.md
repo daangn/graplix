@@ -1,5 +1,11 @@
 # @graplix/codegen
 
+## 2.1.3
+
+### Patch Changes
+
+- 45b8c4c: fix: when only declare relation, do not require relation resolver
+
 ## 2.1.2
 
 ### Patch Changes
