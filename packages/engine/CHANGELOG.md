@@ -1,5 +1,11 @@
 # @graplix/engine
 
+## 2.0.3
+
+### Patch Changes
+
+- a55832f: fix: type error
+
 ## 2.0.2
 
 ### Patch Changes
