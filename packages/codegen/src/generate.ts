@@ -27,6 +27,14 @@ export interface GenerateTypeScriptResult {
 interface ParsedSchema {
   readonly typeNames: readonly string[];
   readonly relationNamesByType: ReadonlyMap<string, readonly string[]>;
+  readonly requiredResolverRelationNamesByType: ReadonlyMap<
+    string,
+    readonly string[]
+  >;
+  readonly relationResolverTargetTypeNamesByType: ReadonlyMap<
+    string,
+    ReadonlyMap<string, readonly string[]>
+  >;
   readonly relationTargetTypeNamesByType: ReadonlyMap<
     string,
     ReadonlyMap<string, readonly string[]>
@@ -149,6 +157,21 @@ function emitRelationTargetNameType(
   return `    ${relationName}: ${targetUnion};`;
 }
 
+function emitRequiredRelationNamesByType(
+  typeName: string,
+  requiredRelationNames: readonly string[],
+): string {
+  if (requiredRelationNames.length === 0) {
+    return `  ${typeName}: never;`;
+  }
+
+  const requiredRelationUnion = requiredRelationNames
+    .map((item) => `"${item}"`)
+    .join(" | ");
+
+  return `  ${typeName}: ${requiredRelationUnion};`;
+}
+
 function escapeTemplateLiteral(input: string): string {
   return input.replace(/`/g, "\\`").replace(/\$\{/g, "\\${");
 }
@@ -179,7 +202,15 @@ async function parseSchema(schema: string): Promise<ParsedSchema> {
 
   const typeNames: string[] = [];
   const relationNamesByType = new Map<string, readonly string[]>();
+  const requiredResolverRelationNamesByType = new Map<
+    string,
+    readonly string[]
+  >();
   const relationDirectTargetTypeNamesByType = new Map<
+    string,
+    Map<string, readonly string[]>
+  >();
+  const relationResolverTargetTypeNamesByType = new Map<
     string,
     Map<string, readonly string[]>
   >();
@@ -193,6 +224,7 @@ async function parseSchema(schema: string): Promise<ParsedSchema> {
 
     const relationDefinitions = typeDeclaration.relations?.relations ?? [];
     const relationNames = relationDefinitions.map((relation) => relation.name);
+    const requiredRelationNames: string[] = [];
     const directTargetTypeNamesByRelation = new Map<
       string,
       readonly string[]
@@ -209,6 +241,10 @@ async function parseSchema(schema: string): Promise<ParsedSchema> {
         .filter(isGraplixDirectTypes)
         .flatMap((term) => term.targets);
 
+      if (relationDefinition.expression.terms.some(isGraplixDirectTypes)) {
+        requiredRelationNames.push(relationDefinition.name);
+      }
+
       directTargetTypeNamesByRelation.set(
         relationDefinition.name,
         directTargetTypeNames,
@@ -219,6 +255,14 @@ async function parseSchema(schema: string): Promise<ParsedSchema> {
     relationDirectTargetTypeNamesByType.set(
       typeDeclaration.name,
       directTargetTypeNamesByRelation,
+    );
+    relationResolverTargetTypeNamesByType.set(
+      typeDeclaration.name,
+      directTargetTypeNamesByRelation,
+    );
+    requiredResolverRelationNamesByType.set(
+      typeDeclaration.name,
+      requiredRelationNames,
     );
 
     relationNamesByType.set(typeDeclaration.name, relationNames);
@@ -337,6 +381,8 @@ async function parseSchema(schema: string): Promise<ParsedSchema> {
   return {
     typeNames,
     relationNamesByType,
+    requiredResolverRelationNamesByType,
+    relationResolverTargetTypeNamesByType,
     relationTargetTypeNamesByType,
   };
 }
@@ -391,6 +437,36 @@ export async function generateTypeScript(
     })
     .join("\n");
 
+  const requiredRelationEntries = parsedSchema.typeNames
+    .map((typeName) => {
+      const requiredRelationNames =
+        parsedSchema.requiredResolverRelationNamesByType.get(typeName) ?? [];
+      return emitRequiredRelationNamesByType(typeName, requiredRelationNames);
+    })
+    .join("\n");
+
+  const resolverRelationTargetEntries = parsedSchema.typeNames
+    .map((typeName) => {
+      const relationNames =
+        parsedSchema.relationNamesByType.get(typeName) ?? [];
+      if (relationNames.length === 0) {
+        return `  ${typeName}: {};`;
+      }
+
+      const resolverRelationTargetTypeEntries = relationNames
+        .map((relationName) => {
+          const targetTypeNames =
+            parsedSchema.relationResolverTargetTypeNamesByType
+              .get(typeName)
+              ?.get(relationName) ?? [];
+          return emitRelationTargetNameType(relationName, targetTypeNames);
+        })
+        .join("\n");
+
+      return `  ${typeName}: {\n${resolverRelationTargetTypeEntries}\n  };`;
+    })
+    .join("\n");
+
   const providedMapperEntries = parsedSchema.typeNames
     .filter((typeName) => mappers[typeName] !== undefined)
     .map((typeName) => `  ${typeName}: ${mapperTypeFor(typeName, mappers)};`)
@@ -428,6 +504,14 @@ export interface GraplixRelationTargetTypeNamesByType {
 ${relationTargetEntries}
 }
 
+export interface GraplixRequiredResolverRelationNamesByType {
+${requiredRelationEntries}
+}
+
+export interface GraplixResolverRelationTargetTypeNamesByType {
+${resolverRelationTargetEntries}
+}
+
 export interface GraplixProvidedMapperTypes {
 ${providedMapperEntries}
 }
@@ -456,22 +540,35 @@ export type GraplixRelationTargetTypeName<
   GraplixTypeName
 >;
 
+export type GraplixResolverRelationTargetTypeName<
+  TTypeName extends GraplixTypeName,
+  TRelationName extends keyof GraplixResolverRelationTargetTypeNamesByType[TTypeName],
+> = Extract<
+  GraplixResolverRelationTargetTypeNamesByType[TTypeName][TRelationName],
+  GraplixTypeName
+>;
+
 export type GraplixResolverRelations<
   TTypeName extends GraplixTypeName,
   TContext = object,
 > = {
-  [TRelationName in keyof GraplixRelationTargetTypeNamesByType[TTypeName]]: (
+  [TRelationName in keyof GraplixResolverRelationTargetTypeNamesByType[
+    TTypeName
+  ] as TRelationName extends
+    GraplixRequiredResolverRelationNamesByType[TTypeName]
+    ? TRelationName
+    : never]: (
     entity: GraplixMapperTypes[TTypeName],
     context: TContext,
   ) =>
     | GraplixRelationResolverResult<
-        GraplixRelationTargetTypeName<TTypeName, TRelationName>
-      >
+      GraplixResolverRelationTargetTypeName<TTypeName, TRelationName>
+    >
     | Promise<
-        GraplixRelationResolverResult<
-          GraplixRelationTargetTypeName<TTypeName, TRelationName>
-        >
-      >;
+      GraplixRelationResolverResult<
+        GraplixResolverRelationTargetTypeName<TTypeName, TRelationName>
+      >
+    >;
 };
 
 export type GraplixResolvers<TContext = object> = {
