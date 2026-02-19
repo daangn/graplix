@@ -288,6 +288,42 @@ describe("createEngine", () => {
     expect(result.exploredEdges.length).toBeGreaterThan(0);
   });
 
+  test("github - accepts domain entity objects via resolver scanning", async () => {
+    type Organization = {
+      readonly id: string;
+      readonly adminIds: readonly string[];
+      readonly memberIds: readonly string[];
+    };
+
+    const engine = createEngine<githubFixture.GithubContext, Organization>({
+      schema: githubFixture.schema,
+      resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
+    });
+
+    const org: Organization = {
+      id: "organization-0",
+      adminIds: ["u-cto"],
+      memberIds: ["user-0", "user-1"],
+    };
+
+    expect(
+      await engine.check({
+        user: { type: "user", id: "user-0" },
+        object: org,
+        relation: "member",
+      }),
+    ).toBe(true);
+
+    expect(
+      await engine.check({
+        user: { type: "user", id: "user-4" },
+        object: org,
+        relation: "member",
+      }),
+    ).toBe(false);
+  });
+
   test("circular - stops recursive relation cycles", async () => {
     const engine = createEngine({
       schema: circularFixture.schema,

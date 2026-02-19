@@ -111,6 +111,12 @@ describe("generateTypeScript", () => {
     );
     expect(result.content).toContain("value: GraplixResolveTypeValue,");
     expect(result.content).toContain("export function createEngine");
+    expect(result.content).toContain(
+      "export type GraplixEntityInput = GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes];",
+    );
+    expect(result.content).toContain(
+      "): GraplixEngine<TContext, GraplixEntityInput> {",
+    );
   });
 
   test("supports mapper imports and mapper type binding", async () => {
@@ -132,6 +138,12 @@ describe("generateTypeScript", () => {
     expect(result.content).toContain("repository: Mapper_repository;");
     expect(result.content).toContain(
       "export type GraplixResolveTypeValue = GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes];",
+    );
+    expect(result.content).toContain(
+      "export type GraplixEntityInput = GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes];",
+    );
+    expect(result.content).toContain(
+      "): GraplixEngine<TContext, GraplixEntityInput> {",
     );
   });
 

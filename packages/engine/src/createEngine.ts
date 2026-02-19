@@ -5,15 +5,16 @@ import type { EntityRef } from "./private/EntityRef";
 import { evaluateRelation } from "./private/evaluateRelation";
 import type { InternalState } from "./private/InternalState";
 import { resolveSchema } from "./private/resolveSchema";
+import { toEntityRef } from "./private/toEntityRef";
 import type { TraceState } from "./private/TraceState";
 import type { Query } from "./Query";
 
 /**
  * Creates a Graplix evaluation engine for a schema and resolver set.
  */
-export function createEngine<TContext = object>(
+export function createEngine<TContext = object, TEntityInput = never>(
   options: GraplixOptions<TContext>,
-): GraplixEngine<TContext> {
+): GraplixEngine<TContext, TEntityInput> {
   const resolvedSchema = resolveSchema(options.schema);
 
   const createState = (
@@ -33,16 +34,19 @@ export function createEngine<TContext = object>(
     };
   };
 
-  const check = async (query: Query<TContext>): Promise<boolean> => {
+  const check = async (query: Query<TContext, TEntityInput>): Promise<boolean> => {
     const schema = await resolvedSchema;
     const context = query.context ?? ({} as TContext);
     const state = createState(context, schema);
 
-    return evaluateRelation(state, query.object, query.relation, query.user);
+    const user = await toEntityRef(query.user, state);
+    const object = await toEntityRef(query.object, state);
+
+    return evaluateRelation(state, object, query.relation, user);
   };
 
   const explain = async (
-    query: Query<TContext>,
+    query: Query<TContext, TEntityInput>,
   ): Promise<CheckExplainResult> => {
     const schema = await resolvedSchema;
     const context = query.context ?? ({} as TContext);
@@ -53,7 +57,10 @@ export function createEngine<TContext = object>(
     };
     const state = createState(context, schema, trace);
 
-    const allowed = await evaluateRelation(state, query.object, query.relation, query.user);
+    const user = await toEntityRef(query.user, state);
+    const object = await toEntityRef(query.object, state);
+
+    const allowed = await evaluateRelation(state, object, query.relation, user);
 
     return {
       allowed,

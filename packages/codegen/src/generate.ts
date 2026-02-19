@@ -516,6 +516,8 @@ export interface GraplixProvidedMapperTypes {
 ${providedMapperEntries}
 }
 
+export type GraplixEntityInput = GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes];
+
 export type GraplixResolveTypeValue = ${resolveTypeValue};
 
 export interface GraplixEntityRef<TTypeName extends GraplixTypeName = GraplixTypeName> {
@@ -591,8 +593,8 @@ export interface CreateGeneratedEngineOptions<TContext = object> {
 
 export function createEngine<TContext = object>(
   options: CreateGeneratedEngineOptions<TContext>,
-): GraplixEngine<TContext> {
-  return createBaseEngine({
+): GraplixEngine<TContext, GraplixEntityInput> {
+  return createBaseEngine<TContext, GraplixEntityInput>({
     schema,
     resolvers: options.resolvers,
     resolveType: (value, context) =>
