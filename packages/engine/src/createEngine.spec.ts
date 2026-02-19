@@ -14,22 +14,22 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: "user:user-0",
-        object: "organization:organization-0",
+        user: { type: "user", id: "user-0" },
+        object: { type: "organization", id: "organization-0" },
         relation: "member",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:u-cto",
-        object: "organization:organization-0",
+        user: { type: "user", id: "u-cto" },
+        object: { type: "organization", id: "organization-0" },
         relation: "admin",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:user-4",
-        object: "organization:organization-0",
+        user: { type: "user", id: "user-4" },
+        object: { type: "organization", id: "organization-0" },
         relation: "member",
       }),
     ).toBe(false);
@@ -44,15 +44,15 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: "user:user-0",
-        object: "repository:repository-0",
+        user: { type: "user", id: "user-0" },
+        object: { type: "repository", id: "repository-0" },
         relation: "can_delete",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:user-2",
-        object: "repository:repository-0",
+        user: { type: "user", id: "user-2" },
+        object: { type: "repository", id: "repository-0" },
         relation: "can_delete",
       }),
     ).toBe(false);
@@ -67,36 +67,36 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: "user:user-0",
-        object: "artifact:artifact-0",
+        user: { type: "user", id: "user-0" },
+        object: { type: "artifact", id: "artifact-0" },
         relation: "can_delete",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:user-3",
-        object: "artifact:artifact-0",
+        user: { type: "user", id: "user-3" },
+        object: { type: "artifact", id: "artifact-0" },
         relation: "can_delete",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:user-2",
-        object: "artifact:artifact-0",
+        user: { type: "user", id: "user-2" },
+        object: { type: "artifact", id: "artifact-0" },
         relation: "can_delete",
       }),
     ).toBe(false);
     expect(
       await engine.check({
-        user: "project:project-core",
-        object: "project:project-core",
+        user: { type: "project", id: "project-core" },
+        object: { type: "project", id: "project-core" },
         relation: "self",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:user-0",
-        object: "artifact:artifact-0",
+        user: { type: "user", id: "user-0" },
+        object: { type: "artifact", id: "artifact-0" },
         relation: "can_touch",
       }),
     ).toBe(false);
@@ -111,29 +111,29 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: "user:u-platform-owner",
-        object: "repository:repo-api",
+        user: { type: "user", id: "u-platform-owner" },
+        object: { type: "repository", id: "repo-api" },
         relation: "write",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:u-platform-maintainer",
-        object: "repository:repo-api",
+        user: { type: "user", id: "u-platform-maintainer" },
+        object: { type: "repository", id: "repo-api" },
         relation: "write",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:u-cto",
-        object: "repository:repo-api",
+        user: { type: "user", id: "u-cto" },
+        object: { type: "repository", id: "repo-api" },
         relation: "admin",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:u-platform-owner",
-        object: "repository:repo-api",
+        user: { type: "user", id: "u-platform-owner" },
+        object: { type: "repository", id: "repo-api" },
         relation: "admin",
       }),
     ).toBe(true);
@@ -148,8 +148,8 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: "user:user-0",
-        object: "repository:repository-0",
+        user: { type: "user", id: "user-0" },
+        object: { type: "repository", id: "repository-0" },
         relation: "resolver_not_found",
       }),
     ).toBe(false);
@@ -164,22 +164,22 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: "user:user-default",
-        object: "repository:repo-4",
+        user: { type: "user", id: "user-default" },
+        object: { type: "repository", id: "repo-4" },
         relation: "owner",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:user-default",
-        object: "repository:repo-4",
+        user: { type: "user", id: "user-default" },
+        object: { type: "repository", id: "repo-4" },
         relation: "owner",
         context: { shouldReadOwner: false },
       }),
     ).toBe(false);
   });
 
-  test("github - supports type:id inputs", async () => {
+  test("github - supports EntityRef inputs", async () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
@@ -188,14 +188,14 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: "user:user-1",
-        object: "repository:repository-1",
+        user: { type: "user", id: "user-1" },
+        object: { type: "repository", id: "repository-1" },
         relation: "owner",
       }),
     ).toBe(true);
   });
 
-  test("github - accepts type:id string inputs", async () => {
+  test("github - accepts EntityRef inputs", async () => {
     const engine = createEngine({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
@@ -204,8 +204,8 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: "user:user-0",
-        object: "repository:repository-0",
+        user: { type: "user", id: "user-0" },
+        object: { type: "repository", id: "repository-0" },
         relation: "owner",
       }),
     ).toBe(true);
@@ -220,29 +220,29 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: "user:u-qa",
-        object: "issue:issue-101",
+        user: { type: "user", id: "u-qa" },
+        object: { type: "issue", id: "issue-101" },
         relation: "can_edit",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:u-security",
-        object: "issue:issue-101",
+        user: { type: "user", id: "u-security" },
+        object: { type: "issue", id: "issue-101" },
         relation: "can_approve",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:u-reporter",
-        object: "issue:issue-101",
+        user: { type: "user", id: "u-reporter" },
+        object: { type: "issue", id: "issue-101" },
         relation: "can_close",
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: "user:u-platform-maintainer",
-        object: "issue:issue-202",
+        user: { type: "user", id: "u-platform-maintainer" },
+        object: { type: "issue", id: "issue-202" },
         relation: "can_edit",
       }),
     ).toBe(false);
@@ -256,17 +256,17 @@ describe("createEngine", () => {
     });
 
     const result = await engine.explain({
-      user: "user:user-1",
-      object: "repository:repository-1",
+      user: { type: "user", id: "user-1" },
+      object: { type: "repository", id: "repository-1" },
       relation: "owner",
     });
 
     expect(result.allowed).toBe(true);
     expect(result.matchedPath).not.toBeNull();
     expect(result.matchedPath).toContainEqual({
-      from: "repository:repository-1",
+      from: { type: "repository", id: "repository-1" },
       relation: "owner",
-      to: "user:user-1",
+      to: { type: "user", id: "user-1" },
     });
   });
 
@@ -278,8 +278,8 @@ describe("createEngine", () => {
     });
 
     const result = await engine.explain({
-      user: "user:user-4",
-      object: "repository:repo-api",
+      user: { type: "user", id: "user-4" },
+      object: { type: "repository", id: "repo-api" },
       relation: "admin",
     });
 
@@ -297,8 +297,8 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: "repository:repository-cycle",
-        object: "repository:repository-cycle",
+        user: { type: "repository", id: "repository-cycle" },
+        object: { type: "repository", id: "repository-cycle" },
         relation: "a",
       }),
     ).toBe(false);
@@ -313,8 +313,8 @@ describe("createEngine", () => {
 
     await expect(
       engine.check({
-        user: "user:user-0",
-        object: "repository:repository-0",
+        user: { type: "user", id: "user-0" },
+        object: { type: "repository", id: "repository-0" },
         relation: "owner",
       }),
     ).rejects.toThrow(/Invalid Graplix schema/);

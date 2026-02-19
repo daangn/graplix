@@ -4,7 +4,6 @@ import type { GraplixOptions } from "./GraplixOptions";
 import type { EntityRef } from "./private/EntityRef";
 import { evaluateRelation } from "./private/evaluateRelation";
 import type { InternalState } from "./private/InternalState";
-import { requireEntityRefKey } from "./private/requireEntityRefKey";
 import { resolveSchema } from "./private/resolveSchema";
 import type { TraceState } from "./private/TraceState";
 import type { Query } from "./Query";
@@ -39,10 +38,7 @@ export function createEngine<TContext = object>(
     const context = query.context ?? ({} as TContext);
     const state = createState(context, schema);
 
-    const user = requireEntityRefKey(query.user, "user");
-    const object = requireEntityRefKey(query.object, "object");
-
-    return evaluateRelation(state, object, query.relation, user);
+    return evaluateRelation(state, query.object, query.relation, query.user);
   };
 
   const explain = async (
@@ -57,10 +53,7 @@ export function createEngine<TContext = object>(
     };
     const state = createState(context, schema, trace);
 
-    const user = requireEntityRefKey(query.user, "user");
-    const object = requireEntityRefKey(query.object, "object");
-
-    const allowed = await evaluateRelation(state, object, query.relation, user);
+    const allowed = await evaluateRelation(state, query.object, query.relation, query.user);
 
     return {
       allowed,

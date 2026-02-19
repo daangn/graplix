@@ -6,7 +6,6 @@ import { entityMatches } from "./entityMatches";
 import { evaluateRelation } from "./evaluateRelation";
 import { getRelationValues } from "./getRelationValues";
 import type { InternalState } from "./InternalState";
-import { toEntityKey } from "./toEntityKey";
 
 export async function evaluateRelationTerm<TContext>(
   state: InternalState<TContext>,
@@ -29,9 +28,9 @@ export async function evaluateRelationTerm<TContext>(
     for (const candidate of relationValues) {
       if (state.trace !== undefined) {
         const edge = {
-          from: toEntityKey(object),
+          from: object,
           relation: currentRelation,
-          to: toEntityKey(candidate),
+          to: candidate,
         };
 
         state.trace.exploredEdges.push(edge);
@@ -67,9 +66,9 @@ export async function evaluateRelationTerm<TContext>(
     for (const sourceRef of sourceRelationValues) {
       if (state.trace !== undefined) {
         const edge = {
-          from: toEntityKey(object),
+          from: object,
           relation: term.source,
-          to: toEntityKey(sourceRef),
+          to: sourceRef,
         };
 
         state.trace.exploredEdges.push(edge);
