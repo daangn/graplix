@@ -1,17 +1,11 @@
 import type { EntityRef } from "./EntityRef";
 import type { InternalState } from "./InternalState";
 import { isEntityRef } from "./isEntityRef";
-import { parseEntityRefKey } from "./parseEntityRefKey";
 
 export async function toEntityRef<TContext>(
   value: unknown,
   state: InternalState<TContext>,
 ): Promise<EntityRef> {
-  const parsed = parseEntityRefKey(value);
-  if (parsed !== undefined) {
-    return parsed;
-  }
-
   if (isEntityRef(value)) {
     return value;
   }
@@ -64,6 +58,6 @@ export async function toEntityRef<TContext>(
     lastError === undefined ? "" : ` Last resolver error: ${lastError.message}`;
 
   throw new Error(
-    `Cannot infer entity type from value. Use "type:id", add { type, id } fields, provide resolveType, or provide a matching resolver id/load pair.${contextMessage}`,
+    `Cannot infer entity type from value. Add { type, id } fields, provide resolveType, or provide a matching resolver id/load pair.${contextMessage}`,
   );
 }

@@ -87,19 +87,29 @@ yarn workspace graplix-vscode-extension watch
 | 타입 | 위치 | 설명 |
 |------|------|------|
 | `EntityRef` | `src/private/EntityRef.ts` (공개 export) | `{ type: string; id: string }` – 엔티티의 정규 표현 |
-| `Query<TContext>` | `src/Query.ts` | `check`/`explain` 입력. `user`, `object` 모두 `EntityRef` |
+| `Query<TContext, TEntityInput>` | `src/Query.ts` | `check`/`explain` 입력. `user`, `object`가 `EntityRef \| TEntityInput` |
 | `CheckEdge` | `src/CheckEdge.ts` | `explain` 출력의 엣지. `from`, `to`가 `EntityRef` |
-| `GraplixEngine<TContext>` | `src/GraplixEngine.ts` | `check(query)`, `explain(query)` 메서드 |
+| `GraplixEngine<TContext, TEntityInput>` | `src/GraplixEngine.ts` | `check(query)`, `explain(query)` 메서드 |
 
-### EntityRef 규칙
+### EntityRef 규칙 및 도메인 엔티티 지원
 
-`Query.user`, `Query.object`, `CheckEdge.from`, `CheckEdge.to`는 **모두 `EntityRef` 객체**를 사용합니다. `"type:id"` 문자열 형식은 공개 API에 존재하지 않으며, Resolver 내부에서 도메인 객체를 변환할 때만 `parseEntityRefKey`(private)가 사용됩니다.
+`Query.user`, `Query.object`, `CheckEdge.from`, `CheckEdge.to`는 **`EntityRef` 객체**를 사용합니다. `"type:id"` 문자열 형식은 공개 API에 존재하지 않습니다.
+
+`Query`와 `GraplixEngine`은 두 번째 제네릭 `TEntityInput`(기본값 `never`)을 통해 도메인 엔티티를 직접 받을 수 있습니다. `TEntityInput = never`이면 `EntityRef`만 허용되고, 타입을 명시하면 `EntityRef | TEntityInput`을 모두 허용합니다.
 
 ```typescript
-// ✅ 올바른 사용
+// ✅ EntityRef 사용 (기본)
 await engine.check({
   user: { type: "user", id: "user-1" },
   object: { type: "repository", id: "repo-1" },
+  relation: "owner",
+});
+
+// ✅ 도메인 엔티티 직접 전달 (TEntityInput 명시)
+const engine = createEngine<MyContext, User | Repository>({ ... });
+await engine.check({
+  user: userEntity,       // User 타입
+  object: repoEntity,     // Repository 타입
   relation: "owner",
 });
 
@@ -107,12 +117,13 @@ await engine.check({
 await engine.check({ user: "user:user-1", object: "repository:repo-1", relation: "owner" });
 ```
 
+도메인 엔티티가 전달되면 내부적으로 `toEntityRef`가 `resolveType` → resolver 스캔 순서로 엔티티 타입을 추론합니다.
+
 ### private/ 디렉터리 구조
 
 ```
 src/private/
   EntityRef.ts            # { type, id } 인터페이스
-  parseEntityRefKey.ts    # "type:id" 문자열 → EntityRef (내부용, toEntityRef에서만 사용)
   isEntityRef.ts          # EntityRef 타입 가드
   toEntityRef.ts          # 임의 값(도메인 객체·string·EntityRef) → EntityRef 변환
   toEntityRefList.ts      # 복수 값 변환
@@ -134,7 +145,11 @@ src/private/
 
 ```
 check(query)
-  └─ evaluateRelation(state, query.object, relation, query.user)
+  └─ toEntityRef(query.user)  ─┐
+  └─ toEntityRef(query.object) ┤  EntityRef | TEntityInput → EntityRef
+                               │  (EntityRef → 직접 사용,
+                               │   도메인 객체 → resolveType → resolver 스캔)
+  └─ evaluateRelation(state, object, relation, user)
        └─ evaluateRelationTerm(state, term, object, user, relation)
             ├─ [direct] getRelationValues → entityMatches
             └─ [from]   getRelationValues → evaluateRelation (재귀)
@@ -151,6 +166,31 @@ check(query)
 - CLI 설정 탐색: `cosmiconfig` 사용 (`graplix.codegen.*`, `graplix-codegen.config.*`)
 - CLI 인수가 설정 파일 값보다 우선합니다.
 - 에디터 검증을 위해 `$schema`가 포함된 JSON 설정을 권장합니다.
+
+### 생성되는 엔티티 입력 타입
+
+codegen은 mapper 설정에 따라 `GraplixEntityInput`을 자동 생성합니다:
+
+```typescript
+// mapper 없음 → never (EntityRef만 허용)
+export type GraplixEntityInput = GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes];
+
+// mapper 있을 때 (e.g. user, repository에 mapper 지정)
+// GraplixEntityInput = Mapper_user | Mapper_repository
+```
+
+생성된 `createEngine`은 `GraplixEngine<TContext, GraplixEntityInput>`을 반환하므로, mapper가 등록된 타입은 `check`/`explain` 호출 시 도메인 엔티티를 직접 넘길 수 있습니다:
+
+```typescript
+// graplix.codegen.json: mappers 설정 후 생성된 코드 사용 예시
+const engine = createEngine({ resolvers, resolveType });
+
+await engine.check({
+  user: userEntity,   // Mapper_user 타입 직접 전달 가능
+  object: repoEntity, // Mapper_repository 타입 직접 전달 가능
+  relation: "owner",
+});
+```
 
 ---
 
