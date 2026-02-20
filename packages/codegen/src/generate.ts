@@ -580,7 +580,7 @@ export type GraplixResolvers<TContext = object> = {
 export type GraplixResolveType<TContext = object> = (
   value: GraplixResolveTypeValue,
   context: TContext,
-) => GraplixTypeName | null;
+) => GraplixTypeName;
 
 export interface BuildEngineOptions<TContext = object> {
   readonly resolvers: GraplixResolvers<TContext>;

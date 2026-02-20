@@ -219,16 +219,17 @@ export const issuesById = new Map(
 );
 
 export const resolveType: ResolveType<GithubContext> = (value) => {
-  if (typeof value !== "object" || value === null) return null;
-  const v = value as Record<string, unknown>;
-  // Each type is identified by a unique required field combination.
-  if ("reporterId" in v && "assigneeId" in v) return "issue";
-  if ("reviewerIds" in v) return "label";
-  if ("projectId" in v) return "artifact";
-  if ("organizationId" in v) return "repository";
-  if ("triageTeamIds" in v) return "project";
-  if ("triagerIds" in v) return "team";
-  if ("adminIds" in v) return "organization";
+  if (typeof value === "object" && value !== null) {
+    const v = value as Record<string, unknown>;
+    // Each type is identified by a unique required field combination.
+    if ("reporterId" in v && "assigneeId" in v) return "issue";
+    if ("reviewerIds" in v) return "label";
+    if ("projectId" in v) return "artifact";
+    if ("organizationId" in v) return "repository";
+    if ("triageTeamIds" in v) return "project";
+    if ("triagerIds" in v) return "team";
+    if ("adminIds" in v) return "organization";
+  }
   return "user";
 };
 

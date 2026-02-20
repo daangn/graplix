@@ -11,7 +11,11 @@ export interface BuildEngineOptions<TContext = object> {
   /** Type-specific data resolvers. */
   readonly resolvers: Resolvers<TContext>;
 
-  /** Runtime type resolver for arbitrary relation outputs. */
+  /**
+   * Maps any entity value to its Graplix type name.
+   * Must return the correct type for every entity the engine may encounter —
+   * including values returned by relation resolvers.
+   */
   readonly resolveType: ResolveType<TContext>;
 
   /**

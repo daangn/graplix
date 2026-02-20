@@ -17,15 +17,14 @@ export function toEntityRefList<TContext>(
   for (const entry of values) {
     let ref: EntityRef;
     try {
-      ref = toEntityRef(entry, state, allowedTargetTypes);
+      ref = toEntityRef(entry, state);
     } catch (error) {
       state.onError?.(error);
       continue;
     }
 
-    // Secondary guard for the resolveType path: toEntityRef limits the type
-    // hint scan to allowedTargetTypes, but resolveType runs unconditionally and
-    // may return a type that falls outside the allowed set.
+    // Guard against resolveType returning a type outside the schema-defined
+    // allowed set for this relation. Entities with unexpected types are skipped.
     if (allowedTargetTypes !== undefined && !allowedTargetTypes.has(ref.type)) {
       continue;
     }

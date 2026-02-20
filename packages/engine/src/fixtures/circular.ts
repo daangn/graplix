@@ -17,12 +17,7 @@ export const repositoriesById = new Map(
   repositories.map((repository) => [repository.id, repository] as const),
 );
 
-export const resolveType: ResolveType = (value) => {
-  if (typeof value === "object" && value !== null && "id" in value) {
-    return "repository";
-  }
-  return null;
-};
+export const resolveType: ResolveType = () => "repository";
 
 export const resolvers: Resolvers = {
   repository: {
