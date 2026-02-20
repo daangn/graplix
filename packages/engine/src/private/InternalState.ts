@@ -1,7 +1,7 @@
 import type { LRUCache } from "lru-cache";
+import type { EntityRef } from "../EntityRef";
 import type { Resolvers } from "../Resolvers";
 import type { ResolveType } from "../ResolveType";
-import type { EntityRef } from "./EntityRef";
 import type { ResolvedSchema } from "./ResolvedSchema";
 import type { TraceState } from "./TraceState";
 
@@ -23,5 +23,6 @@ export interface InternalState<TContext> {
   readonly relationValuesCache: LRUCache<string, readonly EntityRef[]>;
   readonly entityCache: LRUCache<string, CachedEntity>;
   readonly visited: Set<string>;
+  readonly onError: ((error: unknown) => void) | undefined;
   readonly trace?: TraceState;
 }

@@ -822,6 +822,7 @@ __metadata:
     "@types/node": "npm:^24.10.13"
     lru-cache: "npm:^11.2.6"
     tsdown: "npm:^0.20.3"
+    typescript: "npm:^5.9.3"
     vitest: "npm:^3.2.4"
   languageName: unknown
   linkType: soft

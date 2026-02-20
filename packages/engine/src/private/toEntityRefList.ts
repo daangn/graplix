@@ -1,12 +1,12 @@
-import type { EntityRef } from "./EntityRef";
+import type { EntityRef } from "../EntityRef";
 import type { InternalState } from "./InternalState";
 import { toEntityRef } from "./toEntityRef";
 
-export async function toEntityRefList<TContext>(
+export function toEntityRefList<TContext>(
   state: InternalState<TContext>,
   value: unknown,
   allowedTargetTypes?: ReadonlySet<string>,
-): Promise<readonly EntityRef[]> {
+): readonly EntityRef[] {
   if (value === null || value === undefined) {
     return [];
   }
@@ -17,13 +17,14 @@ export async function toEntityRefList<TContext>(
   for (const entry of values) {
     let ref: EntityRef;
     try {
-      ref = await toEntityRef(entry, state, allowedTargetTypes);
-    } catch {
+      ref = toEntityRef(entry, state, allowedTargetTypes);
+    } catch (error) {
+      state.onError?.(error);
       continue;
     }
 
-    // Secondary guard for the resolveType path: toEntityRef limits resolver
-    // scanning to allowedTargetTypes, but resolveType runs unconditionally and
+    // Secondary guard for the resolveType path: toEntityRef limits the type
+    // hint scan to allowedTargetTypes, but resolveType runs unconditionally and
     // may return a type that falls outside the allowed set.
     if (allowedTargetTypes !== undefined && !allowedTargetTypes.has(ref.type)) {
       continue;

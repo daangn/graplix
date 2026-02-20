@@ -28,4 +28,15 @@ export interface BuildEngineOptions<TContext = object> {
    * Default: 500.
    */
   readonly maxCacheSize?: number;
+
+  /**
+   * Called when an error is silently swallowed during evaluation.
+   *
+   * This happens when a relation resolver returns an entity whose type cannot
+   * be determined — the entity is skipped rather than failing the entire check.
+   * Use this callback to log, track metrics, or surface unexpected failures.
+   *
+   * Throwing from this callback will propagate the error and reject the check.
+   */
+  readonly onError?: (error: unknown) => void;
 }

@@ -1,4 +1,4 @@
-import type { EntityRef } from "./private/EntityRef";
+import type { EntityRef } from "./EntityRef";
 
 /**
  * Directed relation edge observed while evaluating a query.

@@ -1,8 +1,8 @@
 import { LRUCache } from "lru-cache";
 import type { BuildEngineOptions } from "./BuildEngineOptions";
 import type { CheckExplainResult } from "./CheckExplainResult";
+import type { EntityRef } from "./EntityRef";
 import type { GraplixEngine } from "./GraplixEngine";
-import type { EntityRef } from "./private/EntityRef";
 import { evaluateRelation } from "./private/evaluateRelation";
 import type { CachedEntity, InternalState } from "./private/InternalState";
 import { resolveSchema } from "./private/resolveSchema";
@@ -37,6 +37,7 @@ export async function buildEngine<TContext = object, TEntityInput = never>(
       }),
       entityCache: new LRUCache<string, CachedEntity>({ max: maxCacheSize }),
       visited: new Set<string>(),
+      onError: options.onError,
       trace,
     };
   };
@@ -46,8 +47,8 @@ export async function buildEngine<TContext = object, TEntityInput = never>(
   ): Promise<boolean> => {
     const state = createState(query.context);
 
-    const user = await toEntityRef(query.user, state);
-    const object = await toEntityRef(query.object, state);
+    const user = toEntityRef(query.user, state);
+    const object = toEntityRef(query.object, state);
 
     return evaluateRelation(state, object, query.relation, user);
   };
@@ -62,8 +63,8 @@ export async function buildEngine<TContext = object, TEntityInput = never>(
     };
     const state = createState(query.context, trace);
 
-    const user = await toEntityRef(query.user, state);
-    const object = await toEntityRef(query.object, state);
+    const user = toEntityRef(query.user, state);
+    const object = toEntityRef(query.object, state);
 
     const allowed = await evaluateRelation(state, object, query.relation, user);
 

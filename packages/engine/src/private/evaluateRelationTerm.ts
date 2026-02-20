@@ -1,7 +1,7 @@
 import type { GraplixRelationTerm } from "@graplix/language";
 import { isGraplixDirectTypes, isGraplixRelationFrom } from "@graplix/language";
 
-import type { EntityRef } from "./EntityRef";
+import type { EntityRef } from "../EntityRef";
 import { entityMatches } from "./entityMatches";
 import { evaluateRelation } from "./evaluateRelation";
 import { getRelationValues } from "./getRelationValues";

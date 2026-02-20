@@ -1,5 +1,5 @@
+import type { EntityRef } from "../EntityRef";
 import type { ResolverInfo } from "../ResolverInfo";
-import type { EntityRef } from "./EntityRef";
 import { getStateKey } from "./getStateKey";
 import type { InternalState } from "./InternalState";
 import { withTimeout } from "./withTimeout";

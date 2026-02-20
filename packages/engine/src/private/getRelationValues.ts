@@ -1,5 +1,5 @@
+import type { EntityRef } from "../EntityRef";
 import type { ResolverInfo } from "../ResolverInfo";
-import type { EntityRef } from "./EntityRef";
 import { getStateKey } from "./getStateKey";
 import type { InternalState } from "./InternalState";
 import { loadEntity } from "./loadEntity";
@@ -50,7 +50,7 @@ export async function getRelationValues<TContext>(
   }
 
   const relationResult = await relationPromise;
-  const normalizedValues = await toEntityRefList(
+  const normalizedValues = toEntityRefList(
     state,
     relationResult,
     allowedTargetTypes,

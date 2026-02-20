@@ -39,6 +39,27 @@ Example (`graplix.codegen.json`):
 
 CLI args override config values.
 
+## Generated API
+
+The generated file exports a `buildEngine` async factory function bound to
+your schema:
+
+```ts
+import { buildEngine } from "./schema.generated";
+
+const engine = await buildEngine({
+  resolvers: { ... },  // typed per your schema + mappers
+  resolveType: (value, context) => { ... },
+});
+
+const allowed = await engine.check({
+  user: myUser,
+  object: myRepo,
+  relation: "owner",
+  context: {},
+});
+```
+
 ## Programmatic API
 
 ```ts

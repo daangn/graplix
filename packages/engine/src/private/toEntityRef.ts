@@ -1,7 +1,5 @@
-import type { ResolverInfo } from "../ResolverInfo";
-import { EntityRef } from "./EntityRef";
+import { EntityRef } from "../EntityRef";
 import type { InternalState } from "./InternalState";
-import { withTimeout } from "./withTimeout";
 
 function describeValue(value: unknown): string {
   try {
@@ -12,80 +10,38 @@ function describeValue(value: unknown): string {
   }
 }
 
-export async function toEntityRef<TContext>(
+export function toEntityRef<TContext>(
   value: unknown,
   state: InternalState<TContext>,
   allowedTypes?: ReadonlySet<string>,
-): Promise<EntityRef> {
-  let lastError: Error | undefined;
-
-  try {
-    const resolvedType = state.resolveType(value, state.context);
-    if (resolvedType !== null) {
-      const resolver = state.resolvers[resolvedType];
-      if (resolver === undefined) {
-        throw new Error(
-          `resolveType returned "${resolvedType}" but no resolver is registered for that type.`,
-        );
-      }
-
-      const id = resolver.id(value);
-      return new EntityRef(resolvedType, id);
+): EntityRef {
+  // Path 1: resolveType — always tried first.
+  const resolvedType = state.resolveType(value, state.context);
+  if (resolvedType !== null) {
+    const resolver = state.resolvers[resolvedType];
+    if (resolver === undefined) {
+      throw new Error(
+        `resolveType returned "${resolvedType}" but no resolver is registered for that type.`,
+      );
     }
-  } catch (error) {
-    if (error instanceof Error) {
-      lastError = error;
-    }
+    return new EntityRef(resolvedType, resolver.id(value));
   }
 
-  const controller = new AbortController();
-  const scanInfo: ResolverInfo = { signal: controller.signal };
-
-  // When allowedTypes is provided, limit scanning to those resolvers only.
-  const resolverEntries = Object.entries(state.resolvers).filter(
-    ([typeName]) => allowedTypes === undefined || allowedTypes.has(typeName),
-  );
-
-  for (const [typeName, resolver] of resolverEntries) {
-    try {
-      const id = resolver.id(value);
-
-      let loadPromise = resolver.load(id, state.context, scanInfo);
-      if (state.resolverTimeoutMs !== undefined) {
-        const timed = withTimeout(
-          loadPromise,
-          state.resolverTimeoutMs,
-          `${typeName}.load("${id}")`,
-        );
-        timed.catch(() => controller.abort());
-        loadPromise = timed;
-      }
-
-      const loaded = await loadPromise;
-
-      if (loaded === null) {
-        continue;
-      }
-
-      if (loaded === value) {
-        return new EntityRef(typeName, id);
-      }
-
-      if (resolver.id(loaded) === id) {
-        return new EntityRef(typeName, id);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        lastError = error;
-      }
+  // Path 2: schema type hint — used for relation resolver outputs where the
+  // schema already narrows the possible target types. Tries each allowed
+  // resolver's id() without any load() call.
+  if (allowedTypes !== undefined) {
+    for (const typeName of allowedTypes) {
+      const resolver = state.resolvers[typeName];
+      if (resolver === undefined) continue;
+      try {
+        return new EntityRef(typeName, resolver.id(value));
+      } catch {}
     }
   }
 
   const valueDesc = describeValue(value);
-  const contextMessage =
-    lastError === undefined ? "" : ` Last error: ${lastError.message}`;
-
   throw new Error(
-    `Cannot resolve entity type for value: ${valueDesc}. Provide resolveType, or provide a matching resolver id/load pair.${contextMessage}`,
+    `Cannot resolve entity type for value: ${valueDesc}. Implement resolveType to identify entity types.`,
   );
 }
