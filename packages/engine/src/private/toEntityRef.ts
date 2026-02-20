@@ -1,8 +1,6 @@
 import type { ResolverInfo } from "../ResolverInfo";
 import { EntityRef } from "./EntityRef";
 import type { InternalState } from "./InternalState";
-import { isEntityRef } from "./isEntityRef";
-import { withTimeout } from "./withTimeout";
 
 function describeValue(value: unknown): string {
   try {
@@ -16,27 +14,12 @@ function describeValue(value: unknown): string {
 export async function toEntityRef<TContext>(
   value: unknown,
   state: InternalState<TContext>,
+  allowedTypes?: ReadonlySet<string>,
 ): Promise<EntityRef> {
-  // Fast path: already an EntityRef instance.
-  if (isEntityRef(value)) {
-    return value;
-  }
-
   let lastError: Error | undefined;
 
   try {
-    let resolveTypePromise = Promise.resolve(
-      state.resolveType(value, state.context),
-    );
-    if (state.resolverTimeoutMs !== undefined) {
-      resolveTypePromise = withTimeout(
-        resolveTypePromise,
-        state.resolverTimeoutMs,
-        "resolveType",
-      );
-    }
-
-    const resolvedType = await resolveTypePromise;
+    const resolvedType = state.resolveType(value, state.context);
     if (resolvedType !== null) {
       const resolver = state.resolvers[resolvedType];
       if (resolver === undefined) {
@@ -56,7 +39,12 @@ export async function toEntityRef<TContext>(
 
   const scanInfo: ResolverInfo = { signal: new AbortController().signal };
 
-  for (const [typeName, resolver] of Object.entries(state.resolvers)) {
+  // When allowedTypes is provided, limit scanning to those resolvers only.
+  const resolverEntries = Object.entries(state.resolvers).filter(
+    ([typeName]) => allowedTypes === undefined || allowedTypes.has(typeName),
+  );
+
+  for (const [typeName, resolver] of resolverEntries) {
     try {
       const id = resolver.id(value);
       const loaded = await resolver.load(id, state.context, scanInfo);
@@ -84,6 +72,6 @@ export async function toEntityRef<TContext>(
     lastError === undefined ? "" : ` Last error: ${lastError.message}`;
 
   throw new Error(
-    `Cannot resolve entity type for value: ${valueDesc}. Add { type, id } fields, provide resolveType, or provide a matching resolver id/load pair.${contextMessage}`,
+    `Cannot resolve entity type for value: ${valueDesc}. Provide resolveType, or provide a matching resolver id/load pair.${contextMessage}`,
   );
 }

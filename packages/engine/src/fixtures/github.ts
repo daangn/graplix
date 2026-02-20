@@ -1,5 +1,4 @@
 import { readFile } from "node:fs/promises";
-import { EntityRef } from "../private/EntityRef";
 import type { Resolvers } from "../Resolvers";
 import type { ResolveType } from "../ResolveType";
 
@@ -239,16 +238,18 @@ export const resolvers: Resolvers<GithubContext> = {
     },
     relations: {
       admin(organization: unknown) {
-        const organizationValue = organization as Organization;
-        return organizationValue.adminIds.map(
-          (id) => new EntityRef("user", id),
-        );
+        const org = organization as Organization;
+        return org.adminIds.flatMap((id) => {
+          const user = usersById.get(id);
+          return user !== undefined ? [user] : [];
+        });
       },
       member(organization: unknown) {
-        const organizationValue = organization as Organization;
-        return organizationValue.memberIds.map(
-          (id) => new EntityRef("user", id),
-        );
+        const org = organization as Organization;
+        return org.memberIds.flatMap((id) => {
+          const user = usersById.get(id);
+          return user !== undefined ? [user] : [];
+        });
       },
     },
   },
@@ -261,20 +262,32 @@ export const resolvers: Resolvers<GithubContext> = {
     },
     relations: {
       owner(team: unknown) {
-        const teamValue = team as Team;
-        return teamValue.ownerIds.map((id) => new EntityRef("user", id));
+        const t = team as Team;
+        return t.ownerIds.flatMap((id) => {
+          const user = usersById.get(id);
+          return user !== undefined ? [user] : [];
+        });
       },
       maintainer(team: unknown) {
-        const teamValue = team as Team;
-        return teamValue.maintainerIds.map((id) => new EntityRef("user", id));
+        const t = team as Team;
+        return t.maintainerIds.flatMap((id) => {
+          const user = usersById.get(id);
+          return user !== undefined ? [user] : [];
+        });
       },
       triager(team: unknown) {
-        const teamValue = team as Team;
-        return teamValue.triagerIds.map((id) => new EntityRef("user", id));
+        const t = team as Team;
+        return t.triagerIds.flatMap((id) => {
+          const user = usersById.get(id);
+          return user !== undefined ? [user] : [];
+        });
       },
       member(team: unknown) {
-        const teamValue = team as Team;
-        return teamValue.memberIds.map((id) => new EntityRef("user", id));
+        const t = team as Team;
+        return t.memberIds.flatMap((id) => {
+          const user = usersById.get(id);
+          return user !== undefined ? [user] : [];
+        });
       },
     },
   },
@@ -287,22 +300,29 @@ export const resolvers: Resolvers<GithubContext> = {
     },
     relations: {
       team(project: unknown) {
-        const projectValue = project as Project;
-        return projectValue.teamIds.map((id) => new EntityRef("team", id));
+        const p = project as Project;
+        return p.teamIds.flatMap((id) => {
+          const team = teamsById.get(id);
+          return team !== undefined ? [team] : [];
+        });
       },
       triage_team(project: unknown) {
-        const projectValue = project as Project;
-        return projectValue.triageTeamIds.map(
-          (id) => new EntityRef("team", id),
-        );
+        const p = project as Project;
+        return p.triageTeamIds.flatMap((id) => {
+          const team = teamsById.get(id);
+          return team !== undefined ? [team] : [];
+        });
       },
       approver(project: unknown) {
-        const projectValue = project as Project;
-        return projectValue.approverIds.map((id) => new EntityRef("user", id));
+        const p = project as Project;
+        return p.approverIds.flatMap((id) => {
+          const user = usersById.get(id);
+          return user !== undefined ? [user] : [];
+        });
       },
       self(project: unknown) {
-        const projectValue = project as Project;
-        return new EntityRef("project", projectValue.id);
+        const p = project as Project;
+        return projectsById.get(p.id) ?? null;
       },
     },
   },
@@ -315,20 +335,25 @@ export const resolvers: Resolvers<GithubContext> = {
     },
     relations: {
       owner(repository: unknown, context: GithubContext) {
-        const repositoryValue = repository as Repository;
+        const repo = repository as Repository;
         if (context.shouldReadOwner === false) {
           return [];
         }
-
-        return repositoryValue.ownerIds.map((id) => new EntityRef("user", id));
+        return repo.ownerIds.flatMap((id) => {
+          const user = usersById.get(id);
+          return user !== undefined ? [user] : [];
+        });
       },
       team(repository: unknown) {
-        const repositoryValue = repository as Repository;
-        return repositoryValue.teamIds.map((id) => new EntityRef("team", id));
+        const repo = repository as Repository;
+        return repo.teamIds.flatMap((id) => {
+          const team = teamsById.get(id);
+          return team !== undefined ? [team] : [];
+        });
       },
       organization(repository: unknown) {
-        const repositoryValue = repository as Repository;
-        return new EntityRef("organization", repositoryValue.organizationId);
+        const repo = repository as Repository;
+        return organizationsById.get(repo.organizationId) ?? null;
       },
     },
   },
@@ -341,8 +366,8 @@ export const resolvers: Resolvers<GithubContext> = {
     },
     relations: {
       project(artifact: unknown) {
-        const artifactValue = artifact as Artifact;
-        return new EntityRef("project", artifactValue.projectId);
+        const a = artifact as Artifact;
+        return projectsById.get(a.projectId) ?? null;
       },
     },
   },
@@ -355,8 +380,11 @@ export const resolvers: Resolvers<GithubContext> = {
     },
     relations: {
       reviewer(label: unknown) {
-        const labelValue = label as Label;
-        return labelValue.reviewerIds.map((id) => new EntityRef("user", id));
+        const l = label as Label;
+        return l.reviewerIds.flatMap((id) => {
+          const user = usersById.get(id);
+          return user !== undefined ? [user] : [];
+        });
       },
     },
   },
@@ -369,20 +397,20 @@ export const resolvers: Resolvers<GithubContext> = {
     },
     relations: {
       reporter(issue: unknown) {
-        const issueValue = issue as Issue;
-        return new EntityRef("user", issueValue.reporterId);
+        const i = issue as Issue;
+        return usersById.get(i.reporterId) ?? null;
       },
       assignee(issue: unknown) {
-        const issueValue = issue as Issue;
-        return new EntityRef("user", issueValue.assigneeId);
+        const i = issue as Issue;
+        return usersById.get(i.assigneeId) ?? null;
       },
       project(issue: unknown) {
-        const issueValue = issue as Issue;
-        return new EntityRef("project", issueValue.projectId);
+        const i = issue as Issue;
+        return projectsById.get(i.projectId) ?? null;
       },
       label(issue: unknown) {
-        const issueValue = issue as Issue;
-        return new EntityRef("label", issueValue.labelId);
+        const i = issue as Issue;
+        return labelsById.get(i.labelId) ?? null;
       },
     },
   },

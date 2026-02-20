@@ -17,7 +17,7 @@ export async function toEntityRefList<TContext>(
   for (const entry of values) {
     let ref: EntityRef;
     try {
-      ref = await toEntityRef(entry, state);
+      ref = await toEntityRef(entry, state, allowedTargetTypes);
     } catch {
       continue;
     }

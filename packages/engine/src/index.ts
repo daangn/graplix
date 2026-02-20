@@ -3,7 +3,6 @@ export { buildEngine } from "./buildEngine";
 export type { CheckEdge } from "./CheckEdge";
 export type { CheckExplainResult } from "./CheckExplainResult";
 export type { GraplixEngine } from "./GraplixEngine";
-export { EntityRef } from "./private/EntityRef";
 export type { Query } from "./Query";
 export type { Resolver } from "./Resolver";
 export type { ResolverInfo } from "./ResolverInfo";

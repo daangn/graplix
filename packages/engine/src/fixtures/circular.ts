@@ -1,5 +1,4 @@
 import { readFile } from "node:fs/promises";
-import { EntityRef } from "../private/EntityRef";
 import type { Resolvers } from "../Resolvers";
 import type { ResolveType } from "../ResolveType";
 
@@ -31,15 +30,15 @@ export const resolvers: Resolvers = {
     relations: {
       a(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return new EntityRef("repository", repositoryValue.id);
+        return repositoriesById.get(repositoryValue.id) ?? null;
       },
       b(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return new EntityRef("repository", repositoryValue.id);
+        return repositoriesById.get(repositoryValue.id) ?? null;
       },
       c(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return new EntityRef("repository", repositoryValue.id);
+        return repositoriesById.get(repositoryValue.id) ?? null;
       },
     },
   },

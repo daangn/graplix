@@ -521,14 +521,8 @@ export type GraplixEntityInput = GraplixProvidedMapperTypes[keyof GraplixProvide
 
 export type GraplixResolveTypeValue = ${resolveTypeValue};
 
-export interface GraplixEntityRef<TTypeName extends GraplixTypeName = GraplixTypeName> {
-  readonly type: TTypeName;
-  readonly id: string;
-}
-
 export type GraplixRelationResolverValue<TTypeName extends GraplixTypeName> =
-  | GraplixMapperTypes[TTypeName]
-  | GraplixEntityRef<TTypeName>;
+  GraplixMapperTypes[TTypeName];
 
 export type GraplixRelationResolverResult<TTypeName extends GraplixTypeName> =
   | GraplixRelationResolverValue<TTypeName>
@@ -586,7 +580,7 @@ export type GraplixResolvers<TContext = object> = {
 export type GraplixResolveType<TContext = object> = (
   value: GraplixResolveTypeValue,
   context: TContext,
-) => GraplixTypeName | null | Promise<GraplixTypeName | null>;
+) => GraplixTypeName | null;
 
 export interface BuildEngineOptions<TContext = object> {
   readonly resolvers: GraplixResolvers<TContext>;
