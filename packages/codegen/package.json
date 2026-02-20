@@ -1,6 +1,6 @@
 {
   "name": "@graplix/codegen",
-  "version": "2.1.3",
+  "version": "2.2.0",
   "description": "Code generation toolkit and CLI for Graplix TypeScript helpers",
   "keywords": [
     "graplix",

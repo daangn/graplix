@@ -1,5 +1,12 @@
 # @graplix/codegen
 
+## 2.2.0
+
+### Minor Changes
+
+- 107e7f8: feat: change query input to `EntityRef` or `Entity` type
+- 107e7f8: BREAKING CHANGE: Timeout and cache settings have been added. Previously, you could pass an EntityRef, but the overall usage has been revised to pass the Entity itself. Internal improvements have been made.
+
 ## 2.1.3
 
 ### Patch Changes
