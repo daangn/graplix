@@ -22,6 +22,9 @@ export async function toEntityRefList<TContext>(
       continue;
     }
 
+    // Secondary guard for the resolveType path: toEntityRef limits resolver
+    // scanning to allowedTargetTypes, but resolveType runs unconditionally and
+    // may return a type that falls outside the allowed set.
     if (allowedTargetTypes !== undefined && !allowedTargetTypes.has(ref.type)) {
       continue;
     }

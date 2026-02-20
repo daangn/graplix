@@ -1,6 +1,7 @@
 import type { ResolverInfo } from "../ResolverInfo";
 import { EntityRef } from "./EntityRef";
 import type { InternalState } from "./InternalState";
+import { withTimeout } from "./withTimeout";
 
 function describeValue(value: unknown): string {
   try {
@@ -37,7 +38,8 @@ export async function toEntityRef<TContext>(
     }
   }
 
-  const scanInfo: ResolverInfo = { signal: new AbortController().signal };
+  const controller = new AbortController();
+  const scanInfo: ResolverInfo = { signal: controller.signal };
 
   // When allowedTypes is provided, limit scanning to those resolvers only.
   const resolverEntries = Object.entries(state.resolvers).filter(
@@ -47,7 +49,19 @@ export async function toEntityRef<TContext>(
   for (const [typeName, resolver] of resolverEntries) {
     try {
       const id = resolver.id(value);
-      const loaded = await resolver.load(id, state.context, scanInfo);
+
+      let loadPromise = resolver.load(id, state.context, scanInfo);
+      if (state.resolverTimeoutMs !== undefined) {
+        const timed = withTimeout(
+          loadPromise,
+          state.resolverTimeoutMs,
+          `${typeName}.load("${id}")`,
+        );
+        timed.catch(() => controller.abort());
+        loadPromise = timed;
+      }
+
+      const loaded = await loadPromise;
 
       if (loaded === null) {
         continue;

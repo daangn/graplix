@@ -16,7 +16,7 @@ export interface BuildEngineOptions<TContext = object> {
 
   /**
    * Timeout in milliseconds applied to each individual resolver call
-   * (`load`, relation resolvers, `resolveType`).
+   * (`load` and relation resolvers).
    * If a call exceeds this limit it rejects with a timeout error.
    * Omit (or set to `undefined`) to disable timeouts.
    */

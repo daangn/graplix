@@ -3,7 +3,9 @@ export function withTimeout<T>(
   ms: number,
   label: string,
 ): Promise<T> {
-  let timeoutId: ReturnType<typeof setTimeout>;
+  // The Promise executor runs synchronously, so timeoutId is always assigned
+  // before the .finally() callback can fire. The non-null assertion reflects this.
+  let timeoutId!: ReturnType<typeof setTimeout>;
 
   const timeoutPromise = new Promise<never>((_, reject) => {
     timeoutId = setTimeout(() => {
