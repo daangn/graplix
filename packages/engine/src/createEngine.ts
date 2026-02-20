@@ -45,7 +45,7 @@ export function createEngine<TContext = object, TEntityInput = never>(
     query: Query<TContext, TEntityInput>,
   ): Promise<boolean> => {
     const schema = await resolvedSchema;
-    const context = query.context ?? ({} as TContext);
+    const context = query.context;
     const state = createState(context, schema);
 
     const user = await toEntityRef(query.user, state);
@@ -58,7 +58,7 @@ export function createEngine<TContext = object, TEntityInput = never>(
     query: Query<TContext, TEntityInput>,
   ): Promise<CheckExplainResult> => {
     const schema = await resolvedSchema;
-    const context = query.context ?? ({} as TContext);
+    const context = query.context;
     const trace: TraceState = {
       exploredEdges: [],
       currentPath: [],

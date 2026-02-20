@@ -10,5 +10,5 @@ export interface Query<TContext = object, TEntityInput = never> {
   readonly user: EntityRef | TEntityInput;
   readonly object: EntityRef | TEntityInput;
   readonly relation: string;
-  readonly context?: TContext;
+  readonly context: TContext;
 }

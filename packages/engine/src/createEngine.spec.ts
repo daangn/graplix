@@ -17,6 +17,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: { type: "organization", id: "organization-0" },
         relation: "member",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -24,6 +25,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "u-cto" },
         object: { type: "organization", id: "organization-0" },
         relation: "admin",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -31,6 +33,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-4" },
         object: { type: "organization", id: "organization-0" },
         relation: "member",
+        context: {},
       }),
     ).toBe(false);
   });
@@ -47,6 +50,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: { type: "repository", id: "repository-0" },
         relation: "can_delete",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -54,6 +58,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-2" },
         object: { type: "repository", id: "repository-0" },
         relation: "can_delete",
+        context: {},
       }),
     ).toBe(false);
   });
@@ -70,6 +75,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: { type: "artifact", id: "artifact-0" },
         relation: "can_delete",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -77,6 +83,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-3" },
         object: { type: "artifact", id: "artifact-0" },
         relation: "can_delete",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -84,6 +91,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-2" },
         object: { type: "artifact", id: "artifact-0" },
         relation: "can_delete",
+        context: {},
       }),
     ).toBe(false);
     expect(
@@ -91,6 +99,7 @@ describe("createEngine", () => {
         user: { type: "project", id: "project-core" },
         object: { type: "project", id: "project-core" },
         relation: "self",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -98,6 +107,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: { type: "artifact", id: "artifact-0" },
         relation: "can_touch",
+        context: {},
       }),
     ).toBe(false);
   });
@@ -114,6 +124,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "u-platform-owner" },
         object: { type: "repository", id: "repo-api" },
         relation: "write",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -121,6 +132,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "u-platform-maintainer" },
         object: { type: "repository", id: "repo-api" },
         relation: "write",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -128,6 +140,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "u-cto" },
         object: { type: "repository", id: "repo-api" },
         relation: "admin",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -135,6 +148,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "u-platform-owner" },
         object: { type: "repository", id: "repo-api" },
         relation: "admin",
+        context: {},
       }),
     ).toBe(true);
   });
@@ -151,6 +165,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: { type: "repository", id: "repository-0" },
         relation: "resolver_not_found",
+        context: {},
       }),
     ).toBe(false);
   });
@@ -167,6 +182,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-default" },
         object: { type: "repository", id: "repo-4" },
         relation: "owner",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -191,6 +207,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-1" },
         object: { type: "repository", id: "repository-1" },
         relation: "owner",
+        context: {},
       }),
     ).toBe(true);
   });
@@ -207,6 +224,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: { type: "repository", id: "repository-0" },
         relation: "owner",
+        context: {},
       }),
     ).toBe(true);
   });
@@ -223,6 +241,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "u-qa" },
         object: { type: "issue", id: "issue-101" },
         relation: "can_edit",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -230,6 +249,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "u-security" },
         object: { type: "issue", id: "issue-101" },
         relation: "can_approve",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -237,6 +257,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "u-reporter" },
         object: { type: "issue", id: "issue-101" },
         relation: "can_close",
+        context: {},
       }),
     ).toBe(true);
     expect(
@@ -244,6 +265,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "u-platform-maintainer" },
         object: { type: "issue", id: "issue-202" },
         relation: "can_edit",
+        context: {},
       }),
     ).toBe(false);
   });
@@ -259,6 +281,7 @@ describe("createEngine", () => {
       user: { type: "user", id: "user-1" },
       object: { type: "repository", id: "repository-1" },
       relation: "owner",
+      context: {},
     });
 
     expect(result.allowed).toBe(true);
@@ -281,6 +304,7 @@ describe("createEngine", () => {
       user: { type: "user", id: "user-4" },
       object: { type: "repository", id: "repo-api" },
       relation: "admin",
+      context: {},
     });
 
     expect(result.allowed).toBe(false);
@@ -312,6 +336,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: org,
         relation: "member",
+        context: {},
       }),
     ).toBe(true);
 
@@ -320,6 +345,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-4" },
         object: org,
         relation: "member",
+        context: {},
       }),
     ).toBe(false);
   });
@@ -348,6 +374,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: { type: "organization", id: "organization-0" },
         relation: "member",
+        context: {},
       }),
     ).rejects.toThrow(/timed out after 50ms/);
   });
@@ -379,6 +406,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: { type: "organization", id: "organization-0" },
         relation: "member",
+        context: {},
       }),
     ).rejects.toThrow(/timed out after 50ms/);
   });
@@ -396,6 +424,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: { type: "organization", id: "organization-0" },
         relation: "member",
+        context: {},
       }),
     ).toBe(true);
   });
@@ -412,6 +441,7 @@ describe("createEngine", () => {
         user: { type: "repository", id: "repository-cycle" },
         object: { type: "repository", id: "repository-cycle" },
         relation: "a",
+        context: {},
       }),
     ).toBe(false);
   });
@@ -428,6 +458,7 @@ describe("createEngine", () => {
         user: { type: "user", id: "user-0" },
         object: { type: "repository", id: "repository-0" },
         relation: "owner",
+        context: {},
       }),
     ).rejects.toThrow(/Invalid Graplix schema/);
   });
