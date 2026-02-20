@@ -1,3 +1,4 @@
+import type { ResolverInfo } from "../ResolverInfo";
 import { EntityRef } from "./EntityRef";
 import type { InternalState } from "./InternalState";
 import { isEntityRef } from "./isEntityRef";
@@ -53,10 +54,12 @@ export async function toEntityRef<TContext>(
     }
   }
 
+  const scanInfo: ResolverInfo = { signal: new AbortController().signal };
+
   for (const [typeName, resolver] of Object.entries(state.resolvers)) {
     try {
       const id = resolver.id(value);
-      const loaded = await resolver.load(id, state.context);
+      const loaded = await resolver.load(id, state.context, scanInfo);
 
       if (loaded === null) {
         continue;

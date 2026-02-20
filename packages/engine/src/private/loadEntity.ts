@@ -1,3 +1,4 @@
+import type { ResolverInfo } from "../ResolverInfo";
 import type { EntityRef } from "./EntityRef";
 import { getStateKey } from "./getStateKey";
 import type { InternalState } from "./InternalState";
@@ -18,13 +19,18 @@ export async function loadEntity<TContext>(
     return null;
   }
 
-  let loadPromise = resolver.load(ref.id, state.context);
+  const controller = new AbortController();
+  const info: ResolverInfo = { signal: controller.signal };
+
+  let loadPromise = resolver.load(ref.id, state.context, info);
   if (state.resolverTimeoutMs !== undefined) {
-    loadPromise = withTimeout(
+    const timed = withTimeout(
       loadPromise,
       state.resolverTimeoutMs,
       `${ref.type}.load("${ref.id}")`,
     );
+    timed.catch(() => controller.abort());
+    loadPromise = timed;
   }
 
   const loaded = await loadPromise;

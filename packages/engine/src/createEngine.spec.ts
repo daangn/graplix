@@ -394,9 +394,9 @@ describe("createEngine", () => {
         ...githubFixture.resolvers,
         organization: {
           ...baseOrgResolver,
-          async load(id, context) {
+          async load(id, context, info) {
             await new Promise((resolve) => setTimeout(resolve, 200));
-            return baseOrgResolver.load(id, context);
+            return baseOrgResolver.load(id, context, info);
           },
         },
       },
@@ -431,9 +431,9 @@ describe("createEngine", () => {
           ...baseOrgResolver,
           relations: {
             ...baseOrgResolver.relations,
-            async member(entity, context) {
+            async member(entity, context, info) {
               await new Promise((resolve) => setTimeout(resolve, 200));
-              return baseOrgResolver.relations?.member?.(entity, context);
+              return baseOrgResolver.relations?.member?.(entity, context, info);
             },
           },
         },

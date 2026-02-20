@@ -1,3 +1,4 @@
+import type { ResolverInfo } from "../ResolverInfo";
 import type { EntityRef } from "./EntityRef";
 import { getStateKey } from "./getStateKey";
 import type { InternalState } from "./InternalState";
@@ -32,15 +33,20 @@ export async function getRelationValues<TContext>(
     return [];
   }
 
+  const controller = new AbortController();
+  const info: ResolverInfo = { signal: controller.signal };
+
   let relationPromise = Promise.resolve(
-    relationResolver(loadedObject, state.context),
+    relationResolver(loadedObject, state.context, info),
   );
   if (state.resolverTimeoutMs !== undefined) {
-    relationPromise = withTimeout(
+    const timed = withTimeout(
       relationPromise,
       state.resolverTimeoutMs,
       `${object.type}.relations.${relation}`,
     );
+    timed.catch(() => controller.abort());
+    relationPromise = timed;
   }
 
   const relationResult = await relationPromise;

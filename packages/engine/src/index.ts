@@ -6,5 +6,6 @@ export type { GraplixOptions } from "./GraplixOptions";
 export { EntityRef } from "./private/EntityRef";
 export type { Query } from "./Query";
 export type { Resolver } from "./Resolver";
+export type { ResolverInfo } from "./ResolverInfo";
 export type { Resolvers } from "./Resolvers";
 export type { ResolveType } from "./ResolveType";

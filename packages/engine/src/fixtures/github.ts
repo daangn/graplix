@@ -219,7 +219,6 @@ export const issuesById = new Map(
   issues.map((issue) => [issue.id, issue] as const),
 );
 
-
 export const resolveType: ResolveType<GithubContext> = () => null;
 
 export const resolvers: Resolvers<GithubContext> = {
@@ -241,11 +240,15 @@ export const resolvers: Resolvers<GithubContext> = {
     relations: {
       admin(organization: unknown) {
         const organizationValue = organization as Organization;
-        return organizationValue.adminIds.map((id) => new EntityRef("user", id));
+        return organizationValue.adminIds.map(
+          (id) => new EntityRef("user", id),
+        );
       },
       member(organization: unknown) {
         const organizationValue = organization as Organization;
-        return organizationValue.memberIds.map((id) => new EntityRef("user", id));
+        return organizationValue.memberIds.map(
+          (id) => new EntityRef("user", id),
+        );
       },
     },
   },
@@ -289,7 +292,9 @@ export const resolvers: Resolvers<GithubContext> = {
       },
       triage_team(project: unknown) {
         const projectValue = project as Project;
-        return projectValue.triageTeamIds.map((id) => new EntityRef("team", id));
+        return projectValue.triageTeamIds.map(
+          (id) => new EntityRef("team", id),
+        );
       },
       approver(project: unknown) {
         const projectValue = project as Project;
