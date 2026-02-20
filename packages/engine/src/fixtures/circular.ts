@@ -7,17 +7,22 @@ export const schema = await readFile(
   "utf8",
 );
 
-type Repository = {
+export type Repository = {
   readonly id: string;
 };
 
 const repositories: Repository[] = [{ id: "repository-cycle" }];
 
-const repositoriesById = new Map(
+export const repositoriesById = new Map(
   repositories.map((repository) => [repository.id, repository] as const),
 );
 
-export const resolveType: ResolveType = () => null;
+export const resolveType: ResolveType = (value) => {
+  if (typeof value === "object" && value !== null && "id" in value) {
+    return "repository";
+  }
+  return null;
+};
 
 export const resolvers: Resolvers = {
   repository: {
@@ -30,15 +35,15 @@ export const resolvers: Resolvers = {
     relations: {
       a(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return { type: "repository", id: repositoryValue.id };
+        return repositoriesById.get(repositoryValue.id) ?? null;
       },
       b(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return { type: "repository", id: repositoryValue.id };
+        return repositoriesById.get(repositoryValue.id) ?? null;
       },
       c(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return { type: "repository", id: repositoryValue.id };
+        return repositoriesById.get(repositoryValue.id) ?? null;
       },
     },
   },

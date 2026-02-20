@@ -479,8 +479,9 @@ export async function generateTypeScript(
   const schemaLiteral = toSchemaTemplateLiteral(options.schema);
 
   const content = `${mapperImports}import {
-  createEngine as createBaseEngine,
+  buildEngine as buildBaseEngine,
   type GraplixEngine,
+  type ResolverInfo,
 } from "@graplix/engine";
 
 const graplix = String.raw;
@@ -516,16 +517,12 @@ export interface GraplixProvidedMapperTypes {
 ${providedMapperEntries}
 }
 
+export type GraplixEntityInput = GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes];
+
 export type GraplixResolveTypeValue = ${resolveTypeValue};
 
-export interface GraplixEntityRef<TTypeName extends GraplixTypeName = GraplixTypeName> {
-  readonly type: TTypeName;
-  readonly id: string;
-}
-
 export type GraplixRelationResolverValue<TTypeName extends GraplixTypeName> =
-  | GraplixMapperTypes[TTypeName]
-  | GraplixEntityRef<TTypeName>;
+  GraplixMapperTypes[TTypeName];
 
 export type GraplixRelationResolverResult<TTypeName extends GraplixTypeName> =
   | GraplixRelationResolverValue<TTypeName>
@@ -560,6 +557,7 @@ export type GraplixResolverRelations<
     : never]: (
     entity: GraplixMapperTypes[TTypeName],
     context: TContext,
+    info: ResolverInfo,
   ) =>
     | GraplixRelationResolverResult<
       GraplixResolverRelationTargetTypeName<TTypeName, TRelationName>
@@ -574,7 +572,7 @@ export type GraplixResolverRelations<
 export type GraplixResolvers<TContext = object> = {
   [TTypeName in GraplixTypeName]: {
     id(entity: GraplixMapperTypes[TTypeName]): string;
-    load(id: string, context: TContext): Promise<GraplixMapperTypes[TTypeName] | null>;
+    load(id: string, context: TContext, info: ResolverInfo): Promise<GraplixMapperTypes[TTypeName] | null>;
     relations?: GraplixResolverRelations<TTypeName, TContext>;
   };
 };
@@ -582,17 +580,17 @@ export type GraplixResolvers<TContext = object> = {
 export type GraplixResolveType<TContext = object> = (
   value: GraplixResolveTypeValue,
   context: TContext,
-) => GraplixTypeName | null | Promise<GraplixTypeName | null>;
+) => GraplixTypeName | null;
 
-export interface CreateGeneratedEngineOptions<TContext = object> {
+export interface BuildEngineOptions<TContext = object> {
   readonly resolvers: GraplixResolvers<TContext>;
   readonly resolveType: GraplixResolveType<TContext>;
 };
 
-export function createEngine<TContext = object>(
-  options: CreateGeneratedEngineOptions<TContext>,
-): GraplixEngine<TContext> {
-  return createBaseEngine({
+export async function buildEngine<TContext = object>(
+  options: BuildEngineOptions<TContext>,
+): Promise<GraplixEngine<TContext, GraplixEntityInput>> {
+  return buildBaseEngine<TContext, GraplixEntityInput>({
     schema,
     resolvers: options.resolvers,
     resolveType: (value, context) =>

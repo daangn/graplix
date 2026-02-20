@@ -22,8 +22,9 @@ Langium-based parser and language services for Graplix schemas.
 
 Runtime evaluator for schema-defined relations.
 
-- `check(query)` for boolean authorization checks.
-- `explain(query)` for traversed relation edges and matched path.
+- `buildEngine(options)` — async factory, validates schema eagerly.
+- `engine.check(query)` for boolean authorization checks.
+- `engine.explain(query)` for traversed relation edges and matched path.
 - README: [`packages/engine/README.md`](packages/engine/README.md)
 
 ### `@graplix/codegen`
