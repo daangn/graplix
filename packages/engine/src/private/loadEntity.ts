@@ -1,23 +1,34 @@
 import type { EntityRef } from "./EntityRef";
 import { getStateKey } from "./getStateKey";
 import type { InternalState } from "./InternalState";
+import { withTimeout } from "./withTimeout";
 
 export async function loadEntity<TContext>(
   state: InternalState<TContext>,
-  object: EntityRef,
+  ref: EntityRef,
 ): Promise<unknown | null> {
-  const cacheKey = getStateKey(object.type, object.id);
-  if (state.entityCache.has(cacheKey)) {
-    return state.entityCache.get(cacheKey) ?? null;
+  const cacheKey = getStateKey(ref.type, ref.id);
+  const cached = state.entityCache.get(cacheKey);
+  if (cached !== undefined) {
+    return cached.value;
   }
 
-  const resolver = state.resolvers[object.type];
+  const resolver = state.resolvers[ref.type];
   if (resolver === undefined) {
     return null;
   }
 
-  const loaded = await resolver.load(object.id, state.context);
-  state.entityCache.set(cacheKey, loaded);
+  let loadPromise = resolver.load(ref.id, state.context);
+  if (state.resolverTimeoutMs !== undefined) {
+    loadPromise = withTimeout(
+      loadPromise,
+      state.resolverTimeoutMs,
+      `${ref.type}.load("${ref.id}")`,
+    );
+  }
+
+  const loaded = await loadPromise;
+  state.entityCache.set(cacheKey, { value: loaded });
 
   return loaded;
 }

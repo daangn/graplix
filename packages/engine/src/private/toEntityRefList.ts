@@ -15,7 +15,12 @@ export async function toEntityRefList<TContext>(
   const resolved: EntityRef[] = [];
 
   for (const entry of values) {
-    const ref = await toEntityRef(entry, state);
+    let ref: EntityRef;
+    try {
+      ref = await toEntityRef(entry, state);
+    } catch {
+      continue;
+    }
 
     if (allowedTargetTypes !== undefined && !allowedTargetTypes.has(ref.type)) {
       continue;

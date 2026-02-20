@@ -1,13 +1,16 @@
+import { LRUCache } from "lru-cache";
 import type { CheckExplainResult } from "./CheckExplainResult";
 import type { GraplixEngine } from "./GraplixEngine";
 import type { GraplixOptions } from "./GraplixOptions";
 import type { EntityRef } from "./private/EntityRef";
 import { evaluateRelation } from "./private/evaluateRelation";
-import type { InternalState } from "./private/InternalState";
+import type { CachedEntity, InternalState } from "./private/InternalState";
 import { resolveSchema } from "./private/resolveSchema";
-import { toEntityRef } from "./private/toEntityRef";
 import type { TraceState } from "./private/TraceState";
+import { toEntityRef } from "./private/toEntityRef";
 import type { Query } from "./Query";
+
+const DEFAULT_MAX_CACHE_SIZE = 500;
 
 /**
  * Creates a Graplix evaluation engine for a schema and resolver set.
@@ -16,6 +19,7 @@ export function createEngine<TContext = object, TEntityInput = never>(
   options: GraplixOptions<TContext>,
 ): GraplixEngine<TContext, TEntityInput> {
   const resolvedSchema = resolveSchema(options.schema);
+  const maxCacheSize = options.maxCacheSize ?? DEFAULT_MAX_CACHE_SIZE;
 
   const createState = (
     context: TContext,
@@ -27,14 +31,19 @@ export function createEngine<TContext = object, TEntityInput = never>(
       schema,
       resolvers: options.resolvers,
       resolveType: options.resolveType,
-      relationValuesCache: new Map<string, readonly EntityRef[]>(),
-      entityCache: new Map<string, unknown | null>(),
+      resolverTimeoutMs: options.resolverTimeoutMs,
+      relationValuesCache: new LRUCache<string, readonly EntityRef[]>({
+        max: maxCacheSize,
+      }),
+      entityCache: new LRUCache<string, CachedEntity>({ max: maxCacheSize }),
       visited: new Set<string>(),
       trace,
     };
   };
 
-  const check = async (query: Query<TContext, TEntityInput>): Promise<boolean> => {
+  const check = async (
+    query: Query<TContext, TEntityInput>,
+  ): Promise<boolean> => {
     const schema = await resolvedSchema;
     const context = query.context ?? ({} as TContext);
     const state = createState(context, schema);

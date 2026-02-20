@@ -42,6 +42,7 @@ export async function evaluateRelationTerm<TContext>(
           state.trace.matchedPath = [...state.trace.currentPath];
         }
 
+        state.trace?.currentPath.pop();
         return true;
       }
 
@@ -76,6 +77,7 @@ export async function evaluateRelationTerm<TContext>(
       }
 
       if (await evaluateRelation(state, sourceRef, term.relation, user)) {
+        state.trace?.currentPath.pop();
         return true;
       }
 

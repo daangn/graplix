@@ -820,6 +820,7 @@ __metadata:
   dependencies:
     "@graplix/language": "npm:^2.0.1"
     "@types/node": "npm:^24.10.13"
+    lru-cache: "npm:^11.2.6"
     tsdown: "npm:^0.20.3"
     vitest: "npm:^3.2.4"
   languageName: unknown
@@ -4068,6 +4069,13 @@ __metadata:
   version: 11.2.4
   resolution: "lru-cache@npm:11.2.4"
   checksum: 10c0/4a24f9b17537619f9144d7b8e42cd5a225efdfd7076ebe7b5e7dc02b860a818455201e67fbf000765233fe7e339d3c8229fc815e9b58ee6ede511e07608c19b2
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^11.2.6":
+  version: 11.2.6
+  resolution: "lru-cache@npm:11.2.6"
+  checksum: 10c0/73bbffb298760e71b2bfe8ebc16a311c6a60ceddbba919cfedfd8635c2d125fbfb5a39b71818200e67973b11f8d59c5a9e31d6f90722e340e90393663a66e5cd
   languageName: node
   linkType: hard
 

@@ -37,7 +37,8 @@
     "test": "vitest --run --passWithNoTests"
   },
   "dependencies": {
-    "@graplix/language": "^2.0.1"
+    "@graplix/language": "^2.0.1",
+    "lru-cache": "^11.2.6"
   },
   "devDependencies": {
     "@types/node": "^24.10.13",

@@ -1,6 +1,16 @@
 import type { EntityRef } from "./EntityRef";
 import type { InternalState } from "./InternalState";
 import { isEntityRef } from "./isEntityRef";
+import { withTimeout } from "./withTimeout";
+
+function describeValue(value: unknown): string {
+  try {
+    const json = JSON.stringify(value);
+    return json.length > 120 ? `${json.slice(0, 120)}…` : json;
+  } catch {
+    return String(value);
+  }
+}
 
 export async function toEntityRef<TContext>(
   value: unknown,
@@ -13,7 +23,18 @@ export async function toEntityRef<TContext>(
   let lastError: Error | undefined;
 
   try {
-    const resolvedType = await state.resolveType(value, state.context);
+    let resolveTypePromise = Promise.resolve(
+      state.resolveType(value, state.context),
+    );
+    if (state.resolverTimeoutMs !== undefined) {
+      resolveTypePromise = withTimeout(
+        resolveTypePromise,
+        state.resolverTimeoutMs,
+        "resolveType",
+      );
+    }
+
+    const resolvedType = await resolveTypePromise;
     if (resolvedType !== null) {
       const resolver = state.resolvers[resolvedType];
       if (resolver === undefined) {
@@ -54,10 +75,11 @@ export async function toEntityRef<TContext>(
     }
   }
 
+  const valueDesc = describeValue(value);
   const contextMessage =
-    lastError === undefined ? "" : ` Last resolver error: ${lastError.message}`;
+    lastError === undefined ? "" : ` Last error: ${lastError.message}`;
 
   throw new Error(
-    `Cannot infer entity type from value. Add { type, id } fields, provide resolveType, or provide a matching resolver id/load pair.${contextMessage}`,
+    `Cannot resolve entity type for value: ${valueDesc}. Add { type, id } fields, provide resolveType, or provide a matching resolver id/load pair.${contextMessage}`,
   );
 }

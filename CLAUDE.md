@@ -155,6 +155,28 @@ check(query)
             └─ [from]   getRelationValues → evaluateRelation (재귀)
 ```
 
+### Production 옵션 (`GraplixOptions`)
+
+| 옵션 | 타입 | 기본값 | 설명 |
+|------|------|--------|------|
+| `resolverTimeout` | `number \| undefined` | `undefined` (없음) | 각 resolver 호출(`load`, relation resolver, `resolveType`)에 적용되는 타임아웃(ms). 초과 시 `"timed out after Nms: ..."` 에러 발생 |
+| `maxCacheSize` | `number` | `500` | 요청당 LRU 캐시 최대 항목 수. `entityCache`와 `relationValuesCache` 각각 독립적으로 적용 |
+
+```typescript
+const engine = createEngine({
+  schema,
+  resolvers,
+  resolveType,
+  resolverTimeout: 3000, // resolver가 3초 초과하면 에러
+  maxCacheSize: 1000,    // 요청당 캐시 항목 최대 1000개
+});
+```
+
+**캐시 구조**: 두 캐시 모두 `lru-cache`(LRUCache) 기반이며 **요청 단위**로 생성됩니다. cross-request 공유는 하지 않으므로 컨텍스트 의존 데이터에도 안전합니다.
+
+- `entityCache` — `LRUCache<string, CachedEntity>`: `resolver.load()` 결과를 `{ value: entity | null }` 형태로 래핑해 저장 (null 캐싱과 cache miss를 구분)
+- `relationValuesCache` — `LRUCache<string, readonly EntityRef[]>`: relation resolver 결과 저장
+
 ### 공개 API
 
 `packages/engine/src/index.ts`가 유일한 공개 진입점입니다. 타입·함수를 추가하거나 제거할 때는 이 파일을 함께 수정합니다. `src/private/` 내 파일은 직접 export하지 않습니다 (`EntityRef`는 예외로 index.ts를 통해 re-export).

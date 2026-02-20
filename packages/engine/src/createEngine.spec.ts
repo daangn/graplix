@@ -324,6 +324,82 @@ describe("createEngine", () => {
     ).toBe(false);
   });
 
+  test("resolverTimeoutMs - rejects when load exceeds timeout", async () => {
+    // biome-ignore lint/style/noNonNullAssertion: organization resolver is defined in the fixture
+    const baseOrgResolver = githubFixture.resolvers.organization!;
+    const engine = createEngine({
+      schema: githubFixture.schema,
+      resolvers: {
+        ...githubFixture.resolvers,
+        organization: {
+          ...baseOrgResolver,
+          async load(id, context) {
+            await new Promise((resolve) => setTimeout(resolve, 200));
+            return baseOrgResolver.load(id, context);
+          },
+        },
+      },
+      resolveType: githubFixture.resolveType,
+      resolverTimeoutMs: 50,
+    });
+
+    await expect(
+      engine.check({
+        user: { type: "user", id: "user-0" },
+        object: { type: "organization", id: "organization-0" },
+        relation: "member",
+      }),
+    ).rejects.toThrow(/timed out after 50ms/);
+  });
+
+  test("resolverTimeoutMs - rejects when relation resolver exceeds timeout", async () => {
+    // biome-ignore lint/style/noNonNullAssertion: organization resolver is defined in the fixture
+    const baseOrgResolver = githubFixture.resolvers.organization!;
+    const engine = createEngine({
+      schema: githubFixture.schema,
+      resolvers: {
+        ...githubFixture.resolvers,
+        organization: {
+          ...baseOrgResolver,
+          relations: {
+            ...baseOrgResolver.relations,
+            async member(entity, context) {
+              await new Promise((resolve) => setTimeout(resolve, 200));
+              return baseOrgResolver.relations?.member?.(entity, context);
+            },
+          },
+        },
+      },
+      resolveType: githubFixture.resolveType,
+      resolverTimeoutMs: 50,
+    });
+
+    await expect(
+      engine.check({
+        user: { type: "user", id: "user-0" },
+        object: { type: "organization", id: "organization-0" },
+        relation: "member",
+      }),
+    ).rejects.toThrow(/timed out after 50ms/);
+  });
+
+  test("maxCacheSize - engine still evaluates correctly with small cache", async () => {
+    const engine = createEngine({
+      schema: githubFixture.schema,
+      resolvers: githubFixture.resolvers,
+      resolveType: githubFixture.resolveType,
+      maxCacheSize: 1,
+    });
+
+    expect(
+      await engine.check({
+        user: { type: "user", id: "user-0" },
+        object: { type: "organization", id: "organization-0" },
+        relation: "member",
+      }),
+    ).toBe(true);
+  });
+
   test("circular - stops recursive relation cycles", async () => {
     const engine = createEngine({
       schema: circularFixture.schema,
