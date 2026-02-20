@@ -110,12 +110,12 @@ describe("generateTypeScript", () => {
       "export type GraplixResolveTypeValue = unknown;",
     );
     expect(result.content).toContain("value: GraplixResolveTypeValue,");
-    expect(result.content).toContain("export function createEngine");
+    expect(result.content).toContain("export async function buildEngine");
     expect(result.content).toContain(
       "export type GraplixEntityInput = GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes];",
     );
     expect(result.content).toContain(
-      "): GraplixEngine<TContext, GraplixEntityInput> {",
+      "): Promise<GraplixEngine<TContext, GraplixEntityInput>> {",
     );
   });
 
@@ -143,7 +143,7 @@ describe("generateTypeScript", () => {
       "export type GraplixEntityInput = GraplixProvidedMapperTypes[keyof GraplixProvidedMapperTypes];",
     );
     expect(result.content).toContain(
-      "): GraplixEngine<TContext, GraplixEntityInput> {",
+      "): Promise<GraplixEngine<TContext, GraplixEntityInput>> {",
     );
   });
 
