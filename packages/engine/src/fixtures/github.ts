@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { EntityRef } from "../private/EntityRef";
 import type { Resolvers } from "../Resolvers";
 import type { ResolveType } from "../ResolveType";
 
@@ -11,18 +12,17 @@ export interface GithubContext {
   readonly shouldReadOwner?: boolean;
 }
 
-type User = {
+export type User = {
   readonly id: string;
-  readonly entityId?: string;
 };
 
-type Organization = {
+export type Organization = {
   readonly id: string;
   readonly adminIds: readonly string[];
   readonly memberIds: readonly string[];
 };
 
-type Team = {
+export type Team = {
   readonly id: string;
   readonly ownerIds: readonly string[];
   readonly maintainerIds: readonly string[];
@@ -30,38 +30,47 @@ type Team = {
   readonly memberIds: readonly string[];
 };
 
-type Project = {
+export type Project = {
   readonly id: string;
   readonly teamIds: readonly string[];
   readonly triageTeamIds: readonly string[];
   readonly approverIds: readonly string[];
 };
 
-type Repository = {
+export type Repository = {
   readonly id: string;
   readonly ownerIds: readonly string[];
   readonly organizationId: string;
   readonly teamIds: readonly string[];
-  readonly useEntityIdForOwner?: boolean;
 };
 
-type Artifact = {
+export type Artifact = {
   readonly id: string;
   readonly projectId: string;
 };
 
-type Label = {
+export type Label = {
   readonly id: string;
   readonly reviewerIds: readonly string[];
 };
 
-type Issue = {
+export type Issue = {
   readonly id: string;
   readonly reporterId: string;
   readonly assigneeId: string;
   readonly projectId: string;
   readonly labelId: string;
 };
+
+export type GithubEntityInput =
+  | User
+  | Organization
+  | Team
+  | Project
+  | Repository
+  | Artifact
+  | Label
+  | Issue;
 
 const users: User[] = [
   { id: "user-0" },
@@ -151,7 +160,6 @@ const repositories: Repository[] = [
     ownerIds: ["user-1"],
     organizationId: "organization-1",
     teamIds: ["team-security"],
-    useEntityIdForOwner: true,
   },
 ];
 
@@ -190,35 +198,33 @@ const issues: Issue[] = [
   },
 ];
 
-const usersById = new Map(users.map((user) => [user.id, user] as const));
-const organizationsById = new Map(
+export const usersById = new Map(users.map((user) => [user.id, user] as const));
+export const organizationsById = new Map(
   organizations.map((organization) => [organization.id, organization] as const),
 );
-const teamsById = new Map(teams.map((team) => [team.id, team] as const));
-const projectsById = new Map(
+export const teamsById = new Map(teams.map((team) => [team.id, team] as const));
+export const projectsById = new Map(
   projects.map((project) => [project.id, project] as const),
 );
-const repositoriesById = new Map(
+export const repositoriesById = new Map(
   repositories.map((repository) => [repository.id, repository] as const),
 );
-const artifactsById = new Map(
+export const artifactsById = new Map(
   artifacts.map((artifact) => [artifact.id, artifact] as const),
 );
-const labelsById = new Map(labels.map((label) => [label.id, label] as const));
-const issuesById = new Map(issues.map((issue) => [issue.id, issue] as const));
+export const labelsById = new Map(
+  labels.map((label) => [label.id, label] as const),
+);
+export const issuesById = new Map(
+  issues.map((issue) => [issue.id, issue] as const),
+);
 
-const getOwnerRef = (ownerId: string, useEntityIdForOwner?: boolean) =>
-  useEntityIdForOwner ? { entityId: ownerId } : { id: ownerId };
 
 export const resolveType: ResolveType<GithubContext> = () => null;
 
 export const resolvers: Resolvers<GithubContext> = {
   user: {
     id(value: User): string {
-      if (value.entityId !== undefined) {
-        return value.entityId;
-      }
-
       return value.id;
     },
     async load(id: string) {
@@ -235,11 +241,11 @@ export const resolvers: Resolvers<GithubContext> = {
     relations: {
       admin(organization: unknown) {
         const organizationValue = organization as Organization;
-        return organizationValue.adminIds.map((id) => ({ type: "user", id }));
+        return organizationValue.adminIds.map((id) => new EntityRef("user", id));
       },
       member(organization: unknown) {
         const organizationValue = organization as Organization;
-        return organizationValue.memberIds.map((id) => ({ type: "user", id }));
+        return organizationValue.memberIds.map((id) => new EntityRef("user", id));
       },
     },
   },
@@ -253,19 +259,19 @@ export const resolvers: Resolvers<GithubContext> = {
     relations: {
       owner(team: unknown) {
         const teamValue = team as Team;
-        return teamValue.ownerIds.map((id) => ({ type: "user", id }));
+        return teamValue.ownerIds.map((id) => new EntityRef("user", id));
       },
       maintainer(team: unknown) {
         const teamValue = team as Team;
-        return teamValue.maintainerIds.map((id) => ({ type: "user", id }));
+        return teamValue.maintainerIds.map((id) => new EntityRef("user", id));
       },
       triager(team: unknown) {
         const teamValue = team as Team;
-        return teamValue.triagerIds.map((id) => ({ type: "user", id }));
+        return teamValue.triagerIds.map((id) => new EntityRef("user", id));
       },
       member(team: unknown) {
         const teamValue = team as Team;
-        return teamValue.memberIds.map((id) => ({ type: "user", id }));
+        return teamValue.memberIds.map((id) => new EntityRef("user", id));
       },
     },
   },
@@ -279,19 +285,19 @@ export const resolvers: Resolvers<GithubContext> = {
     relations: {
       team(project: unknown) {
         const projectValue = project as Project;
-        return projectValue.teamIds.map((id) => ({ type: "team", id }));
+        return projectValue.teamIds.map((id) => new EntityRef("team", id));
       },
       triage_team(project: unknown) {
         const projectValue = project as Project;
-        return projectValue.triageTeamIds.map((id) => ({ type: "team", id }));
+        return projectValue.triageTeamIds.map((id) => new EntityRef("team", id));
       },
       approver(project: unknown) {
         const projectValue = project as Project;
-        return projectValue.approverIds.map((id) => ({ type: "user", id }));
+        return projectValue.approverIds.map((id) => new EntityRef("user", id));
       },
       self(project: unknown) {
         const projectValue = project as Project;
-        return { type: "project", id: projectValue.id };
+        return new EntityRef("project", projectValue.id);
       },
     },
   },
@@ -309,17 +315,15 @@ export const resolvers: Resolvers<GithubContext> = {
           return [];
         }
 
-        return repositoryValue.ownerIds.map((id) =>
-          getOwnerRef(id, repositoryValue.useEntityIdForOwner),
-        );
+        return repositoryValue.ownerIds.map((id) => new EntityRef("user", id));
       },
       team(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return repositoryValue.teamIds.map((id) => ({ type: "team", id }));
+        return repositoryValue.teamIds.map((id) => new EntityRef("team", id));
       },
       organization(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return { type: "organization", id: repositoryValue.organizationId };
+        return new EntityRef("organization", repositoryValue.organizationId);
       },
     },
   },
@@ -333,7 +337,7 @@ export const resolvers: Resolvers<GithubContext> = {
     relations: {
       project(artifact: unknown) {
         const artifactValue = artifact as Artifact;
-        return { type: "project", id: artifactValue.projectId };
+        return new EntityRef("project", artifactValue.projectId);
       },
     },
   },
@@ -347,7 +351,7 @@ export const resolvers: Resolvers<GithubContext> = {
     relations: {
       reviewer(label: unknown) {
         const labelValue = label as Label;
-        return labelValue.reviewerIds.map((id) => ({ type: "user", id }));
+        return labelValue.reviewerIds.map((id) => new EntityRef("user", id));
       },
     },
   },
@@ -361,19 +365,19 @@ export const resolvers: Resolvers<GithubContext> = {
     relations: {
       reporter(issue: unknown) {
         const issueValue = issue as Issue;
-        return { type: "user", id: issueValue.reporterId };
+        return new EntityRef("user", issueValue.reporterId);
       },
       assignee(issue: unknown) {
         const issueValue = issue as Issue;
-        return { type: "user", id: issueValue.assigneeId };
+        return new EntityRef("user", issueValue.assigneeId);
       },
       project(issue: unknown) {
         const issueValue = issue as Issue;
-        return { type: "project", id: issueValue.projectId };
+        return new EntityRef("project", issueValue.projectId);
       },
       label(issue: unknown) {
         const issueValue = issue as Issue;
-        return { type: "label", id: issueValue.labelId };
+        return new EntityRef("label", issueValue.labelId);
       },
     },
   },

@@ -4,9 +4,20 @@ import * as circularFixture from "./fixtures/circular";
 import * as githubFixture from "./fixtures/github";
 import * as invalidSchemaFixture from "./fixtures/invalid-schema";
 
+function getOrThrow<T>(map: ReadonlyMap<string, T>, key: string): T {
+  const value = map.get(key);
+  if (value === undefined) {
+    throw new Error(`Test fixture: "${key}" not found`);
+  }
+  return value;
+}
+
 describe("createEngine", () => {
   test("github - organization membership and admin", async () => {
-    const engine = createEngine({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
@@ -14,24 +25,24 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "organization", id: "organization-0" },
+        user: getOrThrow(githubFixture.usersById, "user-0"),
+        object: getOrThrow(githubFixture.organizationsById, "organization-0"),
         relation: "member",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-cto" },
-        object: { type: "organization", id: "organization-0" },
+        user: getOrThrow(githubFixture.usersById, "u-cto"),
+        object: getOrThrow(githubFixture.organizationsById, "organization-0"),
         relation: "admin",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-4" },
-        object: { type: "organization", id: "organization-0" },
+        user: getOrThrow(githubFixture.usersById, "user-4"),
+        object: getOrThrow(githubFixture.organizationsById, "organization-0"),
         relation: "member",
         context: {},
       }),
@@ -39,7 +50,10 @@ describe("createEngine", () => {
   });
 
   test("github - nested from expressions for permissions", async () => {
-    const engine = createEngine({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
@@ -47,16 +61,16 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "repository", id: "repository-0" },
+        user: getOrThrow(githubFixture.usersById, "user-0"),
+        object: getOrThrow(githubFixture.repositoriesById, "repository-0"),
         relation: "can_delete",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-2" },
-        object: { type: "repository", id: "repository-0" },
+        user: getOrThrow(githubFixture.usersById, "user-2"),
+        object: getOrThrow(githubFixture.repositoriesById, "repository-0"),
         relation: "can_delete",
         context: {},
       }),
@@ -64,7 +78,10 @@ describe("createEngine", () => {
   });
 
   test("github - multi-hop and self references", async () => {
-    const engine = createEngine({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
@@ -72,40 +89,40 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "artifact", id: "artifact-0" },
+        user: getOrThrow(githubFixture.usersById, "user-0"),
+        object: getOrThrow(githubFixture.artifactsById, "artifact-0"),
         relation: "can_delete",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-3" },
-        object: { type: "artifact", id: "artifact-0" },
+        user: getOrThrow(githubFixture.usersById, "user-3"),
+        object: getOrThrow(githubFixture.artifactsById, "artifact-0"),
         relation: "can_delete",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-2" },
-        object: { type: "artifact", id: "artifact-0" },
+        user: getOrThrow(githubFixture.usersById, "user-2"),
+        object: getOrThrow(githubFixture.artifactsById, "artifact-0"),
         relation: "can_delete",
         context: {},
       }),
     ).toBe(false);
     expect(
       await engine.check({
-        user: { type: "project", id: "project-core" },
-        object: { type: "project", id: "project-core" },
+        user: getOrThrow(githubFixture.projectsById, "project-core"),
+        object: getOrThrow(githubFixture.projectsById, "project-core"),
         relation: "self",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "artifact", id: "artifact-0" },
+        user: getOrThrow(githubFixture.usersById, "user-0"),
+        object: getOrThrow(githubFixture.artifactsById, "artifact-0"),
         relation: "can_touch",
         context: {},
       }),
@@ -113,7 +130,10 @@ describe("createEngine", () => {
   });
 
   test("github - repository collaboration permissions", async () => {
-    const engine = createEngine({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
@@ -121,32 +141,32 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "u-platform-owner" },
-        object: { type: "repository", id: "repo-api" },
+        user: getOrThrow(githubFixture.usersById, "u-platform-owner"),
+        object: getOrThrow(githubFixture.repositoriesById, "repo-api"),
         relation: "write",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-platform-maintainer" },
-        object: { type: "repository", id: "repo-api" },
+        user: getOrThrow(githubFixture.usersById, "u-platform-maintainer"),
+        object: getOrThrow(githubFixture.repositoriesById, "repo-api"),
         relation: "write",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-cto" },
-        object: { type: "repository", id: "repo-api" },
+        user: getOrThrow(githubFixture.usersById, "u-cto"),
+        object: getOrThrow(githubFixture.repositoriesById, "repo-api"),
         relation: "admin",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-platform-owner" },
-        object: { type: "repository", id: "repo-api" },
+        user: getOrThrow(githubFixture.usersById, "u-platform-owner"),
+        object: getOrThrow(githubFixture.repositoriesById, "repo-api"),
         relation: "admin",
         context: {},
       }),
@@ -154,7 +174,10 @@ describe("createEngine", () => {
   });
 
   test("github - missing relation fields return false", async () => {
-    const engine = createEngine({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
@@ -162,8 +185,8 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "repository", id: "repository-0" },
+        user: getOrThrow(githubFixture.usersById, "user-0"),
+        object: getOrThrow(githubFixture.repositoriesById, "repository-0"),
         relation: "resolver_not_found",
         context: {},
       }),
@@ -171,7 +194,10 @@ describe("createEngine", () => {
   });
 
   test("github - context-aware resolver execution", async () => {
-    const engine = createEngine<githubFixture.GithubContext>({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
@@ -179,24 +205,27 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-default" },
-        object: { type: "repository", id: "repo-4" },
+        user: getOrThrow(githubFixture.usersById, "user-default"),
+        object: getOrThrow(githubFixture.repositoriesById, "repo-4"),
         relation: "owner",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "user-default" },
-        object: { type: "repository", id: "repo-4" },
+        user: getOrThrow(githubFixture.usersById, "user-default"),
+        object: getOrThrow(githubFixture.repositoriesById, "repo-4"),
         relation: "owner",
         context: { shouldReadOwner: false },
       }),
     ).toBe(false);
   });
 
-  test("github - supports EntityRef inputs", async () => {
-    const engine = createEngine({
+  test("github - entity id extraction via resolver", async () => {
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
@@ -204,25 +233,8 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-1" },
-        object: { type: "repository", id: "repository-1" },
-        relation: "owner",
-        context: {},
-      }),
-    ).toBe(true);
-  });
-
-  test("github - accepts EntityRef inputs", async () => {
-    const engine = createEngine({
-      schema: githubFixture.schema,
-      resolvers: githubFixture.resolvers,
-      resolveType: githubFixture.resolveType,
-    });
-
-    expect(
-      await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "repository", id: "repository-0" },
+        user: getOrThrow(githubFixture.usersById, "user-1"),
+        object: getOrThrow(githubFixture.repositoriesById, "repository-1"),
         relation: "owner",
         context: {},
       }),
@@ -230,7 +242,10 @@ describe("createEngine", () => {
   });
 
   test("github - issue workflow permissions", async () => {
-    const engine = createEngine({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
@@ -238,32 +253,32 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "u-qa" },
-        object: { type: "issue", id: "issue-101" },
+        user: getOrThrow(githubFixture.usersById, "u-qa"),
+        object: getOrThrow(githubFixture.issuesById, "issue-101"),
         relation: "can_edit",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-security" },
-        object: { type: "issue", id: "issue-101" },
+        user: getOrThrow(githubFixture.usersById, "u-security"),
+        object: getOrThrow(githubFixture.issuesById, "issue-101"),
         relation: "can_approve",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-reporter" },
-        object: { type: "issue", id: "issue-101" },
+        user: getOrThrow(githubFixture.usersById, "u-reporter"),
+        object: getOrThrow(githubFixture.issuesById, "issue-101"),
         relation: "can_close",
         context: {},
       }),
     ).toBe(true);
     expect(
       await engine.check({
-        user: { type: "user", id: "u-platform-maintainer" },
-        object: { type: "issue", id: "issue-202" },
+        user: getOrThrow(githubFixture.usersById, "u-platform-maintainer"),
+        object: getOrThrow(githubFixture.issuesById, "issue-202"),
         relation: "can_edit",
         context: {},
       }),
@@ -271,38 +286,49 @@ describe("createEngine", () => {
   });
 
   test("github - explain returns matched path when allowed", async () => {
-    const engine = createEngine({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
     });
 
     const result = await engine.explain({
-      user: { type: "user", id: "user-1" },
-      object: { type: "repository", id: "repository-1" },
+      user: getOrThrow(githubFixture.usersById, "user-1"),
+      object: getOrThrow(githubFixture.repositoriesById, "repository-1"),
       relation: "owner",
       context: {},
     });
 
     expect(result.allowed).toBe(true);
     expect(result.matchedPath).not.toBeNull();
-    expect(result.matchedPath).toContainEqual({
-      from: { type: "repository", id: "repository-1" },
-      relation: "owner",
-      to: { type: "user", id: "user-1" },
-    });
+    expect(result.matchedPath).toContainEqual(
+      expect.objectContaining({
+        from: expect.objectContaining({
+          type: "repository",
+          id: "repository-1",
+        }),
+        relation: "owner",
+        to: expect.objectContaining({ type: "user", id: "user-1" }),
+      }),
+    );
   });
 
   test("github - explain returns explored edges when denied", async () => {
-    const engine = createEngine({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
     });
 
     const result = await engine.explain({
-      user: { type: "user", id: "user-4" },
-      object: { type: "repository", id: "repo-api" },
+      user: getOrThrow(githubFixture.usersById, "user-4"),
+      object: getOrThrow(githubFixture.repositoriesById, "repo-api"),
       relation: "admin",
       context: {},
     });
@@ -319,7 +345,10 @@ describe("createEngine", () => {
       readonly memberIds: readonly string[];
     };
 
-    const engine = createEngine<githubFixture.GithubContext, Organization>({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
@@ -333,7 +362,7 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
+        user: getOrThrow(githubFixture.usersById, "user-0"),
         object: org,
         relation: "member",
         context: {},
@@ -342,7 +371,7 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-4" },
+        user: getOrThrow(githubFixture.usersById, "user-4"),
         object: org,
         relation: "member",
         context: {},
@@ -351,9 +380,15 @@ describe("createEngine", () => {
   });
 
   test("resolverTimeoutMs - rejects when load exceeds timeout", async () => {
-    // biome-ignore lint/style/noNonNullAssertion: organization resolver is defined in the fixture
-    const baseOrgResolver = githubFixture.resolvers.organization!;
-    const engine = createEngine({
+    const baseOrgResolver = githubFixture.resolvers.organization;
+    if (baseOrgResolver === undefined) {
+      throw new Error("organization resolver not found in fixture");
+    }
+
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: {
         ...githubFixture.resolvers,
@@ -371,8 +406,8 @@ describe("createEngine", () => {
 
     await expect(
       engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "organization", id: "organization-0" },
+        user: getOrThrow(githubFixture.usersById, "user-0"),
+        object: getOrThrow(githubFixture.organizationsById, "organization-0"),
         relation: "member",
         context: {},
       }),
@@ -380,9 +415,15 @@ describe("createEngine", () => {
   });
 
   test("resolverTimeoutMs - rejects when relation resolver exceeds timeout", async () => {
-    // biome-ignore lint/style/noNonNullAssertion: organization resolver is defined in the fixture
-    const baseOrgResolver = githubFixture.resolvers.organization!;
-    const engine = createEngine({
+    const baseOrgResolver = githubFixture.resolvers.organization;
+    if (baseOrgResolver === undefined) {
+      throw new Error("organization resolver not found in fixture");
+    }
+
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: {
         ...githubFixture.resolvers,
@@ -403,8 +444,8 @@ describe("createEngine", () => {
 
     await expect(
       engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "organization", id: "organization-0" },
+        user: getOrThrow(githubFixture.usersById, "user-0"),
+        object: getOrThrow(githubFixture.organizationsById, "organization-0"),
         relation: "member",
         context: {},
       }),
@@ -412,7 +453,10 @@ describe("createEngine", () => {
   });
 
   test("maxCacheSize - engine still evaluates correctly with small cache", async () => {
-    const engine = createEngine({
+    const engine = createEngine<
+      githubFixture.GithubContext,
+      githubFixture.GithubEntityInput
+    >({
       schema: githubFixture.schema,
       resolvers: githubFixture.resolvers,
       resolveType: githubFixture.resolveType,
@@ -421,8 +465,8 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "organization", id: "organization-0" },
+        user: getOrThrow(githubFixture.usersById, "user-0"),
+        object: getOrThrow(githubFixture.organizationsById, "organization-0"),
         relation: "member",
         context: {},
       }),
@@ -430,7 +474,7 @@ describe("createEngine", () => {
   });
 
   test("circular - stops recursive relation cycles", async () => {
-    const engine = createEngine({
+    const engine = createEngine<object, circularFixture.Repository>({
       schema: circularFixture.schema,
       resolvers: circularFixture.resolvers,
       resolveType: circularFixture.resolveType,
@@ -438,8 +482,11 @@ describe("createEngine", () => {
 
     expect(
       await engine.check({
-        user: { type: "repository", id: "repository-cycle" },
-        object: { type: "repository", id: "repository-cycle" },
+        user: getOrThrow(circularFixture.repositoriesById, "repository-cycle"),
+        object: getOrThrow(
+          circularFixture.repositoriesById,
+          "repository-cycle",
+        ),
         relation: "a",
         context: {},
       }),
@@ -447,7 +494,7 @@ describe("createEngine", () => {
   });
 
   test("invalid-schema - rejects invalid schema", async () => {
-    const engine = createEngine({
+    const engine = createEngine<object, { id: string }>({
       schema: invalidSchemaFixture.schema,
       resolvers: invalidSchemaFixture.resolvers,
       resolveType: invalidSchemaFixture.resolveType,
@@ -455,8 +502,8 @@ describe("createEngine", () => {
 
     await expect(
       engine.check({
-        user: { type: "user", id: "user-0" },
-        object: { type: "repository", id: "repository-0" },
+        user: { id: "user-0" },
+        object: { id: "repository-0" },
         relation: "owner",
         context: {},
       }),

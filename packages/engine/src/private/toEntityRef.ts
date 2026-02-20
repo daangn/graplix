@@ -1,4 +1,4 @@
-import type { EntityRef } from "./EntityRef";
+import { EntityRef } from "./EntityRef";
 import type { InternalState } from "./InternalState";
 import { isEntityRef } from "./isEntityRef";
 import { withTimeout } from "./withTimeout";
@@ -16,6 +16,7 @@ export async function toEntityRef<TContext>(
   value: unknown,
   state: InternalState<TContext>,
 ): Promise<EntityRef> {
+  // Fast path: already an EntityRef instance.
   if (isEntityRef(value)) {
     return value;
   }
@@ -44,7 +45,7 @@ export async function toEntityRef<TContext>(
       }
 
       const id = resolver.id(value);
-      return { type: resolvedType, id };
+      return new EntityRef(resolvedType, id);
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -62,11 +63,11 @@ export async function toEntityRef<TContext>(
       }
 
       if (loaded === value) {
-        return { type: typeName, id };
+        return new EntityRef(typeName, id);
       }
 
       if (resolver.id(loaded) === id) {
-        return { type: typeName, id };
+        return new EntityRef(typeName, id);
       }
     } catch (error) {
       if (error instanceof Error) {

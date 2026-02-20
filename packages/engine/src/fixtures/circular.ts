@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { EntityRef } from "../private/EntityRef";
 import type { Resolvers } from "../Resolvers";
 import type { ResolveType } from "../ResolveType";
 
@@ -7,13 +8,13 @@ export const schema = await readFile(
   "utf8",
 );
 
-type Repository = {
+export type Repository = {
   readonly id: string;
 };
 
 const repositories: Repository[] = [{ id: "repository-cycle" }];
 
-const repositoriesById = new Map(
+export const repositoriesById = new Map(
   repositories.map((repository) => [repository.id, repository] as const),
 );
 
@@ -30,15 +31,15 @@ export const resolvers: Resolvers = {
     relations: {
       a(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return { type: "repository", id: repositoryValue.id };
+        return new EntityRef("repository", repositoryValue.id);
       },
       b(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return { type: "repository", id: repositoryValue.id };
+        return new EntityRef("repository", repositoryValue.id);
       },
       c(repository: unknown) {
         const repositoryValue = repository as Repository;
-        return { type: "repository", id: repositoryValue.id };
+        return new EntityRef("repository", repositoryValue.id);
       },
     },
   },

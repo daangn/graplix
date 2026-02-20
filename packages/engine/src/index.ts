@@ -3,7 +3,7 @@ export type { CheckExplainResult } from "./CheckExplainResult";
 export { createEngine } from "./createEngine";
 export type { GraplixEngine } from "./GraplixEngine";
 export type { GraplixOptions } from "./GraplixOptions";
-export type { EntityRef } from "./private/EntityRef";
+export { EntityRef } from "./private/EntityRef";
 export type { Query } from "./Query";
 export type { Resolver } from "./Resolver";
 export type { Resolvers } from "./Resolvers";
