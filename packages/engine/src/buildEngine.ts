@@ -1,7 +1,7 @@
 import { LRUCache } from "lru-cache";
+import type { BuildEngineOptions } from "./BuildEngineOptions";
 import type { CheckExplainResult } from "./CheckExplainResult";
 import type { GraplixEngine } from "./GraplixEngine";
-import type { GraplixOptions } from "./GraplixOptions";
 import type { EntityRef } from "./private/EntityRef";
 import { evaluateRelation } from "./private/evaluateRelation";
 import type { CachedEntity, InternalState } from "./private/InternalState";
@@ -13,17 +13,17 @@ import type { Query } from "./Query";
 const DEFAULT_MAX_CACHE_SIZE = 500;
 
 /**
- * Creates a Graplix evaluation engine for a schema and resolver set.
+ * Builds a Graplix evaluation engine for a schema and resolver set.
+ * Parses and validates the schema eagerly — throws on invalid schema.
  */
-export function createEngine<TContext = object, TEntityInput = never>(
-  options: GraplixOptions<TContext>,
-): GraplixEngine<TContext, TEntityInput> {
-  const resolvedSchema = resolveSchema(options.schema);
+export async function buildEngine<TContext = object, TEntityInput = never>(
+  options: BuildEngineOptions<TContext>,
+): Promise<GraplixEngine<TContext, TEntityInput>> {
+  const schema = await resolveSchema(options.schema);
   const maxCacheSize = options.maxCacheSize ?? DEFAULT_MAX_CACHE_SIZE;
 
   const createState = (
     context: TContext,
-    schema: Awaited<ReturnType<typeof resolveSchema>>,
     trace?: TraceState,
   ): InternalState<TContext> => {
     return {
@@ -44,9 +44,7 @@ export function createEngine<TContext = object, TEntityInput = never>(
   const check = async (
     query: Query<TContext, TEntityInput>,
   ): Promise<boolean> => {
-    const schema = await resolvedSchema;
-    const context = query.context;
-    const state = createState(context, schema);
+    const state = createState(query.context);
 
     const user = await toEntityRef(query.user, state);
     const object = await toEntityRef(query.object, state);
@@ -57,14 +55,12 @@ export function createEngine<TContext = object, TEntityInput = never>(
   const explain = async (
     query: Query<TContext, TEntityInput>,
   ): Promise<CheckExplainResult> => {
-    const schema = await resolvedSchema;
-    const context = query.context;
     const trace: TraceState = {
       exploredEdges: [],
       currentPath: [],
       matchedPath: null,
     };
-    const state = createState(context, schema, trace);
+    const state = createState(query.context, trace);
 
     const user = await toEntityRef(query.user, state);
     const object = await toEntityRef(query.object, state);

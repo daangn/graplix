@@ -1,8 +1,8 @@
+export type { BuildEngineOptions } from "./BuildEngineOptions";
+export { buildEngine } from "./buildEngine";
 export type { CheckEdge } from "./CheckEdge";
 export type { CheckExplainResult } from "./CheckExplainResult";
-export { createEngine } from "./createEngine";
 export type { GraplixEngine } from "./GraplixEngine";
-export type { GraplixOptions } from "./GraplixOptions";
 export { EntityRef } from "./private/EntityRef";
 export type { Query } from "./Query";
 export type { Resolver } from "./Resolver";

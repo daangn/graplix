@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { createEngine } from "./createEngine";
+import { buildEngine } from "./buildEngine";
 import * as circularFixture from "./fixtures/circular";
 import * as githubFixture from "./fixtures/github";
 import * as invalidSchemaFixture from "./fixtures/invalid-schema";
@@ -12,9 +12,9 @@ function getOrThrow<T>(map: ReadonlyMap<string, T>, key: string): T {
   return value;
 }
 
-describe("createEngine", () => {
+describe("buildEngine", () => {
   test("github - organization membership and admin", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -50,7 +50,7 @@ describe("createEngine", () => {
   });
 
   test("github - nested from expressions for permissions", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -78,7 +78,7 @@ describe("createEngine", () => {
   });
 
   test("github - multi-hop and self references", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -130,7 +130,7 @@ describe("createEngine", () => {
   });
 
   test("github - repository collaboration permissions", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -174,7 +174,7 @@ describe("createEngine", () => {
   });
 
   test("github - missing relation fields return false", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -194,7 +194,7 @@ describe("createEngine", () => {
   });
 
   test("github - context-aware resolver execution", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -222,7 +222,7 @@ describe("createEngine", () => {
   });
 
   test("github - entity id extraction via resolver", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -242,7 +242,7 @@ describe("createEngine", () => {
   });
 
   test("github - issue workflow permissions", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -286,7 +286,7 @@ describe("createEngine", () => {
   });
 
   test("github - explain returns matched path when allowed", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -317,7 +317,7 @@ describe("createEngine", () => {
   });
 
   test("github - explain returns explored edges when denied", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -345,7 +345,7 @@ describe("createEngine", () => {
       readonly memberIds: readonly string[];
     };
 
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -385,7 +385,7 @@ describe("createEngine", () => {
       throw new Error("organization resolver not found in fixture");
     }
 
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -420,7 +420,7 @@ describe("createEngine", () => {
       throw new Error("organization resolver not found in fixture");
     }
 
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -453,7 +453,7 @@ describe("createEngine", () => {
   });
 
   test("maxCacheSize - engine still evaluates correctly with small cache", async () => {
-    const engine = createEngine<
+    const engine = await buildEngine<
       githubFixture.GithubContext,
       githubFixture.GithubEntityInput
     >({
@@ -474,7 +474,7 @@ describe("createEngine", () => {
   });
 
   test("circular - stops recursive relation cycles", async () => {
-    const engine = createEngine<object, circularFixture.Repository>({
+    const engine = await buildEngine<object, circularFixture.Repository>({
       schema: circularFixture.schema,
       resolvers: circularFixture.resolvers,
       resolveType: circularFixture.resolveType,
@@ -493,19 +493,12 @@ describe("createEngine", () => {
     ).toBe(false);
   });
 
-  test("invalid-schema - rejects invalid schema", async () => {
-    const engine = createEngine<object, { id: string }>({
-      schema: invalidSchemaFixture.schema,
-      resolvers: invalidSchemaFixture.resolvers,
-      resolveType: invalidSchemaFixture.resolveType,
-    });
-
+  test("invalid-schema - rejects on engine construction", async () => {
     await expect(
-      engine.check({
-        user: { id: "user-0" },
-        object: { id: "repository-0" },
-        relation: "owner",
-        context: {},
+      buildEngine<object, { id: string }>({
+        schema: invalidSchemaFixture.schema,
+        resolvers: invalidSchemaFixture.resolvers,
+        resolveType: invalidSchemaFixture.resolveType,
       }),
     ).rejects.toThrow(/Invalid Graplix schema/);
   });

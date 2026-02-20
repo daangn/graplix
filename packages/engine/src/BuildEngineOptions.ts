@@ -4,7 +4,7 @@ import type { ResolveType } from "./ResolveType";
 /**
  * Engine construction options.
  */
-export interface GraplixOptions<TContext = object> {
+export interface BuildEngineOptions<TContext = object> {
   /** Raw Graplix schema text. */
   readonly schema: string;
 
