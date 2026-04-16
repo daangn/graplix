@@ -34,6 +34,8 @@
   ],
   "scripts": {
     "build": "tsdown",
+    "build:docs": "tsx ../../scripts/generate-docs.ts",
+    "prepack": "yarn build:docs",
     "test": "vitest --run --passWithNoTests"
   },
   "dependencies": {
