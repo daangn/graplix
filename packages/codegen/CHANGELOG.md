@@ -1,5 +1,11 @@
 # @graplix/codegen
 
+## 2.2.1
+
+### Patch Changes
+
+- a509b88: docs: add skills
+
 ## 2.2.0
 
 ### Minor Changes

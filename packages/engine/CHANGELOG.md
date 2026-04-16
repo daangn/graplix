@@ -1,5 +1,11 @@
 # @graplix/engine
 
+## 2.1.1
+
+### Patch Changes
+
+- a509b88: docs: add skills
+
 ## 2.1.0
 
 ### Minor Changes
