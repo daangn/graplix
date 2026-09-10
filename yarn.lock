@@ -4127,10 +4127,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonschema@npm:~1.5.0":
+"jsonschema@npm:1.5.0":
   version: 1.5.0
   resolution: "jsonschema@npm:1.5.0"
   checksum: 10c0/c24ddb8d741f02efc0da3ad9b597a275f6b595062903d3edbfaa535c3f9c4c98613df68da5cb6635ed9aeab30d658986fea61d7662fc5b2b92840d5a1e21235e
+  languageName: node
+  linkType: hard
+
+"jsonschema@patch:jsonschema@npm%3A1.5.0#~/.yarn/patches/jsonschema-npm-1.5.0-a1e4a2d9f7.patch":
+  version: 1.5.0
+  resolution: "jsonschema@patch:jsonschema@npm%3A1.5.0#~/.yarn/patches/jsonschema-npm-1.5.0-a1e4a2d9f7.patch::version=1.5.0&hash=b63d94"
+  checksum: 10c0/f39e2aca21d5e023e6c5abb4e4dacb6760e7d036b7925cde1301820e5b74b022af34e08c9cb3644f83d89e7b97788fec613e64d735163dbc2f215f494b15d49d
   languageName: node
   linkType: hard
 

@@ -26,5 +26,8 @@
     "typescript": "^5.9.3",
     "ultra-runner": "^3.10.5"
   },
-  "packageManager": "yarn@4.18.0"
+  "packageManager": "yarn@4.18.0",
+  "resolutions": {
+    "jsonschema@npm:~1.5.0": "patch:jsonschema@npm%3A1.5.0#~/.yarn/patches/jsonschema-npm-1.5.0-a1e4a2d9f7.patch"
+  }
 }
